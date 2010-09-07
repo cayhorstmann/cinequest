@@ -1,0 +1,43 @@
+/*
+    Copyright 2008 San Jose State University
+    
+    This file is part of the Blackberry Cinequest client.
+
+    The Blackberry Cinequest client is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The Blackberry Cinequest client is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package edu.sjsu.cs160.comm.xmlparser;
+
+import junit.framework.TestCase;
+import edu.sjsu.cs160.comm.Platform;
+import edu.sjsu.cs160.comm.cinequestitem.ProgramItem;
+import edu.sjsu.cs160.javase.JavaSEPlatform;
+
+public class ProgramItemParserTest extends TestCase
+{
+    protected void setUp() throws Exception
+    {
+        Platform.setInstance(new JavaSEPlatform());
+    }
+
+    public void testProgramItem428() throws Exception
+    {
+        ProgramItem result = ProgramItemParser
+                .parseProgramItem(
+                        "http://mobile.cinequest.org/mobileCQ.php?type=program_item&id=490",
+                        null);
+        System.out.println(result.getId());
+        assertEquals("Gotta Dance", result.getTitle());
+        assertEquals(490, result.getId());
+    }
+}

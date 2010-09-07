@@ -1,0 +1,33 @@
+# Cinequest BlackBerry Build Properties
+app.desc=Cinequest 2010 Film Festival Catalog (Build ${build.time})
+app.vendor=Cinequest
+app.version=1.0
+#app.title=Cinequest Build ${build.time}
+app.title=Cinequest 2010 Film Festival
+
+# Build properties
+src.dir=src
+images.dir=images
+build.dir=build
+test.dir=test
+cod.name=cinequest
+
+# Javadoc properties
+javadoc.dir=javadoc
+javadoc.title=Cinequest BlackBerry API
+
+# Oslo properties
+oslo.user=cs160
+oslo.pass=9hhC6ikk
+oslo.host=oslo.cs.sjsu.edu
+oslo.dir=/opt/glassfish/domains/domain1/applications/j2ee-modules/cinequest
+oslo.coddir=/home/cs160/build
+
+# JDE properties
+
+# Before running ant, set JDE_HOME to your JDE directory such as /home/me/BlackBerry_JDE_4.1.0
+
+jde.home=${env.JDE_HOME}
+simulator.dir=${jde.home}/simulator
+junit3.home=${env.JUNIT3_HOME}
+bb-ant-tools.home=${env.BB_ANT_TOOLS_HOME}
