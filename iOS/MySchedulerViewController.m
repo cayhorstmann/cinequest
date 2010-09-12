@@ -125,7 +125,11 @@ UITableViewCell *previousCell;
 	MASTERLIST		= [NSArray arrayWithObjects:confirmedList,movedList,removedList,nil];	
 	[MASTERLIST retain];
 }
-- (void)viewWillAppear:(BOOL)animated {	
+- (void)viewWillAppear:(BOOL)animated {
+	delegate = (CinequestAppDelegate*)[[UIApplication sharedApplication] delegate];
+	if (delegate.isOffSeason) return;
+	
+	
 	NSSortDescriptor *sortTime = [[NSSortDescriptor alloc] initWithKey:@"date" 
 															 ascending:YES];
 	

@@ -40,7 +40,7 @@
 @class NewsViewController;
 
 @interface CinequestAppDelegate : NSObject 
-	<UIApplicationDelegate, UITabBarControllerDelegate> 
+	<UIApplicationDelegate, UITabBarControllerDelegate, NSXMLParserDelegate> 
 {
     UIWindow *window;
     UITabBarController *tabBarController;
