@@ -1,13 +1,13 @@
-package edu.sjsu.cs160.comm;
+package edu.sjsu.cinequest.comm;
 
 import java.io.IOException;
 import java.util.Hashtable;
 
 import org.xml.sax.SAXException;
 
-import edu.sjsu.cs160.comm.cinequestitem.UserSchedule;
-import edu.sjsu.cs160.comm.xmlparser.UserScheduleParser;
-import edu.sjsu.cs160.javase.JavaSEPlatform;
+import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
+import edu.sjsu.cinequest.comm.xmlparser.UserScheduleParser;
+import edu.sjsu.cinequest.javase.JavaSEPlatform;
 import junit.framework.TestCase;
 
 public class PostTest extends TestCase

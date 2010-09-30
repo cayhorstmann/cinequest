@@ -59,7 +59,7 @@ public class GenresParser extends BasicHandler
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
 	{
         super.startElement(uri, localName, qName, attributes);
-		if (qName.equals("genre"))
+		if (lastTagName().equals("genre"))
 		{
 			result.addElement(attributes.getValue("name") );
 		}

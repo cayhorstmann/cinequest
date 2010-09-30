@@ -17,17 +17,17 @@
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.sjsu.cs160.client;
+package edu.sjsu.cinequest.client;
 
 import java.util.Vector;
 
 import net.rim.device.api.ui.Ui;
 import net.rim.device.api.ui.UiApplication;
-import edu.sjsu.cs160.comm.ImageManager;
-import edu.sjsu.cs160.comm.Platform;
-import edu.sjsu.cs160.comm.QueryManager;
-import edu.sjsu.cs160.comm.cinequestitem.VenueLocation;
-import edu.sjsu.cs160.rim.RIMPlatform;
+import edu.sjsu.cinequest.comm.ImageManager;
+import edu.sjsu.cinequest.comm.Platform;
+import edu.sjsu.cinequest.comm.QueryManager;
+import edu.sjsu.cinequest.comm.cinequestitem.VenueLocation;
+import edu.sjsu.cinequest.rim.RIMPlatform;
 
 /**
  * Entry point for the application. Contains the main method that enters the

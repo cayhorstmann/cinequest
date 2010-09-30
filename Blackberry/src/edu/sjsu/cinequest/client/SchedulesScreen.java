@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
-package edu.sjsu.cs160.client;
+package edu.sjsu.cinequest.client;
 
 import java.util.Vector;
 
@@ -24,7 +24,7 @@ import net.rim.device.api.i18n.DateFormat;
 import net.rim.device.api.ui.MenuItem;
 import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.component.SeparatorField;
-import edu.sjsu.cs160.comm.cinequestitem.Schedule;
+import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 /**
  * This class describes the Schedules screen. The SchedulesScreen is reached

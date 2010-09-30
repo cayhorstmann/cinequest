@@ -17,12 +17,12 @@
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.sjsu.cs160.comm;
+package edu.sjsu.cinequest.comm;
 
 import junit.framework.TestCase;
 import java.lang.Exception;
-import edu.sjsu.cs160.comm.HParser;
-import edu.sjsu.cs160.comm.TagIndex;
+import edu.sjsu.cinequest.comm.HParser;
+import edu.sjsu.cinequest.comm.TagIndex;
 
 public class HParserInitTest extends TestCase
 {

@@ -1,4 +1,4 @@
-package edu.sjsu.cs160.client;
+package edu.sjsu.cinequest.client;
 
 import java.util.Vector;
 
@@ -25,7 +25,7 @@ import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.component.ListField;
 import net.rim.device.api.ui.component.ObjectListField;
 import net.rim.device.api.ui.component.SeparatorField;
-import edu.sjsu.cs160.comm.cinequestitem.Filmlet;
+import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 
 /**
  * This class describes a CinequestScreen that takes a genre and a list of

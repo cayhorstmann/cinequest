@@ -1,4 +1,4 @@
-package edu.sjsu.cs160.client;
+package edu.sjsu.cinequest.client;
 
 import java.util.Vector;
 

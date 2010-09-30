@@ -17,7 +17,7 @@
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.sjsu.cs160.client;
+package edu.sjsu.cinequest.client;
 
 import java.util.Calendar;
 
@@ -37,7 +37,8 @@ public class DateUtils
     public static final int NORMAL_MODE = 0;
     public static final int FESTIVAL_TEST_MODE = 1;
     public static final int OFFSEASON_TEST_MODE = 2;
-    private static int mode = NORMAL_MODE;
+    // TODO: Set to NORMAL_MODE before release
+    private static int mode = FESTIVAL_TEST_MODE;
     
 	private static String dvdLink = "http://www.cinequestonline.org/theater/detail_view.php";
 	private static String ticketLink = "http://mobile.cinequest.org/event_view.php";

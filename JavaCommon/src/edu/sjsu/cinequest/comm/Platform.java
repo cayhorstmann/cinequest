@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import net.rim.device.api.util.Comparator;
-
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -34,6 +32,11 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public abstract class Platform
 {
+	public interface Comparator
+	{
+       int compare(Object obj1, Object obj2);    
+	}
+	
     private static Platform platform;
     
     /**

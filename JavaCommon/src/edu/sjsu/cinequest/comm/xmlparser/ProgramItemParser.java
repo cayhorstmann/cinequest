@@ -65,16 +65,17 @@ public class ProgramItemParser extends FilmParser
 
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
 	{
-        if (qName.equals("film"))
+    	super.startElement(uri, localName, qName, attributes);
+        if (lastTagName().equals("film"))
         {
             setFilm(new Film());
         }
-        else if (qName.equals("program_item"))
+        else if (lastTagName().equals("program_item"))
         {
             item.setId(Integer.parseInt(attributes.getValue("id")));
             schedules = new Vector();
         }
-        else if (qName.equals("schedule") && getFilm() == null)
+        else if (lastTagName().equals("schedule") && getFilm() == null)
         {
             Schedule schedule = new Schedule();
             schedule.setItemId(item.getId());  
@@ -85,17 +86,17 @@ public class ProgramItemParser extends FilmParser
             schedule.setVenue(attributes.getValue("venue"));
             schedules.addElement(schedule);         
         }
-        super.startElement(uri, localName, qName, attributes);
 	}
 
 	public void endElement(String uri, String localName, String qName) throws SAXException
 	{        
-        if (qName.equals("film"))
+		super.endElement(uri, localName, qName);
+        if (lastTagName().equals("film"))
         {
             item.getFilms().addElement(getFilm());
             setFilm(null);
         }
-        else if (qName.equals("program_item"))
+        else if (lastTagName().equals("program_item"))
         {
             // attach all schedules to the individual films
             for (int i = 0; i < item.getFilms().size(); i++)
@@ -103,18 +104,17 @@ public class ProgramItemParser extends FilmParser
                 ((Film) item.getFilms().elementAt(i)).setSchedules(schedules);
             }
         }
-        else if (qName.equals("title") && getFilm() == null)
+        else if (lastTagName().equals("title") && getFilm() == null)
         {
                 item.setTitle(lastString());
         }
-        else if (qName.equals("description") && getFilm() == null)
+        else if (lastTagName().equals("description") && getFilm() == null)
         {
             item.setDescription(lastString());
         }
-        else if (qName.equals("imageURL") && getFilm() == null)
+        else if (lastTagName().equals("imageURL") && getFilm() == null)
         {
             item.setImageURL(lastString());
         }
-	    super.endElement(uri, localName, qName);
 	}
 }

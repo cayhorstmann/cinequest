@@ -17,13 +17,13 @@
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.sjsu.cs160.comm.xmlparser;
+package edu.sjsu.cinequest.comm.xmlparser;
 
 import java.util.Vector;
 
 import junit.framework.TestCase;
-import edu.sjsu.cs160.comm.Platform;
-import edu.sjsu.cs160.javase.JavaSEPlatform;
+import edu.sjsu.cinequest.comm.Platform;
+import edu.sjsu.cinequest.javase.JavaSEPlatform;
 
 public class GenresParserTest extends TestCase
 {

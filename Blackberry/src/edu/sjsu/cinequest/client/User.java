@@ -1,12 +1,12 @@
-package edu.sjsu.cs160.client;
+package edu.sjsu.cinequest.client;
 
 import net.rim.device.api.ui.Ui;
 import net.rim.device.api.ui.component.Dialog;
 import net.rim.device.api.util.Persistable;
-import edu.sjsu.cs160.comm.Callback;
-import edu.sjsu.cs160.comm.Platform;
-import edu.sjsu.cs160.comm.cinequestitem.Schedule;
-import edu.sjsu.cs160.comm.cinequestitem.UserSchedule;
+import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.Platform;
+import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
+import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
 
 public class User
 {
@@ -17,7 +17,7 @@ public class User
    private boolean failedAuthorization;
    private LoginDialog1 dialog;
    
-   // key produced by: echo -n "edu.sjsu.cs160.comm.cinequestitem.User" | md5sum | cut -c1-16
+   // key produced by: echo -n "edu.sjsu.cinequest.comm.cinequestitem.User" | md5sum | cut -c1-16
    private static final long PERSISTENCE_KEY = 0x74dbb8dc65739d30L;   
    
    public User()
@@ -59,7 +59,7 @@ public class User
    {
       if (!schedule.isSaved()) 
       {
-         int answer = Dialog.ask(Dialog.D_OK_CANCEL, "Really discard the current schedule?");
+         int answer = Dialog.ask(Dialog.D_YES_NO, "Really discard the current schedule?");
          if (answer != Dialog.OK) return;
       }      
       if (!loggedIn || failedAuthorization)
@@ -151,7 +151,7 @@ public class User
                }
                else 
                {
-                  int answer = Dialog.ask(Dialog.D_OK_CANCEL, "Conflicting schedule on server. Really save this schedule?");
+                  int answer = Dialog.ask(Dialog.D_YES_NO, "Conflicting schedule on server. Really save this schedule?");
                   if (answer == Dialog.OK)
                   {
                      schedule.setLastChanged(newSchedule.getLastChanged());
@@ -177,7 +177,7 @@ public class User
    {
       if (!schedule.isSaved())
       {
-         int answer = Dialog.ask(Dialog.D_OK_CANCEL, "Save schedule?");
+         int answer = Dialog.ask(Dialog.D_YES_NO, "Save schedule?");
          if (answer == Dialog.OK)
          {
             saveSchedule();

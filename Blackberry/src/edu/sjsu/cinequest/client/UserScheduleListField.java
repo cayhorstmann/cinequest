@@ -17,7 +17,7 @@
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.sjsu.cs160.client;
+package edu.sjsu.cinequest.client;
 
 import java.util.Vector;
 
@@ -28,8 +28,8 @@ import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.ui.Ui;
 import net.rim.device.api.ui.UiEngine;
 import net.rim.device.api.ui.component.ListField;
-import edu.sjsu.cs160.comm.cinequestitem.Schedule;
-import edu.sjsu.cs160.comm.cinequestitem.UserSchedule;
+import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
+import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
 
 /**
  * An ObjectListField that can format schedules and dates

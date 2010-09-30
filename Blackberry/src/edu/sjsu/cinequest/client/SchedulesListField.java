@@ -17,7 +17,7 @@
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.sjsu.cs160.client;
+package edu.sjsu.cinequest.client;
 
 import net.rim.device.api.ui.Color;
 import net.rim.device.api.ui.Font;
@@ -25,8 +25,8 @@ import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.ui.XYRect;
 import net.rim.device.api.ui.component.ListField;
 import net.rim.device.api.ui.component.ObjectListField;
-import edu.sjsu.cs160.comm.Callback;
-import edu.sjsu.cs160.comm.cinequestitem.Schedule;
+import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 /**
  * An ObjectListField that can format schedules

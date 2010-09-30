@@ -72,13 +72,13 @@ public class FilmParser extends BasicHandler
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
 	{
         super.startElement(uri, localName, qName, attributes);
-        if (qName.equals("film"))
+        if (lastTagName().equals("film"))
 		{
             String id = attributes.getValue("id");
             if (id != null)
                 film.setId(Integer.parseInt(id));
 		}
-        else if (qName.equals("schedule") && film != null)
+        else if (lastTagName().equals("schedule") && film != null)
         {
             Schedule schedule = new Schedule();
             schedule.setStartTime(attributes.getValue("start_time"));
@@ -90,59 +90,60 @@ public class FilmParser extends BasicHandler
 
 	public void endElement(String uri, String localName, String qName) throws SAXException
 	{
-		if (qName.equals("title") && film != null)
+		super.endElement(uri, localName, qName);
+		if (lastTagName().equals("title") && film != null)
 		{
 			film.setTitle(lastString());
 		}
-		else if (qName.equals("description") && film != null)
+		else if (lastTagName().equals("description") && film != null)
 		{
 			film.setDescription(lastString());
 		}
-        else if (qName.equals("imageURL") && film != null)
+        else if (lastTagName().equals("imageURL") && film != null)
         {
             film.setImageURL(lastString());
         }
-		else if (qName.equals("tagline"))
+		else if (lastTagName().equals("tagline"))
 		{
 			film.setTagline(lastString());
 		}
-		else if (qName.equals("genre"))
+		else if (lastTagName().equals("genre"))
 		{
 			film.setGenre(lastString());
 		}
-		else if (qName.equals("director"))
+		else if (lastTagName().equals("director"))
 		{
 			film.setDirector(lastString());
 		}
-		else if (qName.equals("producer"))
+		else if (lastTagName().equals("producer"))
 		{
 			film.setProducer(lastString());
 		}
-		else if (qName.equals("writer"))
+		else if (lastTagName().equals("writer"))
 		{
 			film.setWriter(lastString());
 		}
-		else if (qName.equals("cinematographer"))
+		else if (lastTagName().equals("cinematographer"))
 		{
 			film.setCinematographer(lastString());
 		}
-		else if (qName.equals("editor"))
+		else if (lastTagName().equals("editor"))
 		{
 			film.setEditor(lastString());
 		}
-		else if (qName.equals("cast"))
+		else if (lastTagName().equals("cast"))
 		{
 			film.setCast(lastString());
 		}
-		else if (qName.equals("country"))
+		else if (lastTagName().equals("country"))
 		{
 			film.setCountry(lastString());
 		}
-		else if (qName.equals("language"))
+		else if (lastTagName().equals("language"))
 		{
 			film.setLanguage(lastString());
 		}
-		else if (qName.equals("film_info"))
+		else if (lastTagName().equals("film_info"))
 		{
 			film.setFilmInfo(lastString());
 		}

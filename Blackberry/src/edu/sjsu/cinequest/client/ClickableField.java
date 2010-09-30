@@ -1,4 +1,4 @@
-package edu.sjsu.cs160.client;
+package edu.sjsu.cinequest.client;
 
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.Font;

@@ -17,7 +17,7 @@
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.sjsu.cs160.client;
+package edu.sjsu.cinequest.client;
 
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.Graphics;
@@ -25,7 +25,7 @@ import net.rim.device.api.ui.Ui;
 import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.component.SeparatorField;
 import net.rim.device.api.ui.container.MainScreen;
-import edu.sjsu.cs160.comm.Callback;
+import edu.sjsu.cinequest.comm.Callback;
 
 /**
  * A callback for progress reporting.

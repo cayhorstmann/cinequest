@@ -22,7 +22,6 @@ package edu.sjsu.cinequest.comm;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import edu.sjsu.cinequest.client.Main;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
@@ -368,7 +367,7 @@ public class QueryManager
     
     public void saveSchedule(final Callback callback, final String email, final String password, final UserSchedule schedule)
     {
-       Main.getQueryManager().getWebData(callback,  
+       getWebData(callback,  
              new Callable()
              {         
                 public Object run() throws Throwable

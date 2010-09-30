@@ -17,7 +17,7 @@
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.sjsu.cs160.javase;
+package edu.sjsu.cinequest.javase;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -43,15 +43,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import net.rim.device.api.util.Comparator;
-
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import edu.sjsu.cs160.comm.Callback;
-import edu.sjsu.cs160.comm.MessageDigest;
-import edu.sjsu.cs160.comm.Platform;
-import edu.sjsu.cs160.comm.WebConnection;
+import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.MessageDigest;
+import edu.sjsu.cinequest.comm.Platform;
+import edu.sjsu.cinequest.comm.WebConnection;
 
 public class JavaSEPlatform extends Platform
 {
@@ -209,10 +207,14 @@ public class JavaSEPlatform extends Platform
         return null;
     }
     
-   public Vector sort(Vector vec, Comparator comp)
+   public Vector sort(Vector vec, final Comparator comp)
    {
       Vector svec = new Vector(vec);
-      Collections.sort(svec, comp);
+      Collections.sort(svec, new java.util.Comparator() {
+    	  public int compare(Object obj1, Object obj2) {
+    		  return comp.compare(obj1, obj2);
+    	  }
+      });
       return svec;
    }
     

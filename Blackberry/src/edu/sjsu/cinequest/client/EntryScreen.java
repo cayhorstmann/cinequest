@@ -17,7 +17,7 @@
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.sjsu.cs160.client;
+package edu.sjsu.cinequest.client;
 
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.ui.Field;
@@ -25,8 +25,8 @@ import net.rim.device.api.ui.Ui;
 import net.rim.device.api.ui.component.BitmapField;
 import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.component.ObjectListField;
-import edu.sjsu.cs160.comm.Callback;
-import edu.sjsu.cs160.comm.Platform;
+import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.Platform;
 
 /**
  * This class describes the EntryScreen, which is the application entry for the

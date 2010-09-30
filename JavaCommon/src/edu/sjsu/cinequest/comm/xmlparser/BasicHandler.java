@@ -35,7 +35,9 @@ public class BasicHandler extends DefaultHandler
 {
     private Callback callback;    
     private long millis;
-    private StringBuffer buffer = new StringBuffer();
+    private boolean fixed;
+    private StringBuffer lastStr = new StringBuffer();
+    private String tagName;
     private static final int INTERVAL = 100; // reporting interval in millis
     
     public BasicHandler(Callback callback)
@@ -44,25 +46,43 @@ public class BasicHandler extends DefaultHandler
         millis = System.currentTimeMillis();
     }
 
-    private StringBuffer lastStr = new StringBuffer();
-    
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
     {
-        buffer.append(qName);
-        buffer.append("\n");
+    	if (qName != null && qName.length() > 0)
+           tagName = qName;
+    	else
+    		tagName = localName;
         long currentMillis = System.currentTimeMillis();
         if (currentMillis > millis + INTERVAL)
         {            
-            Platform.getInstance().progress(callback, buffer.toString());
-            buffer.setLength(0);
+            Platform.getInstance().progress(callback, tagName);
             millis = currentMillis;
         }
         lastStr.setLength(0);
+        fixed = false;
     }
 
+    public void endElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
+    {
+    	if (qName != null && qName.length() > 0)
+           tagName = qName;
+    	else
+     	   tagName = localName;
+    }
+    
     public void characters(char[] ch, int start, int length) throws SAXException
     {       
         lastStr.append(ch, start, length);
+    }
+    
+    /**
+     * Gets the last encountered tag name. Works around an Android bug
+     * where qName is null (http://code.google.com/p/android/issues/detail?id=990)
+     * @return the name of the last encountered tag
+     */
+    public String lastTagName() 
+    {
+    	return tagName;
     }
     
     /**
@@ -71,12 +91,14 @@ public class BasicHandler extends DefaultHandler
      */
     public String lastString()
     {
-        CharUtils.trim(lastStr);
-        CharUtils.fixWin1252(lastStr);
-        CharUtils.replaceEntities(lastStr);
+    	if (!fixed)
+    	{
+	        CharUtils.trim(lastStr);
+	        CharUtils.fixWin1252(lastStr);
+	        CharUtils.replaceEntities(lastStr);
+	        fixed = true;
+    	}
         
-        String ret = lastStr.toString();
-        lastStr.setLength(0);
-        return ret;
+        return lastStr.toString();
     }
 }

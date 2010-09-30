@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
-package edu.sjsu.cs160.client;
+package edu.sjsu.cinequest.client;
 
 import java.util.Vector;
 
@@ -38,15 +38,15 @@ import net.rim.device.api.ui.component.ObjectListField;
 import net.rim.device.api.ui.component.RichTextField;
 import net.rim.device.api.ui.container.HorizontalFieldManager;
 import net.rim.device.api.ui.container.VerticalFieldManager;
-import edu.sjsu.cs160.comm.Callback;
-import edu.sjsu.cs160.comm.HParser;
-import edu.sjsu.cs160.comm.cinequestitem.Film;
-import edu.sjsu.cs160.comm.cinequestitem.MobileItem;
-import edu.sjsu.cs160.comm.cinequestitem.ProgramItem;
-import edu.sjsu.cs160.comm.cinequestitem.Schedule;
-import edu.sjsu.cs160.comm.cinequestitem.Section;
-import edu.sjsu.cs160.comm.cinequestitem.UserSchedule;
-import edu.sjsu.cs160.comm.cinequestitem.VenueLocation;
+import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.HParser;
+import edu.sjsu.cinequest.comm.cinequestitem.Film;
+import edu.sjsu.cinequest.comm.cinequestitem.MobileItem;
+import edu.sjsu.cinequest.comm.cinequestitem.ProgramItem;
+import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
+import edu.sjsu.cinequest.comm.cinequestitem.Section;
+import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
+import edu.sjsu.cinequest.comm.cinequestitem.VenueLocation;
 
 /**
  * ControlList is a screen that is constructed from objects in the cinequestitem
@@ -60,7 +60,7 @@ import edu.sjsu.cs160.comm.cinequestitem.VenueLocation;
  */
 public class ControlList extends CinequestScreen
 {
-    /**
+    /** 	
      * Creates a screen suitable for displaying an item or a vector of items.
      * @param in the item: a Film, Schedule, VenueLocation, SpecialItem, Home,
      * or Vector of such items

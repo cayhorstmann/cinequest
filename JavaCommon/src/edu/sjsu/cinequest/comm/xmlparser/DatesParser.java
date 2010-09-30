@@ -22,7 +22,6 @@ package edu.sjsu.cinequest.comm.xmlparser;
 import java.io.IOException;
 import java.util.Vector;
 
-import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import edu.sjsu.cinequest.comm.Callback;
@@ -67,17 +66,11 @@ public class DatesParser extends BasicHandler
       return "" + y + (m < 10 ? "-0" : "-") + m +  (d < 10 ? "-0" : "-") + d;  
    }
 
-	public DatesParser(Callback callback)
+   public DatesParser(Callback callback)
    {
         super(callback);
    }
 
-	public void startElement(String uri, String localName, String qName,
-            Attributes attributes) throws SAXException
-   {
-        super.startElement(uri, localName, qName, attributes);
-   }
-	
 	/**
 	 * Add - if necesessary
 	 * @param date yyyy-MM-dd or yyyyMMdd
@@ -91,9 +84,10 @@ public class DatesParser extends BasicHandler
 	
 	public void endElement(String uri, String localName, String qName) throws SAXException
 	{
-		if(qName.equals("first")) 
+		super.endElement(uri, localName, qName);
+		if(lastTagName().equals("first")) 
 		   first = fixDateString(lastString());
-		else if(qName.equals("last")) 
+		else if(lastTagName().equals("last")) 
 		   last = fixDateString(lastString());
 	}
 }

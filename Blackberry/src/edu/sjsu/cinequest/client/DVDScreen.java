@@ -1,9 +1,9 @@
-package edu.sjsu.cs160.client;
+package edu.sjsu.cinequest.client;
 
 import java.util.Vector;
 
 import net.rim.device.api.ui.MenuItem;
-import edu.sjsu.cs160.comm.cinequestitem.Filmlet;
+import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 
 /**
  * This class describes the DVDs screen. It holds a list of DVDs, which are

@@ -16,19 +16,20 @@
     You should have received a copy of the GNU General Public License
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
-package edu.sjsu.cs160.client;
+package edu.sjsu.cinequest.client;
 
 import java.util.Vector;
 
 import net.rim.blackberry.api.browser.Browser;
 import net.rim.blackberry.api.browser.BrowserSession;
 import net.rim.device.api.i18n.DateFormat;
+import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.MenuItem;
 import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.container.HorizontalFieldManager;
-import edu.sjsu.cs160.comm.QueryManager;
-import edu.sjsu.cs160.comm.cinequestitem.Schedule;
-import edu.sjsu.cs160.comm.cinequestitem.UserSchedule;
+import edu.sjsu.cinequest.comm.QueryManager;
+import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
+import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
 
 /**
  * This class describes the Schedules screen. The SchedulesScreen is reached
@@ -107,11 +108,17 @@ public class UserScheduleScreen extends CinequestScreen
     {
        if (currentCommandSet == set) return;
        currentCommandSet = set;
-       if (set == 1) replace(hfm2, hfm1);
-       else replace(hfm1, hfm2);
+       if (set == 1) replaceFields(hfm2, hfm1);
+       else replaceFields(hfm1, hfm2);
        updateDisplay();
     }
-
+    
+    private void replaceFields(Field f1, Field f2)
+    {
+    	delete(f1);
+    	add(f2);
+    }
+    
     protected void onExposed() // so it reflects schedule changes when popping off schedules screen
     {
        setScheduleItems();

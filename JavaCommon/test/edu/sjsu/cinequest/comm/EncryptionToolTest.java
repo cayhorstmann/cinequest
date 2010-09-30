@@ -1,10 +1,10 @@
-package edu.sjsu.cs160.comm;
+package edu.sjsu.cinequest.comm;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-import edu.sjsu.cs160.javase.JavaSEPlatform;
+import edu.sjsu.cinequest.javase.JavaSEPlatform;
 
 import junit.framework.TestCase;
 

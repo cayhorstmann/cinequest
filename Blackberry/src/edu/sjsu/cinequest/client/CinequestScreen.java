@@ -17,7 +17,7 @@
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.sjsu.cs160.client;
+package edu.sjsu.cinequest.client;
 
 import java.util.Vector;
 
@@ -29,9 +29,9 @@ import net.rim.device.api.ui.MenuItem;
 import net.rim.device.api.ui.Ui;
 import net.rim.device.api.ui.component.BitmapField;
 import net.rim.device.api.ui.container.MainScreen;
-import edu.sjsu.cs160.comm.cinequestitem.MobileItem;
-import edu.sjsu.cs160.comm.cinequestitem.Schedule;
-import edu.sjsu.cs160.comm.cinequestitem.Section;
+import edu.sjsu.cinequest.comm.cinequestitem.MobileItem;
+import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
+import edu.sjsu.cinequest.comm.cinequestitem.Section;
 
 /**
  * This abstract class describes a CinequestScreen. It's up to the implementor
@@ -230,7 +230,7 @@ public class CinequestScreen extends MainScreen
                 license.setLinkURL("http://www.gnu.org/licenses/gpl-3.0-standalone.html");
                 MobileItem sourceLink = new MobileItem();
                 sourceLink.setTitle("Source Code");
-                sourceLink.setLinkURL("http://sjsu-cs.svn.cvsdude.com/cs160-1_Fall08/cinequest/trunk/");
+                sourceLink.setLinkURL("http://sjsu-cs.svn.cvsdude.com/cinequest-1_Fall08/cinequest/trunk/");
                 sourceLink.setDescription("Log in with user name and password <b>sjsuguest</b>.");
                 Section section = new Section();
                 section.addItem(credits);

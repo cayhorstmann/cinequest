@@ -17,7 +17,7 @@
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.sjsu.cs160.rim;
+package edu.sjsu.cinequest.rim;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +26,7 @@ import java.io.OutputStream;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
-import edu.sjsu.cs160.comm.WebConnection;
+import edu.sjsu.cinequest.comm.WebConnection;
 
 /**
  * The RIM-specific wrapper for a web connection

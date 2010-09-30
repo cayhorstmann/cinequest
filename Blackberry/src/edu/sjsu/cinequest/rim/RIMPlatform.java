@@ -17,7 +17,7 @@
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.sjsu.cs160.rim;
+package edu.sjsu.cinequest.rim;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,7 +37,6 @@ import net.rim.device.api.system.PersistentObject;
 import net.rim.device.api.system.PersistentStore;
 import net.rim.device.api.ui.Ui;
 import net.rim.device.api.ui.UiApplication;
-import net.rim.device.api.util.Comparator;
 import net.rim.device.api.util.SimpleSortingVector;
 import net.rim.device.api.xml.parsers.ParserConfigurationException;
 import net.rim.device.api.xml.parsers.SAXParser;
@@ -47,12 +46,12 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import edu.sjsu.cs160.client.ErrorScreen;
-import edu.sjsu.cs160.comm.Cache;
-import edu.sjsu.cs160.comm.Callback;
-import edu.sjsu.cs160.comm.MessageDigest;
-import edu.sjsu.cs160.comm.Platform;
-import edu.sjsu.cs160.comm.WebConnection;
+import edu.sjsu.cinequest.client.ErrorScreen;
+import edu.sjsu.cinequest.comm.Cache;
+import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.MessageDigest;
+import edu.sjsu.cinequest.comm.Platform;
+import edu.sjsu.cinequest.comm.WebConnection;
 
 /**
  * This class implements various RIM-specific services
@@ -66,7 +65,7 @@ public class RIMPlatform extends Platform
    private static final int MAX_IMAGE_WIDTH = 500;
    private static final int MAX_IMAGE_HEIGHT = 300;
    private static final int MAX_CACHE_SIZE = 50;
-   // echo -n "edu.sjsu.cs160.rim.RIMPlatform" | md5sum | cut -c1-16
+   // echo -n "edu.sjsu.cinequest.rim.RIMPlatform" | md5sum | cut -c1-16
    private static final long PERSISTENCE_KEY = 0xcfbd786faca62011L;
 
    public RIMPlatform()
@@ -293,7 +292,7 @@ public class RIMPlatform extends Platform
 
    public void log(String message)
    {
-      // key produced by: echo -n "edu.sjsu.cs160.client.Main" | md5sum | cut
+      // key produced by: echo -n "edu.sjsu.cinequest.client.Main" | md5sum | cut
       // -c1-16
       long APP_ID = 0xe2a3a144c78e37aaL;
       if (!loggerRegistered)
@@ -304,14 +303,18 @@ public class RIMPlatform extends Platform
       EventLogger.logEvent(APP_ID, message.getBytes());
    }
 
-   public Vector sort(Vector vec, Comparator comp)
+   public Vector sort(Vector vec, final Platform.Comparator comp)
    {
       SimpleSortingVector svec = new SimpleSortingVector();
-      svec.setSortComparator(comp);
+      svec.setSortComparator(new net.rim.device.api.util.Comparator() {
+    	public int compare(Object obj1, Object obj2) {
+    		return comp.compare(obj1, obj2);
+    	}  
+      });
       for (int i = 0; i < vec.size(); i++)
-         svec.addElement(vec.elementAt(i));
+         svec.add(vec.elementAt(i));
       svec.reSort();
-      return svec;
+      return svec.getVector();
    }
 
    public void close()

@@ -42,9 +42,9 @@ public class EventsParser extends SchedulesParser
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
     {
         super.startElement(uri, localName, qName, attributes);
-        if (type != null && (qName.equals("forums") || qName.equals("special_events")))
+        if (type != null && (lastTagName().equals("forums") || lastTagName().equals("special_events")))
         {
-            if (type.equals(qName)) setResult(result); else setResult(null);
+            if (type.equals(lastTagName())) setResult(result); else setResult(null);
         }
     }
 }

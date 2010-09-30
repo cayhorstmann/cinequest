@@ -62,7 +62,7 @@ public class VenuesParser extends BasicHandler
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
 	{
         super.startElement(uri, localName, qName, attributes);
-		if (qName.equals("venue_location"))
+		if (lastTagName().equals("venue_location"))
 		{
 		    venueLocation = new VenueLocation();
 		    result.addElement(venueLocation);
@@ -72,23 +72,24 @@ public class VenuesParser extends BasicHandler
 	
 	public void endElement(String uri, String localName, String qName) throws SAXException
 	{		
-		if (qName.equals("venue"))
+		super.endElement(uri, localName, qName);
+		if (lastTagName().equals("venue"))
 		{
 			venueLocation.setVenueAbbreviation(lastString());
 		}
-		else if (qName.equals("description"))
+		else if (lastTagName().equals("description"))
 		{
 			venueLocation.setDescription(lastString());
 		}
-		else if (qName.equals("location"))
+		else if (lastTagName().equals("location"))
 		{
 			venueLocation.setLocation(lastString());
 		}
-		else if (qName.equals("imageURL"))
+		else if (lastTagName().equals("imageURL"))
 		{
 			venueLocation.setImageURL(lastString());
 		}
-        else if (qName.equals("directionsURL"))
+        else if (lastTagName().equals("directionsURL"))
         {
             venueLocation.setDirectionsURL(lastString());
         }

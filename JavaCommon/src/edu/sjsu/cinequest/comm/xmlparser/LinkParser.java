@@ -51,6 +51,7 @@ public class LinkParser extends BasicHandler
 	
 	public void endElement(String uri, String localName, String qName) throws SAXException
 	{
-		if(qName.equals("blink")) link = lastString();
+		super.endElement(uri, localName, qName);
+		if(lastTagName().equals("blink")) link = lastString();
 	}
 }

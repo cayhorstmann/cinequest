@@ -17,14 +17,14 @@
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.sjsu.cs160.comm;
+package edu.sjsu.cinequest.comm;
 
 import java.util.Vector;
 
 import junit.framework.TestCase;
-import edu.sjsu.cs160.comm.cinequestitem.Film;
-import edu.sjsu.cs160.comm.cinequestitem.Schedule;
-import edu.sjsu.cs160.javase.JavaSEPlatform;
+import edu.sjsu.cinequest.comm.cinequestitem.Film;
+import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
+import edu.sjsu.cinequest.javase.JavaSEPlatform;
 
 public class QueryManagerTest extends TestCase
 {

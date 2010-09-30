@@ -63,12 +63,12 @@ public class FilmsParser extends BasicHandler
             Attributes attributes) throws SAXException
     {
         super.startElement(uri, localName, qName, attributes);
-        if (qName.equals("film"))
+        if (lastTagName().equals("film"))
         {
             filmlet = new Filmlet();
             filmlet.setId(Integer.parseInt(attributes.getValue("id")));
         }
-        else if (qName.equals("distribution"))
+        else if (lastTagName().equals("distribution"))
         {
             String type = attributes.getValue("channel");
             if (type.equals("dvd")) filmlet.setDVD(true); 
@@ -79,7 +79,8 @@ public class FilmsParser extends BasicHandler
     public void endElement(String uri, String localName, String qName)
             throws SAXException
     {
-        if (qName.equals("title"))
+    	super.endElement(uri, localName, qName);
+        if (lastTagName().equals("title"))
         {
             filmlet.setTitle(lastString());
             result.addElement(filmlet);

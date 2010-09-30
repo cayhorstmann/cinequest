@@ -2,8 +2,6 @@ package edu.sjsu.cinequest.comm.cinequestitem;
 
 import java.util.Vector;
 
-import net.rim.device.api.util.Comparator;
-
 import edu.sjsu.cinequest.comm.Platform;
 
 public class UserSchedule
@@ -120,7 +118,7 @@ public class UserSchedule
          if (item.getStartTime().startsWith(date)) result.addElement(item);
       }
       // sort by time, then venue-- SimpleSortingVector
-      return Platform.getInstance().sort(result, new Comparator()
+      return Platform.getInstance().sort(result, new Platform.Comparator()
        {
          public int compare(Object o1, Object o2) {
             Schedule s1 = (Schedule) o1;

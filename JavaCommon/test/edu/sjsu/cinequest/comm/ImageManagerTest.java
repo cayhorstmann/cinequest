@@ -17,13 +17,13 @@
     along with the Blackberry Cinequest client.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.sjsu.cs160.comm;
+package edu.sjsu.cinequest.comm;
 
 import java.awt.Image;
 import java.io.IOException;
 
 import junit.framework.TestCase;
-import edu.sjsu.cs160.javase.JavaSEPlatform;
+import edu.sjsu.cinequest.javase.JavaSEPlatform;
 
 public class ImageManagerTest extends TestCase
 {

@@ -21,7 +21,6 @@ package edu.sjsu.cinequest.comm.xmlparser;
 
 import java.io.IOException;
 
-import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import edu.sjsu.cinequest.comm.Callback;
@@ -55,15 +54,10 @@ public class SeasonParser extends BasicHandler
     {
         super(callback);
     }
-
-	public void startElement(String uri, String localName, String qName,
-            Attributes attributes) throws SAXException
-    {
-        super.startElement(uri, localName, qName, attributes);
-    }
 	
 	public void endElement(String uri, String localName, String qName) throws SAXException
 	{
-		if(qName.equals("mode")) mode = lastString();
+		super.endElement(uri, localName, qName);
+		if(lastTagName().equals("mode")) mode = lastString();
 	}
 }

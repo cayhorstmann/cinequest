@@ -69,21 +69,20 @@ public class UserScheduleParser extends BasicHandler
    public void startElement(String uri, String localName, String qName,
          Attributes attributes) throws SAXException
    {
-      Platform.getInstance().log(qName);
       super.startElement(uri, localName, qName, attributes);
-      if (qName.equals("userschedule"))
+      if (lastTagName().equals("userschedule"))
       {
          result = new UserSchedule();
          result.setLastChanged(attributes.getValue("lastChanged"));
          result.setUpdated("true".equals(attributes.getValue("updated")));
       }
-      else if (qName.equals("confirmed"))
+      else if (lastTagName().equals("confirmed"))
          type = UserSchedule.CONFIRMED;
-      else if (qName.equals("moved"))
+      else if (lastTagName().equals("moved"))
          type = UserSchedule.MOVED;
-      else if (qName.equals("removed"))
+      else if (lastTagName().equals("removed"))
          type = UserSchedule.REMOVED;
-      else if (qName.equals("schedule")) 
+      else if (lastTagName().equals("schedule")) 
       {
          Schedule schedule = new Schedule();
          String id = attributes.getValue("id");

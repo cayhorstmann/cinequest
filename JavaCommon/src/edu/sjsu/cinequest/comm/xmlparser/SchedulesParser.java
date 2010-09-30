@@ -69,7 +69,7 @@ public class SchedulesParser extends BasicHandler
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
 	{
 	    super.startElement(uri, localName, qName, attributes);
-		if (qName.equals("schedule") && result != null)
+		if (lastTagName().equals("schedule") && result != null)
 		{
 		    Schedule schedule = new Schedule();
 		    String id = attributes.getValue("id");

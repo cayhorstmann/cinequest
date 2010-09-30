@@ -66,43 +66,42 @@ public class SectionsParser extends BasicHandler
             Attributes attributes) throws SAXException
     {
         super.startElement(uri, localName, qName, attributes);
-        if (qName.equals("section"))
+        if (lastTagName().equals("section"))
         {
             section = new Section();
             section.setTitle(CharUtils.fixWin1252AndEntities(attributes.getValue("name")));
             result.addElement(section);
         }
-        else if (qName.equals("item"))
+        else if (lastTagName().equals("item"))
         {
             item = new MobileItem();
             section.addItem(item);
         }
-        else if (qName.equals("link"))
+        else if (lastTagName().equals("link"))
         {
             item.setLinkType(attributes.getValue("type"));
             String id = attributes.getValue("id");
             if (id != null)
                 item.setLinkId(Integer.parseInt(id));
         }
-
-        super.startElement(uri, localName, qName, attributes);
     }
     
     public void endElement(String uri, String localName, String qName) throws SAXException
     {
-        if (qName.equals("title"))
+    	super.endElement(uri, localName, qName);
+        if (lastTagName().equals("title"))
         {
             item.setTitle(lastString());
         }
-        else if (qName.equals("imageURL"))
+        else if (lastTagName().equals("imageURL"))
         {
             item.setImageURL(lastString());
         }
-        else if (qName.equals("url"))
+        else if (lastTagName().equals("url"))
         {
             item.setLinkURL(lastString());
         }
-        else if (qName.equals("description"))
+        else if (lastTagName().equals("description"))
         {
             item.setDescription(lastString());
         }
