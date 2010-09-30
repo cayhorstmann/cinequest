@@ -10,7 +10,7 @@
 #import "CinequestAppDelegate.h"
 
 @interface MySchedulerViewController : UIViewController 
-<UITableViewDelegate, UITableViewDataSource>
+<UITableViewDelegate, UITableViewDataSource, NSXMLParserDelegate>
 {
 @public
 	IBOutlet UITableView *_tableView;	
