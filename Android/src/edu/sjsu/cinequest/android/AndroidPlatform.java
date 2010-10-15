@@ -2,6 +2,8 @@ package edu.sjsu.cinequest.android;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -10,6 +12,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -55,8 +58,13 @@ public class AndroidPlatform extends Platform {
 		} catch (ParserConfigurationException e) {
 			throw new SAXException(e.toString());
 		}
-		InputStream in = new URL(url).openStream();
-		sp.parse(in, handler);
+		/*
+		 * Android crap--search for http://www.google.com/search?q=android+XML+parser+8859-1
+		 * The parser can't infer the character encoding from the xml encoding attribute, so 
+		 * we have to hardwire 8859-1 here. 
+		 */
+		Reader in = new InputStreamReader(new URL(url).openStream(), "iso-8859-1");
+		sp.parse(new InputSource(in), handler);
 	}
 
 	@Override
