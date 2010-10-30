@@ -19,7 +19,6 @@
 
 package edu.sjsu.cinequest.comm.cinequestitem;
 
-import net.rim.device.api.util.Persistable;
 
 /**
  * Schedule is a class that aggregates one (or more) ProgramItems, with associated meta-info.
@@ -29,11 +28,14 @@ import net.rim.device.api.util.Persistable;
  * @version 0.1
  */
 
-public class Schedule implements Persistable
+public class Schedule 
 {	
+	private String time;
+	private int hour;
 	/**
 	 * @return the venue
 	 */
+	
 	public String getVenue() {
 		return venue;
 	}
@@ -47,7 +49,13 @@ public class Schedule implements Persistable
 	 * @return the showingTime
 	 */
 	public String getStartTime() {
-		return startTime;
+		time = new String(this.startTime.substring(11, 13));
+		hour = Integer.parseInt(time);
+		if(hour>12)
+			time = new String("0"+(hour-12)+this.startTime.substring(13, 16)+" PM");
+		else
+			time = new String(this.startTime.substring(11, 16)+" AM");
+		return time;
 	}
 	/**
 	 * @param showingTime the showingTime to set
@@ -57,10 +65,20 @@ public class Schedule implements Persistable
 	}
 	
 	public void setEndTime(String endTime)
-   {
-      this.endTime = endTime;
-   }
+	{
+	      this.endTime = endTime;
+	   }
 	
+	public String getEndTime()
+	   {
+		time = new String(this.endTime.substring(11, 13));
+		hour = Integer.parseInt(time);
+		if(hour>12)
+			time = new String("0"+(hour-12)+this.endTime.substring(13, 16)+" PM");
+		else
+			time = new String(this.endTime.substring(11, 16)+" AM");
+		return time;
+	   }
     public int getItemId()
     {
         return itemId;
