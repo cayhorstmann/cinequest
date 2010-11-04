@@ -25,8 +25,11 @@ import java.util.Vector;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import android.util.Log;
+
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
+import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 
 /**
@@ -38,7 +41,7 @@ public class FilmsParser extends BasicHandler
 {
     private Filmlet filmlet;
     private Vector result = new Vector();
-
+    String tagName;
     /**
      * Parses a single film
      * @param url the URL to parse
@@ -63,11 +66,13 @@ public class FilmsParser extends BasicHandler
             Attributes attributes) throws SAXException
     {
         super.startElement(uri, localName, qName, attributes);
-        if (lastTagName().equals("film"))
+        if (lastTagName().equals("program"))
         {
             filmlet = new Filmlet();
             filmlet.setId(Integer.parseInt(attributes.getValue("id")));
         }
+       
+        
         else if (lastTagName().equals("distribution"))
         {
             String type = attributes.getValue("channel");
@@ -79,11 +84,17 @@ public class FilmsParser extends BasicHandler
     public void endElement(String uri, String localName, String qName)
             throws SAXException
     {
+    	Log.i("localName",localName);
+    	//System.out.println("localName is L:"+localName);
     	super.endElement(uri, localName, qName);
         if (lastTagName().equals("title"))
         {
             filmlet.setTitle(lastString());
             result.addElement(filmlet);
-        }        
+            
+        } 
+              
     }
+    
+    
 }

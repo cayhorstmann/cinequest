@@ -19,6 +19,15 @@
 
 package edu.sjsu.cinequest.comm.cinequestitem;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import android.util.Log;
+
+
+
+
 
 /**
  * Schedule is a class that aggregates one (or more) ProgramItems, with associated meta-info.
@@ -30,8 +39,7 @@ package edu.sjsu.cinequest.comm.cinequestitem;
 
 public class Schedule 
 {	
-	private String time;
-	private int hour;
+	
 	/**
 	 * @return the venue
 	 */
@@ -46,16 +54,48 @@ public class Schedule
 		this.venue = venue;
 	}
 	/**
+	 *  @return the date
+	 */
+	public Date getDate(){
+	SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	try {
+		this.date = curFormater.parse(startTime);
+	} catch (ParseException e) {
+		e.printStackTrace();
+	}
+	
+		return this.date;
+	}
+	
+	/**
+	 * @return the dateString 
+	 */
+	public String getDateString(){
+		SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			this.date = curFormater.parse(startTime);
+		} catch (ParseException e) {
+			Log.e("getDateString", e.toString());
+		}
+		SimpleDateFormat postFormater = new SimpleDateFormat("EEEE, MMMM d");
+        dateString = postFormater.format(date);
+        return dateString;
+	}
+	
+	/**
 	 * @return the showingTime
 	 */
 	public String getStartTime() {
-		time = new String(this.startTime.substring(11, 13));
-		hour = Integer.parseInt(time);
-		if(hour>12)
-			time = new String("0"+(hour-12)+this.startTime.substring(13, 16)+" PM");
-		else
-			time = new String(this.startTime.substring(11, 16)+" AM");
-		return time;
+		SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			this.date = curFormater.parse(startTime);
+		} catch (ParseException e) {
+			Log.e("getStartTime", e.toString());
+		}
+		SimpleDateFormat postFormater = new SimpleDateFormat("hh:mm a");
+		startTime = postFormater.format(date);
+		
+		return startTime;
 	}
 	/**
 	 * @param showingTime the showingTime to set
@@ -71,13 +111,16 @@ public class Schedule
 	
 	public String getEndTime()
 	   {
-		time = new String(this.endTime.substring(11, 13));
-		hour = Integer.parseInt(time);
-		if(hour>12)
-			time = new String("0"+(hour-12)+this.endTime.substring(13, 16)+" PM");
-		else
-			time = new String(this.endTime.substring(11, 16)+" AM");
-		return time;
+		SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			this.date = curFormater.parse(endTime);
+		} catch (ParseException e) {
+			Log.e("getEndTime", e.toString());
+		}
+		SimpleDateFormat postFormater = new SimpleDateFormat("hh:mm a");
+		endTime = postFormater.format(date);
+		
+		return endTime;
 	   }
     public int getItemId()
     {
@@ -154,4 +197,8 @@ public class Schedule
 	private String venue;
 	private String startTime;
 	private String endTime;
+	private String dateString;
+	private String time;
+	private int hour;
+	private Date date;
 }
