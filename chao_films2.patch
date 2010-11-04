@@ -1,0 +1,340 @@
+diff --git a/Android/AndroidManifest.xml b/Android/AndroidManifest.xml
+index c310996..1e51c54 100644
+--- a/Android/AndroidManifest.xml
++++ b/Android/AndroidManifest.xml
+@@ -4,14 +4,18 @@
+       android:versionCode="1"
+       android:versionName="1.0">
+     <application android:icon="@drawable/icon" android:label="@string/app_name">
+-        <activity android:name=".Cinequest"
++        <activity android:name=".MainTab"
+                   android:label="@string/app_name">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+                 <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
+         </activity>
+-
++		<activity android:name=".DVDActivity" />
++		<activity android:name=".EventsActivity" />
++		<activity android:name=".FilmsActivity" />
++		<activity android:name=".ForumsActivity" />
++		<activity android:name=".ScheduleActivity" />
+     </application>
+ 
+ 
+diff --git a/Android/src/edu/sjsu/cinequest/FilmsActivity.java b/Android/src/edu/sjsu/cinequest/FilmsActivity.java
+index f2d1cac..3e4c13c 100644
+--- a/Android/src/edu/sjsu/cinequest/FilmsActivity.java
++++ b/Android/src/edu/sjsu/cinequest/FilmsActivity.java
+@@ -7,6 +7,8 @@ import java.util.List;
+ import java.util.Map;
+ import java.util.Vector;
+ 
++
++import edu.sjsu.cinequest.R;
+ import edu.sjsu.cinequest.android.AndroidPlatform;
+ import edu.sjsu.cinequest.comm.Callback;
+ import edu.sjsu.cinequest.comm.Platform;
+@@ -18,30 +20,57 @@ import android.os.Bundle;
+ import android.util.Log;
+ import android.view.View;
+ import android.view.View.OnClickListener;
++import android.widget.AdapterView;
+ import android.widget.ArrayAdapter;
+ import android.widget.Button;
+ import android.widget.ListView;
+ import android.widget.SimpleAdapter;
++import android.widget.TextView;
+ 
+ public class FilmsActivity extends Activity {
+ 	private QueryManager queryManager;
+-	private ListView lv1;
++	private ListView filmsList;
+ 	private Vector<Filmlet> films = new Vector<Filmlet>();
+ 	private Vector<Schedule> schedules = new Vector<Schedule>();
+ 	private String[] title ;
+ 	private static final int FILMBYDATE = 0;
+-	private static final int FILMBYTTITLE = 1;
++	private static final int FILMBYTITLE = 1;
+ 	private int filterStatus;
+ 	private Button byDate_bt;
+ 	private Button byTitle_bt;
+     public void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.film_layout);
+-        lv1=(ListView)findViewById(R.id.ListView01);
+-        filterStatus = FILMBYDATE;
+-        this.updatefilter(filterStatus);
++        filmsList=(ListView)findViewById(R.id.ListView01);
+         byDate_bt = (Button)findViewById(R.id.bydate_bt);
+         byTitle_bt = (Button)findViewById(R.id.bytitle_bt);
++        
++        TextView textView = new TextView(this); 
++        textView.setText("header"); 
++        filmsList.addHeaderView(textView);
++        
++        //Action Listener
++        filmsList.setOnItemClickListener(new ListView.OnItemClickListener() {
++			@Override
++			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
++					long arg3) {
++				//Intent intent = new Intent();
++				switch(filterStatus){
++					case FILMBYDATE:
++						break;
++					case FILMBYTITLE:
++						break;
++				}
++			/*	
++				intent.setClass(mainScreen.this, MyWebView.class);
++				Bundle bundle=new Bundle();
++				bundle.putString("url", url);
++				intent.putExtras(bundle);
++				startActivity(intent);
++				*/
++			}
++        });
++        
+         byDate_bt.setOnClickListener(new OnClickListener(){
+     		public void onClick(View v){
+     			System.out.println("date button got clicked");
+@@ -52,11 +81,16 @@ public class FilmsActivity extends Activity {
+     	byTitle_bt.setOnClickListener(new OnClickListener(){
+     		public void onClick(View v){
+     			System.out.println("title button got clicked");
+-    			filterStatus = FILMBYTTITLE;
++    			filterStatus = FILMBYTITLE;
+     			FilmsActivity.this.updatefilter(filterStatus);
+     		}
+     	});
+-        
++
++    	
++        filterStatus = FILMBYDATE;
++        this.updatefilter(filterStatus);
++      
++              
+          
+     }
+     private void updatefilter(int filterStatus)
+@@ -107,17 +141,31 @@ public class FilmsActivity extends Activity {
+     	for(int i=0;i<film.size();i++)
+     		title[i]=film.get(i).getTitle();
+     	 Log.v("array~~in Test",film.get(0).getTitle());	    	 	
+-    	 lv1.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1 , title));   	 
++    	 filmsList.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1 , title));   	 
+     }
+     private void scheduleList(Vector<Schedule> schedule)
+-    {
+-    	
++    {  	
+     	Log.i("block","scheduleList");
+-    
+-    	SimpleAdapter adapter = new SimpleAdapter(this,getData(schedule),R.layout.filmbydateitem, new String[]{"title","time","venue"}, 
+-    			new int[]{R.id.ScheduleTitle ,R.id.ScheduleTime ,R.id.ScheduleVenue});
++    	String previousDay = schedule.get(0).getDateString();
++    	Vector<Schedule> tempVect = new Vector<Schedule>();
++    	tempVect.addElement(schedule.get(0));
++    	// create our list and custom adapter  
++        SeparatedListAdapter adapter = new SeparatedListAdapter(this);
++    	for(int i=1;i<schedule.size();i++)
++    	{
++    		if(!schedule.get(i).getDateString().equalsIgnoreCase(previousDay))
++    		{
++    			adapter.addSection(previousDay, new SimpleAdapter(this,getData(tempVect),R.layout.filmbydateitem, new String[]{"title","time","venue"}, 
++    	    			new int[]{R.id.ScheduleTitle ,R.id.ScheduleTime ,R.id.ScheduleVenue}));
++    			tempVect.removeAllElements();
++    			previousDay = schedule.get(i).getDateString();
++    		}else
++    		{
++    			tempVect.addElement(schedule.get(i));
++    		}
++    	}
+ 
+-    	lv1.setAdapter(adapter);
++    	filmsList.setAdapter(adapter);
+ 		
+ 		
+ 	}
+diff --git a/JavaCommon/src/edu/sjsu/cinequest/comm/cinequestitem/Schedule.java b/JavaCommon/src/edu/sjsu/cinequest/comm/cinequestitem/Schedule.java
+index 1b99cb3..ca4d1a6 100644
+--- a/JavaCommon/src/edu/sjsu/cinequest/comm/cinequestitem/Schedule.java
++++ b/JavaCommon/src/edu/sjsu/cinequest/comm/cinequestitem/Schedule.java
+@@ -19,6 +19,15 @@
+ 
+ package edu.sjsu.cinequest.comm.cinequestitem;
+ 
++import java.text.ParseException;
++import java.text.SimpleDateFormat;
++import java.util.Date;
++
++import android.util.Log;
++
++
++
++
+ 
+ /**
+  * Schedule is a class that aggregates one (or more) ProgramItems, with associated meta-info.
+@@ -30,8 +39,7 @@ package edu.sjsu.cinequest.comm.cinequestitem;
+ 
+ public class Schedule 
+ {	
+-	private String time;
+-	private int hour;
++	
+ 	/**
+ 	 * @return the venue
+ 	 */
+@@ -46,16 +54,48 @@ public class Schedule
+ 		this.venue = venue;
+ 	}
+ 	/**
++	 *  @return the date
++	 */
++	public Date getDate(){
++	SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
++	try {
++		this.date = curFormater.parse(startTime);
++	} catch (ParseException e) {
++		e.printStackTrace();
++	}
++	
++		return this.date;
++	}
++	
++	/**
++	 * @return the dateString 
++	 */
++	public String getDateString(){
++		SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
++		try {
++			this.date = curFormater.parse(startTime);
++		} catch (ParseException e) {
++			Log.e("getDateString", e.toString());
++		}
++		SimpleDateFormat postFormater = new SimpleDateFormat("EEEE, MMMM d");
++        dateString = postFormater.format(date);
++        return dateString;
++	}
++	
++	/**
+ 	 * @return the showingTime
+ 	 */
+ 	public String getStartTime() {
+-		time = new String(this.startTime.substring(11, 13));
+-		hour = Integer.parseInt(time);
+-		if(hour>12)
+-			time = new String("0"+(hour-12)+this.startTime.substring(13, 16)+" PM");
+-		else
+-			time = new String(this.startTime.substring(11, 16)+" AM");
+-		return time;
++		SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
++		try {
++			this.date = curFormater.parse(startTime);
++		} catch (ParseException e) {
++			Log.e("getStartTime", e.toString());
++		}
++		SimpleDateFormat postFormater = new SimpleDateFormat("hh:mm a");
++		startTime = postFormater.format(date);
++		
++		return startTime;
+ 	}
+ 	/**
+ 	 * @param showingTime the showingTime to set
+@@ -71,13 +111,16 @@ public class Schedule
+ 	
+ 	public String getEndTime()
+ 	   {
+-		time = new String(this.endTime.substring(11, 13));
+-		hour = Integer.parseInt(time);
+-		if(hour>12)
+-			time = new String("0"+(hour-12)+this.endTime.substring(13, 16)+" PM");
+-		else
+-			time = new String(this.endTime.substring(11, 16)+" AM");
+-		return time;
++		SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
++		try {
++			this.date = curFormater.parse(endTime);
++		} catch (ParseException e) {
++			Log.e("getEndTime", e.toString());
++		}
++		SimpleDateFormat postFormater = new SimpleDateFormat("hh:mm a");
++		endTime = postFormater.format(date);
++		
++		return endTime;
+ 	   }
+     public int getItemId()
+     {
+@@ -154,4 +197,8 @@ public class Schedule
+ 	private String venue;
+ 	private String startTime;
+ 	private String endTime;
++	private String dateString;
++	private String time;
++	private int hour;
++	private Date date;
+ }
+\ No newline at end of file
+diff --git a/JavaCommon/src/edu/sjsu/cinequest/comm/xmlparser/FilmsParser.java b/JavaCommon/src/edu/sjsu/cinequest/comm/xmlparser/FilmsParser.java
+old mode 100755
+new mode 100644
+index bd382ad..ced729a
+--- a/JavaCommon/src/edu/sjsu/cinequest/comm/xmlparser/FilmsParser.java
++++ b/JavaCommon/src/edu/sjsu/cinequest/comm/xmlparser/FilmsParser.java
+@@ -25,8 +25,11 @@ import java.util.Vector;
+ import org.xml.sax.Attributes;
+ import org.xml.sax.SAXException;
+ 
++import android.util.Log;
++
+ import edu.sjsu.cinequest.comm.Callback;
+ import edu.sjsu.cinequest.comm.Platform;
++import edu.sjsu.cinequest.comm.cinequestitem.Film;
+ import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
+ 
+ /**
+@@ -38,7 +41,7 @@ public class FilmsParser extends BasicHandler
+ {
+     private Filmlet filmlet;
+     private Vector result = new Vector();
+-
++    String tagName;
+     /**
+      * Parses a single film
+      * @param url the URL to parse
+@@ -63,11 +66,13 @@ public class FilmsParser extends BasicHandler
+             Attributes attributes) throws SAXException
+     {
+         super.startElement(uri, localName, qName, attributes);
+-        if (lastTagName().equals("film"))
++        if (lastTagName().equals("program"))
+         {
+             filmlet = new Filmlet();
+             filmlet.setId(Integer.parseInt(attributes.getValue("id")));
+         }
++       
++        
+         else if (lastTagName().equals("distribution"))
+         {
+             String type = attributes.getValue("channel");
+@@ -79,11 +84,17 @@ public class FilmsParser extends BasicHandler
+     public void endElement(String uri, String localName, String qName)
+             throws SAXException
+     {
++    	Log.i("localName",localName);
++    	//System.out.println("localName is L:"+localName);
+     	super.endElement(uri, localName, qName);
+         if (lastTagName().equals("title"))
+         {
+             filmlet.setTitle(lastString());
+             result.addElement(filmlet);
+-        }        
++            
++        } 
++              
+     }
++    
++    
+ }
