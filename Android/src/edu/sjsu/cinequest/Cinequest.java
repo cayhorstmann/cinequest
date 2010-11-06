@@ -15,9 +15,7 @@ public class Cinequest extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Platform.setInstance(new AndroidPlatform());
-        queryManager = new QueryManager();
+        Platform.setInstance(new AndroidPlatform(getApplicationContext()));
         
         final TextView tv = new TextView(this);
         

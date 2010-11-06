@@ -1,5 +1,7 @@
 package edu.sjsu.cinequest;
 
+// http://blogingtutorials.blogspot.com/2010/09/separating-lists-with-headers-in.html
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 

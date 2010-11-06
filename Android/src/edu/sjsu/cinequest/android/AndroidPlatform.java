@@ -1,10 +1,14 @@
 package edu.sjsu.cinequest.android;
+import android.util.Log;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -17,7 +21,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import android.os.Handler;
+import android.content.Context;
+import android.graphics.BitmapFactory;
 
+import edu.sjsu.cinequest.comm.Cache;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.MessageDigest;
 import edu.sjsu.cinequest.comm.Platform;
@@ -25,10 +32,23 @@ import edu.sjsu.cinequest.comm.WebConnection;
 
 // Must be created on UI thread
 public class AndroidPlatform extends Platform {
-	private Handler handler;
+	// echo -n "edu.sjsu.cinequest.rim.RIMPlatform" | md5sum | cut -c1-16
+	private static final long PERSISTENCE_KEY = 0xcfbd786faca62011L;
+	private Cache xmlRawBytesCache;
+	private static final int MAX_CACHE_SIZE = 50;
 
-	public AndroidPlatform() {
+	private Handler handler;
+	private Context context;
+
+	public AndroidPlatform(Context context) {
 		handler = new Handler();
+		this.context = context;
+		
+		xmlRawBytesCache = (Cache) loadPersistentObject(PERSISTENCE_KEY);
+		if (xmlRawBytesCache == null)
+		{
+			xmlRawBytesCache = new Cache(MAX_CACHE_SIZE);
+		}	
 	}
 
 	public WebConnection createWebConnection(String url) throws IOException {
@@ -36,12 +56,14 @@ public class AndroidPlatform extends Platform {
 	}
 
 	@Override
-	public Object convert(byte[] bytes) {
-		// TODO Auto-generated method stub
-		return null;
+	// TODO: Give better name to method
+	// Returns an android.graphics.BitMap
+	public Object convert(byte[] bytes) {		
+		return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 	}
 
 	@Override
+	// Returns an android.graphics.BitMap
 	public Object getLocalImage(String imageName) {
 		// TODO Auto-generated method stub
 		return null;
@@ -63,9 +85,33 @@ public class AndroidPlatform extends Platform {
 		 * The parser can't infer the character encoding from the xml encoding attribute, so 
 		 * we have to hardwire 8859-1 here. 
 		 */
-		Reader in = new InputStreamReader(new URL(url).openStream(), "iso-8859-1");
-		sp.parse(new InputSource(in), handler);
-	}
+		// Reader in = new InputStreamReader(new URL(url).openStream(), "iso-8859-1");
+		WebConnection connection = null;
+		try {
+			connection = createWebConnection(url);
+			byte[] xmlSource = (byte[]) connection.getBytes();
+	        // Store the xml source
+	        xmlRawBytesCache.put(url, xmlSource);
+	        InputSource in = new InputSource(new InputStreamReader(
+	              new ByteArrayInputStream(xmlSource), "ISO-8859-1"));
+			sp.parse(in, handler);
+		} 
+		// Reading fails. Try to get XML from cache
+        catch (IOException e)
+        {
+           byte[] bytes = (byte[]) xmlRawBytesCache.get(url);
+           // XML exists in cache
+           if (bytes != null)
+           {
+              InputSource in  = new InputSource(new InputStreamReader(
+                 new ByteArrayInputStream(bytes), "ISO-8859-1"));
+              sp.parse(in, handler);
+              return;
+           } else
+              // XML not found on cache.
+           throw e;
+        }
+    }
 
 	@Override
 	public void parse(String url, Hashtable postData, DefaultHandler handler,
@@ -117,14 +163,28 @@ public class AndroidPlatform extends Platform {
 
 	@Override
 	public void storePersistentObject(long key, Object object) {
-		// TODO Auto-generated method stub
-
+		try {
+			OutputStream out = context.openFileOutput(key + ".ser", Context.MODE_PRIVATE);
+			ObjectOutputStream oout = new ObjectOutputStream(out);
+			oout.writeObject(object);
+			oout.close();
+		} catch (Exception e) {
+			log(e.getMessage());
+		}
 	}
 
 	@Override
 	public Object loadPersistentObject(long key) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			InputStream in = context.openFileInput(key + ".ser");
+			ObjectInputStream oin = new ObjectInputStream(in);
+			Object ret = oin.readObject();
+			oin.close();
+			return ret;
+		} catch (Exception e) {
+			log(e.getMessage());
+			return null;
+		}
 	}
 
 	@Override
@@ -134,20 +194,24 @@ public class AndroidPlatform extends Platform {
 	}
 
 	@Override
-	public Vector sort(Vector vec, Comparator comp) {
-		// TODO Auto-generated method stub
-		return null;
+	public Vector sort(Vector vec, final Comparator comp) {
+		Vector ret = new Vector(vec);
+		Collections.sort(ret, new java.util.Comparator<Object>() {
+			@Override
+			public int compare(Object a, Object b) {
+				return comp.compare(a, b);
+			}
+		});
+		return ret;
 	}
 
 	@Override
 	public void log(String message) {
-		// TODO Auto-generated method stub
-
+		Log.i("Cinequest", message);
 	}
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
-
+		storePersistentObject(PERSISTENCE_KEY, xmlRawBytesCache);
 	}
 }

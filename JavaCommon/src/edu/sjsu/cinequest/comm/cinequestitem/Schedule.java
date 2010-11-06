@@ -54,28 +54,16 @@ public class Schedule
 		this.venue = venue;
 	}
 	/**
-	 *  @return the date
-	 */
-	public Date getDate(){
-	SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	try {
-		this.date = curFormater.parse(startTime);
-	} catch (ParseException e) {
-		e.printStackTrace();
-	}
-	
-		return this.date;
-	}
-	
-	/**
 	 * @return the dateString 
 	 */
 	public String getDateString(){
+		Date date;
 		SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try {
-			this.date = curFormater.parse(startTime);
+			date = curFormater.parse(startTime);
 		} catch (ParseException e) {
 			Log.e("getDateString", e.toString());
+			return null;
 		}
 		SimpleDateFormat postFormater = new SimpleDateFormat("EEEE, MMMM d");
         dateString = postFormater.format(date);
@@ -86,11 +74,13 @@ public class Schedule
 	 * @return the showingTime
 	 */
 	public String getStartTime() {
+		Date date;
 		SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try {
-			this.date = curFormater.parse(startTime);
+			date = curFormater.parse(startTime);
 		} catch (ParseException e) {
 			Log.e("getStartTime", e.toString());
+			return null;
 		}
 		SimpleDateFormat postFormater = new SimpleDateFormat("hh:mm a");
 		startTime = postFormater.format(date);
@@ -112,10 +102,12 @@ public class Schedule
 	public String getEndTime()
 	   {
 		SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date;
 		try {
-			this.date = curFormater.parse(endTime);
+			date = curFormater.parse(endTime);
 		} catch (ParseException e) {
 			Log.e("getEndTime", e.toString());
+			return null;
 		}
 		SimpleDateFormat postFormater = new SimpleDateFormat("hh:mm a");
 		endTime = postFormater.format(date);
@@ -198,7 +190,4 @@ public class Schedule
 	private String startTime;
 	private String endTime;
 	private String dateString;
-	private String time;
-	private int hour;
-	private Date date;
 }

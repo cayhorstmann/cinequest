@@ -1,17 +1,35 @@
 package edu.sjsu.cinequest;
 
+import edu.sjsu.cinequest.android.AndroidPlatform;
+import edu.sjsu.cinequest.comm.ImageManager;
+import edu.sjsu.cinequest.comm.Platform;
+import edu.sjsu.cinequest.comm.QueryManager;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TabHost;
 
 public class MainTab extends TabActivity {
+	private static QueryManager queryManager;
+	private static ImageManager imageManager;
 	
     public void onCreate(Bundle savedInstanceState) {
     	    	
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
 
+        Platform.setInstance(new AndroidPlatform(getApplicationContext()));        
+        queryManager = new QueryManager();
+        imageManager = new ImageManager();
+        // TODO: Persistent application user
+        // user = new User();
+        // Remove this to turn on test mode
+        // DateUtils.setMode(DateUtils.FESTIVAL_TEST_MODE);
+       
+        try {
+        setContentView(R.layout.main);
+        } catch (Throwable t) {
+        	t.printStackTrace();
+        }
         // Get host object from super class
         TabHost tabHost = getTabHost();
         TabHost.TabSpec spec;
@@ -45,4 +63,12 @@ public class MainTab extends TabActivity {
         tabHost.setCurrentTab(0);
 
     }
+    
+    public static QueryManager getQueryManager() {
+		return queryManager;
+	}
+    
+    public static ImageManager getImageManager() {
+		return imageManager;
+	}
 }

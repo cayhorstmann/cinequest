@@ -9,10 +9,7 @@ import java.util.Vector;
 
 
 import edu.sjsu.cinequest.R;
-import edu.sjsu.cinequest.android.AndroidPlatform;
 import edu.sjsu.cinequest.comm.Callback;
-import edu.sjsu.cinequest.comm.Platform;
-import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import android.app.Activity;
@@ -28,7 +25,6 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 public class FilmsActivity extends Activity {
-	private QueryManager queryManager;
 	private ListView filmsList;
 	private Vector<Filmlet> films = new Vector<Filmlet>();
 	private Vector<Schedule> schedules = new Vector<Schedule>();
@@ -38,7 +34,7 @@ public class FilmsActivity extends Activity {
 	private int filterStatus;
 	private Button byDate_bt;
 	private Button byTitle_bt;
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
         setContentView(R.layout.film_layout);
         filmsList=(ListView)findViewById(R.id.ListView01);
@@ -54,6 +50,7 @@ public class FilmsActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
+				Log.v("Cinequest", "item clicked, id=" + arg3);
 				//Intent intent = new Intent();
 				switch(filterStatus){
 					case FILMBYDATE:
@@ -95,12 +92,10 @@ public class FilmsActivity extends Activity {
     }
     private void updatefilter(int filterStatus)
     {
-        Platform.setInstance(new AndroidPlatform());        
-        queryManager = new QueryManager();
         if(filterStatus == FILMBYDATE)
         {
-        	System.out.println("updatefilter-date");
-        	queryManager.getScheduls(new Callback(){
+        	Log.v("Cinequest", "updatefilter-date");
+        	MainTab.getQueryManager().getScheduls(new Callback(){
 
 				@Override
 				public void invoke(Object result) {
@@ -119,8 +114,8 @@ public class FilmsActivity extends Activity {
         	
         } else
         {
-        	System.out.println("updatefilter-title");
-       	 queryManager.getAllFilms (new Callback() {
+        	Log.v("Cinequest", "updatefilter-title");
+       	 MainTab.getQueryManager().getAllFilms (new Callback() {
     			public void progress(Object value) {
     			}
     			public void invoke(Object result) {
@@ -145,12 +140,12 @@ public class FilmsActivity extends Activity {
     }
     private void scheduleList(Vector<Schedule> schedule)
     {  	
-    	Log.i("block","scheduleList");
+    	Log.v("Cinequest","enter scheduleList");
     	String previousDay = schedule.get(0).getDateString();
     	Vector<Schedule> tempVect = new Vector<Schedule>();
     	tempVect.addElement(schedule.get(0));
     	// create our list and custom adapter  
-        SeparatedListAdapter adapter = new SeparatedListAdapter(this);
+    	SeparatedListAdapter adapter = new SeparatedListAdapter(this);
     	for(int i=1;i<schedule.size();i++)
     	{
     		if(!schedule.get(i).getDateString().equalsIgnoreCase(previousDay))
@@ -164,9 +159,11 @@ public class FilmsActivity extends Activity {
     			tempVect.addElement(schedule.get(i));
     		}
     	}
-
+        
+    	
     	filmsList.setAdapter(adapter);
-		
+    	Log.v("Cinequest","exit scheduleList");
+    	
 		
 	}
     private List<Map<String, Object>> getData(Vector<Schedule> schedule) {
