@@ -64,6 +64,14 @@ public class MainTab extends TabActivity {
 
     }
     
+    protected void onStop(){
+        super.onStop();
+        // TODO: Persist user schedule
+        imageManager.close();
+        Platform.getInstance().close();
+
+    }
+    
     public static QueryManager getQueryManager() {
 		return queryManager;
 	}

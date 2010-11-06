@@ -145,6 +145,7 @@ public class FilmsActivity extends Activity {
     	Vector<Schedule> tempVect = new Vector<Schedule>();
     	tempVect.addElement(schedule.get(0));
     	// create our list and custom adapter  
+    	// TODO: This code takes a REALLY long time
     	SeparatedListAdapter adapter = new SeparatedListAdapter(this);
     	for(int i=1;i<schedule.size();i++)
     	{

@@ -8,7 +8,10 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.URLEncoder;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -23,6 +26,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import android.os.Handler;
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 
 import edu.sjsu.cinequest.comm.Cache;
 import edu.sjsu.cinequest.comm.Callback;
@@ -65,8 +69,8 @@ public class AndroidPlatform extends Platform {
 	@Override
 	// Returns an android.graphics.BitMap
 	public Object getLocalImage(String imageName) {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO Uncomment below and switch to higher version of API
+		return new BitmapDrawable(/*context.getResources(), */ imageName).getBitmap();
 	}
 
 	@Override
@@ -116,8 +120,33 @@ public class AndroidPlatform extends Platform {
 	@Override
 	public void parse(String url, Hashtable postData, DefaultHandler handler,
 			Callback callback) throws SAXException, IOException {
-		// TODO Auto-generated method stub
-
+       SAXParserFactory spf = SAXParserFactory.newInstance();
+       SAXParser sp;
+       try
+       {
+           sp = spf.newSAXParser();
+       } catch (ParserConfigurationException e)
+       {
+           throw new SAXException(e.toString());
+       }
+       WebConnection connection = createWebConnection(url);
+       
+       PrintWriter out = new PrintWriter(connection.getOutputStream());
+       boolean first = true;
+       Enumeration keys = postData.keys();
+       while (keys.hasMoreElements()) 
+       {
+          if (first) first = false;
+          else out.print('&');
+          String key = keys.nextElement().toString();
+          String value = postData.get(key).toString();
+          out.print(key);
+          out.print('=');
+          out.print(URLEncoder.encode(value, "UTF-8"));               
+       }         
+       out.close();
+       byte[] response = connection.getBytes();
+       sp.parse(new ByteArrayInputStream(response), handler);
 	}
 
 	@Override
@@ -162,6 +191,7 @@ public class AndroidPlatform extends Platform {
 	}
 
 	@Override
+	// TODO: Add hint whether this is a cache or a truly persistent object
 	public void storePersistentObject(long key, Object object) {
 		try {
 			OutputStream out = context.openFileOutput(key + ".ser", Context.MODE_PRIVATE);
