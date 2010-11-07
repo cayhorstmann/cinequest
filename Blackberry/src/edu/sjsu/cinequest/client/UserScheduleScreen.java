@@ -82,7 +82,6 @@ public class UserScheduleScreen extends CinequestScreen {
 			final User user = Main.getUser();
 			final Callback[] callback = new Callback[1];
 			callback[0] = new ProgressMonitorCallback() {
-				@Override
 				public void failure(Throwable t) {
 					super.failure(t);
 					if (t instanceof User.ConflictingScheduleException) {

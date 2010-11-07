@@ -64,7 +64,6 @@ public class LoginDialog1 extends CinequestScreen {
 
 	public static User.CredentialsPrompt getLoginPrompt() {
 		return new User.CredentialsPrompt() {
-			@Override
 			public void promptForCredentials(String command, String defaultUsername,
 					String defaultPassword, final User.CredentialsAction action) {
 				// Array of size 1 avoids error that Runnable uses potentially

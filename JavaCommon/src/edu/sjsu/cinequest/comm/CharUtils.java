@@ -43,9 +43,9 @@ public class CharUtils
         replacements.put("rdquo", new Character('\u201d'));
         replacements.put("bull", new Character('\u2022'));
         
+        replacements.put("auml", new Character('\u00e4'));
         replacements.put("uuml", new Character('\u00fc'));
-        replacements.put("ecirc", new Character('\u00ea'));
-        
+        replacements.put("ecirc", new Character('\u00ea'));        
     }
 
     /**

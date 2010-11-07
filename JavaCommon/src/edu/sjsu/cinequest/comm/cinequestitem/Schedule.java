@@ -19,173 +19,132 @@
 
 package edu.sjsu.cinequest.comm.cinequestitem;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import android.util.Log;
-
-
-
-
+import net.rim.device.api.util.Persistable;
 
 /**
- * Schedule is a class that aggregates one (or more) ProgramItems, with associated meta-info.
- *
+ * Schedule is a class that aggregates one (or more) ProgramItems, with
+ * associated meta-info.
+ * 
  * @author Kevin Ross (cs160_109)
- *
+ * 
  * @version 0.1
  */
 
-public class Schedule 
-{	
-	
+public class Schedule implements Persistable {
 	/**
 	 * @return the venue
 	 */
-	
+
 	public String getVenue() {
 		return venue;
 	}
+
 	/**
-	 * @param venue the venue to set
+	 * @param venue
+	 *            the venue to set
 	 */
 	public void setVenue(String venue) {
 		this.venue = venue;
 	}
+
 	/**
-	 * @return the dateString 
+	 * @return the dateString
 	 */
-	public String getDateString(){
-		Date date;
-		SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		try {
-			date = curFormater.parse(startTime);
-		} catch (ParseException e) {
-			Log.e("getDateString", e.toString());
-			return null;
-		}
-		SimpleDateFormat postFormater = new SimpleDateFormat("EEEE, MMMM d");
-        dateString = postFormater.format(date);
-        return dateString;
+	public String getDateString() {
+		return dateString;
 	}
-	
+
 	/**
 	 * @return the showingTime
 	 */
 	public String getStartTime() {
-		Date date;
-		SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		try {
-			date = curFormater.parse(startTime);
-		} catch (ParseException e) {
-			Log.e("getStartTime", e.toString());
-			return null;
-		}
-		SimpleDateFormat postFormater = new SimpleDateFormat("hh:mm a");
-		startTime = postFormater.format(date);
-		
 		return startTime;
 	}
+
 	/**
-	 * @param showingTime the showingTime to set
+	 * @param showingTime
+	 *            the showingTime to set
 	 */
 	public void setStartTime(String showingTime) {
 		this.startTime = showingTime;
 	}
-	
-	public void setEndTime(String endTime)
-	{
-	      this.endTime = endTime;
-	   }
-	
-	public String getEndTime()
-	   {
-		SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date;
-		try {
-			date = curFormater.parse(endTime);
-		} catch (ParseException e) {
-			Log.e("getEndTime", e.toString());
-			return null;
-		}
-		SimpleDateFormat postFormater = new SimpleDateFormat("hh:mm a");
-		endTime = postFormater.format(date);
-		
-		return endTime;
-	   }
-    public int getItemId()
-    {
-        return itemId;
-    }
-    
-    public void setItemId(int programItemId)
-    {
-        this.itemId = programItemId;
-    }
 
-    /**
-     * @return true if this item needs to be retrieved with a "mobile_item" query
-     */
-    public boolean isMobileItem()
-    {
-        return mobileItem;
-    }
-    
-    public void setMobileItem(boolean special)
-    {
-        this.mobileItem = special;
-    }
-    
-    public String getTitle()
-    {
-        return title;
-    }
-    
-    public void setTitle(String title)
-    {
-       if (title == null) title = "(No title)";
-        this.title = title;
-    }
-    
-    /**
-     * @return true if this is a special item that should be highlighted in a list of schedules
-     */
-    public boolean isSpecialItem()
-    {
-        return specialItem;
-    }
-    
-    public void setSpecialItem(boolean specialItem)
-    {
-        this.specialItem = specialItem;
-    }
-    
-    public int getId()
-    {
-      return id;
-    }
-    
-    public void setId(int id)
-    {
-      this.id = id;
-    }
-    
-    public boolean overlaps(Schedule other)
-    {
-       // The intersection of [s1,e1) and [s2,e2) is [max(s1,s2),min(e1,e2))
-       if (startTime == null || other.startTime == null) return false; 
-       if (endTime == null || other.endTime == null) return false;  
-       String maxStart = startTime.compareTo(other.startTime) > 0 ? startTime : other.startTime;
-       String minEnd = endTime.compareTo(other.endTime) < 0 ? endTime : other.endTime;
-       return maxStart.compareTo(minEnd) < 0;
-    }
-    
-    private int id;
-    private String title;
-    private boolean mobileItem;
-    private boolean specialItem;
-    private int itemId;
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public int getItemId() {
+		return itemId;
+	}
+
+	public void setItemId(int programItemId) {
+		this.itemId = programItemId;
+	}
+
+	/**
+	 * @return true if this item needs to be retrieved with a "mobile_item"
+	 *         query
+	 */
+	public boolean isMobileItem() {
+		return mobileItem;
+	}
+
+	public void setMobileItem(boolean special) {
+		this.mobileItem = special;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		if (title == null)
+			title = "(No title)";
+		this.title = title;
+	}
+
+	/**
+	 * @return true if this is a special item that should be highlighted in a
+	 *         list of schedules
+	 */
+	public boolean isSpecialItem() {
+		return specialItem;
+	}
+
+	public void setSpecialItem(boolean specialItem) {
+		this.specialItem = specialItem;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public boolean overlaps(Schedule other) {
+		// The intersection of [s1,e1) and [s2,e2) is [max(s1,s2),min(e1,e2))
+		if (startTime == null || other.startTime == null)
+			return false;
+		if (endTime == null || other.endTime == null)
+			return false;
+		String maxStart = startTime.compareTo(other.startTime) > 0 ? startTime
+				: other.startTime;
+		String minEnd = endTime.compareTo(other.endTime) < 0 ? endTime
+				: other.endTime;
+		return maxStart.compareTo(minEnd) < 0;
+	}
+
+	private int id;
+	private String title;
+	private boolean mobileItem;
+	private boolean specialItem;
+	private int itemId;
 	private String venue;
 	private String startTime;
 	private String endTime;

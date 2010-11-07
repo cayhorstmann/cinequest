@@ -22,8 +22,6 @@ package edu.sjsu.cinequest.comm;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import android.util.Log;
-
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
@@ -233,7 +231,6 @@ public class QueryManager
     
     public void getAllFilms(final Callback callback)
     {
-    	Log.i("block","in queryManager's get all films");
         getWebData(callback, new Callable()
         {
             public Object run() throws Throwable
@@ -245,7 +242,6 @@ public class QueryManager
     
     public void getScheduls(final Callback callback)
     {
-    	Log.i("block","in queryManager's get schedules");
         getWebData(callback, new Callable()
         {
             public Object run() throws Throwable
