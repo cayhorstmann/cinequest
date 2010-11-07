@@ -135,7 +135,7 @@ public class DateUtils
     /**
      * Formats a date string into a locale-specific version. (Note: This is not a static method for thread safety)
      * @param date a string in the format yyyy-MM-dd HH:mm or yyyy-MM-dd
-     * one of the net.rim.device.api.i18n.DateFormat constants DATE_FULL, DATE_LONG, DATE_MEDIUM,
+     * @style one of the net.rim.device.api.i18n.DateFormat constants DATE_FULL, DATE_LONG, DATE_MEDIUM,
      * DATE_SHORT, DATE_DEFAULT, TIME_FULL, TIME_LONG, TIME_MEDIUM, TIME_SHORT,
      * TIME_DEFAULT, DATETIME_DEFAULT
      */

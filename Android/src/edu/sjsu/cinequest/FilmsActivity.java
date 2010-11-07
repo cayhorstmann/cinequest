@@ -1,19 +1,13 @@
 package edu.sjsu.cinequest;
 
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
-import edu.sjsu.cinequest.R;
-import edu.sjsu.cinequest.comm.Callback;
-import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
-import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +19,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
+import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 public class FilmsActivity extends Activity {
 	private ListView filmsList;
@@ -36,6 +33,7 @@ public class FilmsActivity extends Activity {
 	private int filterStatus;
 	private Button byDate_bt;
 	private Button byTitle_bt;
+	
     public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
         setContentView(R.layout.film_layout);
@@ -140,27 +138,14 @@ public class FilmsActivity extends Activity {
     	 filmsList.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1 , title));   	 
     }
 
-	/**
-	 * @return the dateString 
-	 */
-	public String getDateString(Schedule s){
-		Date date;
-		String dateString;
-		SimpleDateFormat curFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		try {
-			date = curFormatter.parse(s.getStartTime());
-		} catch (ParseException e) {
-			return null;
-		}
-		SimpleDateFormat postFormatter = new SimpleDateFormat("EEEE, MMMM d");
-        dateString = postFormatter.format(date);
-        return dateString;
-	}
-	
     private void scheduleList(Vector<Schedule> schedule)
     {  	
     	Log.v("Cinequest","enter scheduleList");
-    	String previousDay = getDateString(schedule.get(0));
+    	if (schedule.size() == 0) return;
+    	DateUtils du = new DateUtils();
+		DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);
+		
+    	String previousDay = schedule.get(0).getStartTime().substring(0, 10); 
     	Vector<Schedule> tempVect = new Vector<Schedule>();
     	tempVect.addElement(schedule.get(0));
     	// create our list and custom adapter  
@@ -168,12 +153,14 @@ public class FilmsActivity extends Activity {
     	SeparatedListAdapter adapter = new SeparatedListAdapter(this);
     	for(int i=1;i<schedule.size();i++)
     	{
-    		if(!getDateString(schedule.get(i)).equalsIgnoreCase(previousDay))
+    		String day = schedule.get(i).getStartTime().substring(0, 10);
+    		if(!day.equals(previousDay))
     		{
-    			adapter.addSection(previousDay, new SimpleAdapter(this,getData(tempVect),R.layout.filmbydateitem, new String[]{"title","time","venue"}, 
+    			String title = du.format(previousDay, df);
+    			adapter.addSection(title, new SimpleAdapter(this,getData(tempVect),R.layout.filmbydateitem, new String[]{"title","time","venue"}, 
     	    			new int[]{R.id.ScheduleTitle ,R.id.ScheduleTime ,R.id.ScheduleVenue}));
     			tempVect.removeAllElements();
-    			previousDay = getDateString(schedule.get(i));
+    			previousDay = day;
     		}else
     		{
     			tempVect.addElement(schedule.get(i));
@@ -186,32 +173,19 @@ public class FilmsActivity extends Activity {
     	
 		
 	}
-	private String getEndTime(Schedule s)
-    {
-		SimpleDateFormat curFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date;
-		try 
-		{
-			date = curFormatter.parse(s.getEndTime());
-
-		} catch (ParseException e) {
-			Log.e("getEndTime", e.toString());
-			return null;
-		}
-		SimpleDateFormat postFormatter = new SimpleDateFormat("hh:mm a");
-		String endTime = postFormatter.format(date);
-		return endTime;
-	}
 	
     private List<Map<String, Object>> getData(Vector<Schedule> schedule) {
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		Map<String, Object> map = new HashMap<String, Object>();
+		DateUtils du = new DateUtils();
+		DateFormat df = DateFormat.getTimeInstance(DateFormat.SHORT);
 		
 		for(int i =0;i<schedule.size();i++){
 			map = new HashMap<String, Object>();
 			map.put("title", schedule.get(i).getTitle());
-			map.put("time","Time: "+ schedule.get(i).getStartTime()+" - "+ getEndTime(schedule.get(i)));
-			map.put("venue","  venue: "+  schedule.get(i).getVenue());
+			map.put("time", du.format(schedule.get(i).getStartTime(), df) + " - " + 
+					du.format(schedule.get(i).getEndTime(), df));
+			map.put("venue", schedule.get(i).getVenue());
 			list.add(i, map);
 			}
 		return list;

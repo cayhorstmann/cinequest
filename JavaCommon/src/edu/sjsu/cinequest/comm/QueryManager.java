@@ -52,6 +52,7 @@ public class QueryManager
                 "?type=schedule&id=", // 4 -- unused
                 //"?type=schedules", // -- unused
                 //"?type=venue&id=", // -- unused
+                //"?type=programs" // unused, undocumented
                 "?type=blink&b=prg", // 5
                 "?type=blink&b=dvd", // 6
                 "?type=venues", // 7
@@ -62,7 +63,8 @@ public class QueryManager
                 "?type=dvd&id=", // 12
                 "?type=films&genre=", // 13
                 "?type=xml&name=", // 14
-                "?type=xml&name=items&id=" // 15                
+                "?type=xml&name=items&id=", // 15
+                "?type=schedules" //16 films by date
         };
     private static final String imageBase = "http://mobile.cinequest.org/";
     private static final String mainImageURL = "imgs/mobile/creative.gif";
@@ -238,6 +240,7 @@ public class QueryManager
             }
         });
     }
+    
     public void getFilmsByGenre(final String genre, final Callback callback)
     {
         getWebData(callback, new Callable()
@@ -248,7 +251,6 @@ public class QueryManager
             }
         });
     }
-
 
     public void getSchedules(final Callback callback)
     {
