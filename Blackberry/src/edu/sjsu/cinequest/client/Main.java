@@ -26,6 +26,7 @@ import net.rim.device.api.ui.UiApplication;
 import edu.sjsu.cinequest.comm.ImageManager;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.QueryManager;
+import edu.sjsu.cinequest.comm.cinequestitem.User;
 import edu.sjsu.cinequest.comm.cinequestitem.VenueLocation;
 import edu.sjsu.cinequest.rim.RIMPlatform;
 

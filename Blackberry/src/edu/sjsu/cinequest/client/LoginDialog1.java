@@ -18,6 +18,7 @@
  */
 package edu.sjsu.cinequest.client;
 
+import edu.sjsu.cinequest.comm.cinequestitem.User;
 import net.rim.device.api.ui.Ui;
 import net.rim.device.api.ui.component.EmailAddressEditField;
 import net.rim.device.api.ui.component.LabelField;
@@ -30,34 +31,55 @@ import net.rim.device.api.ui.container.HorizontalFieldManager;
  * @author Cay Horstmann
  * 
  */
-public class LoginDialog1 extends CinequestScreen
-{
-   private EmailAddressEditField emailField = new EmailAddressEditField(
-         "Email: ", "");
-   private PasswordEditField passwordField = new PasswordEditField(
-         "Password: ", "");
+public class LoginDialog1 extends CinequestScreen {
+	private EmailAddressEditField emailField = new EmailAddressEditField(
+			"Email: ", "");
+	private PasswordEditField passwordField = new PasswordEditField(
+			"Password: ", "");
 
-   public LoginDialog1(String title, String email, String password, Runnable runnable)
-   {      
-      emailField.setText(email);
-      passwordField.setText(password);
-      add(emailField);
-      add(passwordField);
-      HorizontalFieldManager hfm = new HorizontalFieldManager();
-      hfm.add(new ClickableField(title, runnable));
-      hfm.add(new LabelField(" | "));
-      hfm.add(new ClickableField("Cancel", 
-            new Runnable() { public void run() {Ui.getUiEngine().popScreen(LoginDialog1.this);}}));
-      add(hfm);      
-   }
+	public LoginDialog1(String command, String email, String password,
+			Runnable runnable) {
+		emailField.setText(email);
+		passwordField.setText(password);
+		add(emailField);
+		add(passwordField);
+		HorizontalFieldManager hfm = new HorizontalFieldManager();
+		hfm.add(new ClickableField(command, runnable));
+		hfm.add(new LabelField(" | "));
+		hfm.add(new ClickableField("Cancel", new Runnable() {
+			public void run() {
+				Ui.getUiEngine().popScreen(LoginDialog1.this);
+			}
+		}));
+		add(hfm);
+	}
 
-   public String getEmail()
-   {
-      return emailField.getText();
-   }
+	public String getEmail() {
+		return emailField.getText();
+	}
 
-   public String getPassword()
-   {
-      return passwordField.getText();
-   }
+	public String getPassword() {
+		return passwordField.getText();
+	}
+
+	public static User.CredentialsPrompt getLoginPrompt() {
+		return new User.CredentialsPrompt() {
+			@Override
+			public void promptForCredentials(String command, String defaultUsername,
+					String defaultPassword, final User.CredentialsAction action) {
+				// Array of size 1 avoids error that Runnable uses potentially
+				// uninitialized variable
+				final LoginDialog1[] dialog = new LoginDialog1[1];
+				dialog[0] = new LoginDialog1(command,
+						defaultUsername, defaultPassword, new Runnable() {
+							public void run() {
+								Ui.getUiEngine().popScreen(dialog[0]);
+								action.actWithCredentials(dialog[0].getEmail(),
+										dialog[0].getPassword());
+							}
+						});
+				Ui.getUiEngine().pushScreen(dialog[0]);
+			}
+		};
+	}
 }

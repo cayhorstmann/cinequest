@@ -93,7 +93,7 @@ public class CinequestScreen extends MainScreen
         {
             public void run()
             {
-                Main.getUser().saveSchedule();
+                UserScheduleScreen.save.run();
             }
         });        
         if (!DateUtils.isOffSeason()) addMenuItem(new MenuItem("Festival", 23, 80)
