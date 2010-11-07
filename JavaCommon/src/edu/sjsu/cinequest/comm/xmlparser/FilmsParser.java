@@ -38,7 +38,7 @@ public class FilmsParser extends BasicHandler
 {
     private Filmlet filmlet;
     private Vector result = new Vector();
-    String tagName;
+
     /**
      * Parses a single film
      * @param url the URL to parse
@@ -63,13 +63,11 @@ public class FilmsParser extends BasicHandler
             Attributes attributes) throws SAXException
     {
         super.startElement(uri, localName, qName, attributes);
-        if (lastTagName().equals("program"))
+        if (lastTagName().equals("film"))
         {
             filmlet = new Filmlet();
             filmlet.setId(Integer.parseInt(attributes.getValue("id")));
         }
-       
-        
         else if (lastTagName().equals("distribution"))
         {
             String type = attributes.getValue("channel");
@@ -86,10 +84,6 @@ public class FilmsParser extends BasicHandler
         {
             filmlet.setTitle(lastString());
             result.addElement(filmlet);
-            
-        } 
-              
+        }        
     }
-    
-    
 }

@@ -29,7 +29,6 @@ public class SeparatedListAdapter extends BaseAdapter {
     }  
     
     
-	@Override
 	public int getCount() {
 		// total together all sections, plus one for each section header  
         int total = 0;  
@@ -38,7 +37,6 @@ public class SeparatedListAdapter extends BaseAdapter {
         return total;  
 	}
 
-	@Override
 	public Object getItem(int position) {
 		for(Object section : this.sections.keySet()) {  
             Adapter adapter = sections.get(section);  
@@ -87,12 +85,11 @@ public class SeparatedListAdapter extends BaseAdapter {
         return (getItemViewType(position) != TYPE_SECTION_HEADER);  
     }  
 	
-	@Override
 	public long getItemId(int position) {
 		return position; 
 	}
 
-	@Override
+
 	public View getView(int position, View convertView, ViewGroup parent) {
 		int sectionnum = 0;  
         for(Object section : this.sections.keySet()) {  

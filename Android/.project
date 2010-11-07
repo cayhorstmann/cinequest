@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Android</name>
+	<name>Cinequest</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -31,6 +31,11 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
 	<linkedResources>
+		<link>
+			<name>JavaCommon</name>
+			<type>2</type>
+			<locationURI>_android_JavaCommon/src</locationURI>
+		</link>
 		<link>
 			<name>JavaCommon_src</name>
 			<type>2</type>
