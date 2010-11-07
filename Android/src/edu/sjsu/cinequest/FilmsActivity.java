@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import edu.sjsu.cinequest.R;
 import edu.sjsu.cinequest.comm.Callback;
@@ -47,7 +49,7 @@ public class FilmsActivity extends Activity {
         
         //Action Listener
         filmsList.setOnItemClickListener(new ListView.OnItemClickListener() {
-			@Override
+
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				Log.v("Cinequest", "item clicked, id=" + arg3);
@@ -95,17 +97,16 @@ public class FilmsActivity extends Activity {
         if(filterStatus == FILMBYDATE)
         {
         	Log.v("Cinequest", "updatefilter-date");
-        	MainTab.getQueryManager().getScheduls(new Callback(){
+        	MainTab.getQueryManager().getSchedules(new Callback(){
 
-				@Override
 				public void invoke(Object result) {
 					schedules = (Vector<Schedule>) result;
 					FilmsActivity.this.scheduleList(schedules);	
 				}
-				@Override
+
 				public void progress(Object value) {	
 				}
-				@Override
+
 				public void failure(Throwable t) {
 				}
         	
@@ -138,10 +139,28 @@ public class FilmsActivity extends Activity {
     	 Log.v("array~~in Test",film.get(0).getTitle());	    	 	
     	 filmsList.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1 , title));   	 
     }
+
+	/**
+	 * @return the dateString 
+	 */
+	public String getDateString(Schedule s){
+		Date date;
+		String dateString;
+		SimpleDateFormat curFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			date = curFormatter.parse(s.getStartTime());
+		} catch (ParseException e) {
+			return null;
+		}
+		SimpleDateFormat postFormatter = new SimpleDateFormat("EEEE, MMMM d");
+        dateString = postFormatter.format(date);
+        return dateString;
+	}
+	
     private void scheduleList(Vector<Schedule> schedule)
     {  	
     	Log.v("Cinequest","enter scheduleList");
-    	String previousDay = schedule.get(0).getDateString();
+    	String previousDay = getDateString(schedule.get(0));
     	Vector<Schedule> tempVect = new Vector<Schedule>();
     	tempVect.addElement(schedule.get(0));
     	// create our list and custom adapter  
@@ -149,12 +168,12 @@ public class FilmsActivity extends Activity {
     	SeparatedListAdapter adapter = new SeparatedListAdapter(this);
     	for(int i=1;i<schedule.size();i++)
     	{
-    		if(!schedule.get(i).getDateString().equalsIgnoreCase(previousDay))
+    		if(!getDateString(schedule.get(i)).equalsIgnoreCase(previousDay))
     		{
     			adapter.addSection(previousDay, new SimpleAdapter(this,getData(tempVect),R.layout.filmbydateitem, new String[]{"title","time","venue"}, 
     	    			new int[]{R.id.ScheduleTitle ,R.id.ScheduleTime ,R.id.ScheduleVenue}));
     			tempVect.removeAllElements();
-    			previousDay = schedule.get(i).getDateString();
+    			previousDay = getDateString(schedule.get(i));
     		}else
     		{
     			tempVect.addElement(schedule.get(i));
@@ -167,6 +186,23 @@ public class FilmsActivity extends Activity {
     	
 		
 	}
+	private String getEndTime(Schedule s)
+    {
+		SimpleDateFormat curFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date;
+		try 
+		{
+			date = curFormatter.parse(s.getEndTime());
+
+		} catch (ParseException e) {
+			Log.e("getEndTime", e.toString());
+			return null;
+		}
+		SimpleDateFormat postFormatter = new SimpleDateFormat("hh:mm a");
+		String endTime = postFormatter.format(date);
+		return endTime;
+	}
+	
     private List<Map<String, Object>> getData(Vector<Schedule> schedule) {
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -174,7 +210,7 @@ public class FilmsActivity extends Activity {
 		for(int i =0;i<schedule.size();i++){
 			map = new HashMap<String, Object>();
 			map.put("title", schedule.get(i).getTitle());
-			map.put("time","Time: "+ schedule.get(i).getStartTime()+" - "+schedule.get(i).getEndTime());
+			map.put("time","Time: "+ schedule.get(i).getStartTime()+" - "+ getEndTime(schedule.get(i)));
 			map.put("venue","  venue: "+  schedule.get(i).getVenue());
 			list.add(i, map);
 			}

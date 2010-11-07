@@ -22,8 +22,6 @@ package edu.sjsu.cinequest.comm;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import android.util.Log;
-
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
@@ -50,7 +48,7 @@ public class QueryManager
         { "?type=program_item&id=", // 0
     			"?type=mode", // 1
                 "?type=film&id=", // 2
-                "?type=programs", // 3
+                "?type=films", // 3
                 "?type=schedule&id=", // 4 -- unused
                 //"?type=schedules", // -- unused
                 //"?type=venue&id=", // -- unused
@@ -64,8 +62,7 @@ public class QueryManager
                 "?type=dvd&id=", // 12
                 "?type=films&genre=", // 13
                 "?type=xml&name=", // 14
-                "?type=xml&name=items&id=", // 15
-                "?type=schedules" //16 films by date
+                "?type=xml&name=items&id=" // 15                
         };
     private static final String imageBase = "http://mobile.cinequest.org/";
     private static final String mainImageURL = "imgs/mobile/creative.gif";
@@ -233,7 +230,6 @@ public class QueryManager
     
     public void getAllFilms(final Callback callback)
     {
-    	Log.i("block","in queryManager's get all films");
         getWebData(callback, new Callable()
         {
             public Object run() throws Throwable
@@ -242,19 +238,6 @@ public class QueryManager
             }
         });
     }
-    
-    public void getScheduls(final Callback callback)
-    {
-    	Log.i("block","in queryManager's get schedules");
-        getWebData(callback, new Callable()
-        {
-            public Object run() throws Throwable
-            {
-                return SchedulesParser.parseSchedule(makeQuery(16, ""), callback);
-            }
-        });
-    }
-    
     public void getFilmsByGenre(final String genre, final Callback callback)
     {
         getWebData(callback, new Callable()
@@ -265,7 +248,20 @@ public class QueryManager
             }
         });
     }
-        
+
+
+    public void getSchedules(final Callback callback)
+    {
+    	getWebData(callback, new Callable()
+        {
+            public Object run() throws Throwable
+            {
+                return SchedulesParser.parseSchedule(makeQuery(16, ""), callback);
+            }
+        });
+    }
+
+           
     /**
      * Gets a special screen as a vector of Section objects  
      * @param type one of "home", "info", "offseason", "offseasoninfo", "release", "pick"

@@ -19,15 +19,7 @@
 
 package edu.sjsu.cinequest.comm.cinequestitem;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import android.util.Log;
-
-
-
-
+import net.rim.device.api.util.Persistable;
 
 /**
  * Schedule is a class that aggregates one (or more) ProgramItems, with associated meta-info.
@@ -37,13 +29,11 @@ import android.util.Log;
  * @version 0.1
  */
 
-public class Schedule 
+public class Schedule implements Persistable
 {	
-	
 	/**
 	 * @return the venue
 	 */
-	
 	public String getVenue() {
 		return venue;
 	}
@@ -53,38 +43,11 @@ public class Schedule
 	public void setVenue(String venue) {
 		this.venue = venue;
 	}
-	/**
-	 * @return the dateString 
-	 */
-	public String getDateString(){
-		Date date;
-		SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		try {
-			date = curFormater.parse(startTime);
-		} catch (ParseException e) {
-			Log.e("getDateString", e.toString());
-			return null;
-		}
-		SimpleDateFormat postFormater = new SimpleDateFormat("EEEE, MMMM d");
-        dateString = postFormater.format(date);
-        return dateString;
-	}
-	
+
 	/**
 	 * @return the showingTime
 	 */
 	public String getStartTime() {
-		Date date;
-		SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		try {
-			date = curFormater.parse(startTime);
-		} catch (ParseException e) {
-			Log.e("getStartTime", e.toString());
-			return null;
-		}
-		SimpleDateFormat postFormater = new SimpleDateFormat("hh:mm a");
-		startTime = postFormater.format(date);
-		
 		return startTime;
 	}
 	/**
@@ -95,25 +58,14 @@ public class Schedule
 	}
 	
 	public void setEndTime(String endTime)
-	{
-	      this.endTime = endTime;
-	   }
-	
-	public String getEndTime()
-	   {
-		SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date;
-		try {
-			date = curFormater.parse(endTime);
-		} catch (ParseException e) {
-			Log.e("getEndTime", e.toString());
-			return null;
-		}
-		SimpleDateFormat postFormater = new SimpleDateFormat("hh:mm a");
-		endTime = postFormater.format(date);
-		
+   {
+      this.endTime = endTime;
+   }
+
+	public String getEndTime() {
 		return endTime;
-	   }
+	}
+	
     public int getItemId()
     {
         return itemId;
@@ -189,5 +141,4 @@ public class Schedule
 	private String venue;
 	private String startTime;
 	private String endTime;
-	private String dateString;
 }

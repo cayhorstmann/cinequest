@@ -227,7 +227,7 @@ public class AndroidPlatform extends Platform {
 	public Vector sort(Vector vec, final Comparator comp) {
 		Vector ret = new Vector(vec);
 		Collections.sort(ret, new java.util.Comparator<Object>() {
-			@Override
+		
 			public int compare(Object a, Object b) {
 				return comp.compare(a, b);
 			}
