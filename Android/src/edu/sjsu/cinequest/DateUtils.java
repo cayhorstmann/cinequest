@@ -4,6 +4,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DateUtils {
     public static final int NORMAL_MODE = 0;
@@ -11,6 +13,29 @@ public class DateUtils {
     public static final int OFFSEASON_TEST_MODE = 2;
     // TODO: Set to NORMAL_MODE before release
     private static int mode = FESTIVAL_TEST_MODE;
+
+    /*
+     * If you need more time formats, add a constant here, and be sure to
+     * update LAST_TIME_FORMAT to equal the value of the last one. 
+     * Also add the formatter below.
+     */
+    
+    public static final int TIME_SHORT = 0;
+    // More time formats
+    private static final int LAST_TIME_FORMAT = 0; 
+    
+    public static final int DATE_DEFAULT = 1;
+    
+    /*
+     * If you need more date or date/time formats, add a constant here. 
+     * Also add the formatter below. Each formatter's index should match
+     * the formatter constant.
+     */
+    
+    private DateFormat[] formatters = {
+    	DateFormat.getTimeInstance(DateFormat.SHORT),
+    	DateFormat.getDateInstance()
+    };
     
     private static String[] festivalDates =
     { 
@@ -19,6 +44,8 @@ public class DateUtils {
     "2010-03-03", "2010-03-04", "2010-03-05", "2010-03-06",
     "2010-03-07"
     };
+    
+    private static Map<String, String> cache = new ConcurrentHashMap<String, String>();
     
     /**
      * Get all dates for this festival in the format yyyy-MM-dd
@@ -66,17 +93,31 @@ public class DateUtils {
     }
     
     /**
-     * Formats a date string into a locale-specific version. (Note: This is not a static method for thread safety)
+     * Formats a date string into a locale-specific version. 
+     * (Note: This is not a static method for thread safety)
      * @param date a string in the format yyyy-MM-dd HH:mm or yyyy-MM-dd
-     * @target a DateFormat such as DateFormat.getDateTimeInstance()
+     * @target a format constant defined in this class.
+     * TODO: Do we really need thread safety, or can we just restrict this
+     * class to the UI thread?
      */
-    public String format(String date, DateFormat target)
+    public String format(String date, int format)
     {
-    	String fmt = date.length() == 10 ? "yyyy-MM-dd" : "yyyy-MM-dd HH:mm";
-        SimpleDateFormat sdf = new SimpleDateFormat(fmt);
-        try
+    	int len = date.length();
+    	if (format <= LAST_TIME_FORMAT) 
+    		date = len == 10 ? "00:00" : date.substring(11, 16);
+    	try
         {
-        	return target.format(sdf.parse(date));
+    		String key = date + (char)('A' + format);
+    		String result = cache.get(key);
+    		if (result == null)
+    		{
+    			String d = format <= LAST_TIME_FORMAT ? "2000-01-01 " + date : date; 
+    			String fmt = len == 10 ? "yyyy-MM-dd" : "yyyy-MM-dd HH:mm";
+    			SimpleDateFormat sdf = new SimpleDateFormat(fmt);
+    			result = formatters[format].format(sdf.parse(d));
+    			cache.put(key, result);
+    		}
+        	return result;
         } 
         catch (ParseException ex)
         {

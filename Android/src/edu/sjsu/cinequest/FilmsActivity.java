@@ -156,7 +156,7 @@ public class FilmsActivity extends Activity {
     		String day = schedule.get(i).getStartTime().substring(0, 10);
     		if(!day.equals(previousDay))
     		{
-    			String title = du.format(previousDay, df);
+    			String title = du.format(previousDay, DateUtils.DATE_DEFAULT);
     			adapter.addSection(title, new SimpleAdapter(this,getData(tempVect),R.layout.filmbydateitem, new String[]{"title","time","venue"}, 
     	    			new int[]{R.id.ScheduleTitle ,R.id.ScheduleTime ,R.id.ScheduleVenue}));
     			tempVect.removeAllElements();
@@ -179,13 +179,13 @@ public class FilmsActivity extends Activity {
 		Map<String, Object> map = new HashMap<String, Object>();
 		DateUtils du = new DateUtils();
 		DateFormat df = DateFormat.getTimeInstance(DateFormat.SHORT);
-		
 		for(int i =0;i<schedule.size();i++){
+			Schedule s = schedule.get(i);
 			map = new HashMap<String, Object>();
-			map.put("title", schedule.get(i).getTitle());
-			map.put("time", du.format(schedule.get(i).getStartTime(), df) + " - " + 
-					du.format(schedule.get(i).getEndTime(), df));
-			map.put("venue", schedule.get(i).getVenue());
+			map.put("title", s.getTitle());
+			map.put("time", du.format(s.getStartTime(), DateUtils.TIME_SHORT) + " - " + 
+					du.format(s.getEndTime(), DateUtils.TIME_SHORT));
+			map.put("venue", s.getVenue());
 			list.add(i, map);
 			}
 		return list;

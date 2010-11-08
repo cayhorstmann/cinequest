@@ -32,6 +32,8 @@ import net.rim.device.api.util.DateTimeUtilities;
  */
 public class DateUtils
 {
+	
+	
     private int[] fields = new int[7];
     private Calendar cal = Calendar.getInstance();
     public static final int NORMAL_MODE = 0;
