@@ -66,11 +66,7 @@ public class ProgramItemParser extends FilmParser
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
 	{
     	super.startElement(uri, localName, qName, attributes);
-        if (lastTagName().equals("film"))
-        {
-            setFilm(new Film());
-        }
-        else if (lastTagName().equals("program_item"))
+        if (lastTagName().equals("program_item"))
         {
             item.setId(Integer.parseInt(attributes.getValue("id")));
             schedules = new Vector();

@@ -74,6 +74,8 @@ public class FilmParser extends BasicHandler
         super.startElement(uri, localName, qName, attributes);
         if (lastTagName().equals("film"))
 		{
+        	if (film == null) film = new Film();
+        		
             String id = attributes.getValue("id");
             if (id != null)
                 film.setId(Integer.parseInt(id));

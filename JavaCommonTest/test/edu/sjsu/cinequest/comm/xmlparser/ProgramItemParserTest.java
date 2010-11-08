@@ -30,14 +30,13 @@ public class ProgramItemParserTest extends TestCase
         Platform.setInstance(new JavaSEPlatform());
     }
 
-    public void testProgramItem428() throws Exception
+    public void testProgramItem1406() throws Exception
     {
         ProgramItem result = ProgramItemParser
                 .parseProgramItem(
-                        "http://mobile.cinequest.org/mobileCQ.php?type=program_item&id=490",
+                        "http://mobile.cinequest.org/mobileCQ.php?type=program_item&id=1406",
                         null);
-        System.out.println(result.getId());
-        assertEquals("Gotta Dance", result.getTitle());
-        assertEquals(490, result.getId());
+        assertEquals("Anyone You Want", result.getTitle());
+        assertEquals(1406, result.getId());
     }
 }

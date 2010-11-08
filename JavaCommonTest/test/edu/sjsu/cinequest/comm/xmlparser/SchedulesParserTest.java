@@ -34,10 +34,10 @@ public class SchedulesParserTest extends TestCase
         Platform.setInstance(new JavaSEPlatform());
     }
 
-    public void testSchedules5062() throws Exception
+    public void testSchedules2010_03_01() throws Exception
     {
-        Vector result = SchedulesParser.parseSchedule("http://mobile.cinequest.org/mobileCQ.php?type=schedules&day=2009-03-08", new TestCallback());
-        assertEquals(((Schedule) result.elementAt(0)).getItemId(), 530);
-        assertEquals(((Schedule) result.elementAt(14)).getItemId(), 520);
+        Vector result = SchedulesParser.parseSchedule("http://mobile.cinequest.org/mobileCQ.php?type=schedules&day=2010-03-01", new TestCallback());
+        assertEquals(((Schedule) result.elementAt(0)).getItemId(), 1387);
+        assertEquals(((Schedule) result.elementAt(14)).getItemId(), 1383);
     }
 }
