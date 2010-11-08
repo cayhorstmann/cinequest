@@ -32,6 +32,7 @@ import edu.sjsu.cinequest.comm.xmlparser.FilmsParser;
 import edu.sjsu.cinequest.comm.xmlparser.GenresParser;
 import edu.sjsu.cinequest.comm.xmlparser.LinkParser;
 import edu.sjsu.cinequest.comm.xmlparser.ProgramItemParser;
+import edu.sjsu.cinequest.comm.xmlparser.ProgramItemsParser;
 import edu.sjsu.cinequest.comm.xmlparser.SchedulesParser;
 import edu.sjsu.cinequest.comm.xmlparser.SeasonParser;
 import edu.sjsu.cinequest.comm.xmlparser.SectionsParser;
@@ -50,9 +51,7 @@ public class QueryManager
                 "?type=film&id=", // 2
                 "?type=films", // 3
                 "?type=schedule&id=", // 4 -- unused
-                //"?type=schedules", // -- unused
                 //"?type=venue&id=", // -- unused
-                //"?type=programs" // unused, undocumented
                 "?type=blink&b=prg", // 5
                 "?type=blink&b=dvd", // 6
                 "?type=venues", // 7
@@ -64,7 +63,8 @@ public class QueryManager
                 "?type=films&genre=", // 13
                 "?type=xml&name=", // 14
                 "?type=xml&name=items&id=", // 15
-                "?type=schedules" //16 films by date
+                "?type=schedules", //16 schedules by date
+                "?type=programs" //17 program items by title
         };
     private static final String imageBase = "http://mobile.cinequest.org/";
     private static final String mainImageURL = "imgs/mobile/creative.gif";
@@ -248,6 +248,17 @@ public class QueryManager
             public Object run() throws Throwable
             {
                 return FilmsParser.parse(makeQuery(13, genre), callback);
+            }
+        });
+    }
+    
+    public void getAllPrograms(final Callback callback)
+    {
+        getWebData(callback, new Callable()
+        {
+            public Object run() throws Throwable
+            {
+                return ProgramItemsParser.parse(makeQuery(17, ""), callback);
             }
         });
     }

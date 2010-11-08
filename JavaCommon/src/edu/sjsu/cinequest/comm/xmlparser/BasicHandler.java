@@ -62,7 +62,7 @@ public class BasicHandler extends DefaultHandler
         fixed = false;
     }
 
-    public void endElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
+    public void endElement(String uri, String localName, String qName) throws SAXException
     {
     	if (qName != null && qName.length() > 0)
            tagName = qName;

@@ -10,7 +10,7 @@
       <property name="common-src.dir" value="../JavaCommon/src" />
       <property name="images.dir" value="images" />
       <property name="build.dir" value="build" />
-      <property name="test.dir" value="../JavaCommon/test" />
+      <property name="test.dir" value="../JavaCommonTest/test" />
       <property name="javadoc.dir" value="javadoc" />
       <property name="javadoc.title" value="Cinequest BlackBerry API" />
       <property name="simulator.dir" value="${jde.home}/simulator" />
@@ -180,7 +180,7 @@
         <scan>
             <fileset dir=".">
             	<include name="src/**/*.java"/>
-            	<include name="test	/**/*.java"/>
+            	<include name="test/**/*.java"/>
             </fileset>
             <filterchain>
                 <countfilter property="src.loc" />
