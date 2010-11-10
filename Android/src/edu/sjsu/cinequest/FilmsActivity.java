@@ -95,20 +95,13 @@ public class FilmsActivity extends Activity {
         if(filterStatus == FILMBYDATE)
         {
         	Log.v("Cinequest", "updatefilter-date");
-        	MainTab.getQueryManager().getSchedules(new Callback(){
-
+        	MainTab.getQueryManager().getSchedules(new ProgressMonitorCallback(this,
+        			"Loading films", "Unable to load films") {
 				public void invoke(Object result) {
+					super.invoke(result);
 					schedules = (Vector<Schedule>) result;
 					FilmsActivity.this.scheduleList(schedules);	
-				}
-
-				public void progress(Object value) {	
-				}
-
-				public void failure(Throwable t) {
-				}
-        	
-        	
+				}        	
         	});
         	
         } else
