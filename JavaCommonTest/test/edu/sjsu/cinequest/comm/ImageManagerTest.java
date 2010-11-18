@@ -27,20 +27,30 @@ import edu.sjsu.cinequest.javase.JavaSEPlatform;
 
 public class ImageManagerTest extends TestCase
 {
+	private ImageManager mgr;
+	
     protected void setUp() throws Exception
     {
         Platform.setInstance(new JavaSEPlatform());
+        mgr = new ImageManager();
+    }
+
+    private Image loadImage(String url)
+    {
+        TestCallback callback = new TestCallback();
+        mgr.getImage(url, callback, "images/creative.png", false /* persistent */);
+        return (Image) callback.getResult();    	
     }
     
     public void testSimpleImage() throws IOException 
     {
-        ImageManager mgr = new ImageManager();
-        String url = "http://horstmann.com/love_aliencamel.gif";
-        TestCallback callback = new TestCallback();
-        mgr.getImage(url, callback, "images/creative.png", false /* persistent */);
-        Image img = (Image) callback.getResult();
-        // javax.swing.JOptionPane.showMessageDialog(null, "", "", javax.swing.JOptionPane.INFORMATION_MESSAGE, new javax.swing.ImageIcon(img));
-        assertEquals(85, img.getWidth(null));
-        assertEquals(75, img.getHeight(null));        
+        Image img = loadImage("http://horstmann.com/cay-tiny.gif");
+        assertEquals(74, img.getWidth(null));
+        assertEquals(68, img.getHeight(null));        
+    }
+    
+    public void testSimpleImageAgain() throws IOException 
+    {
+        testSimpleImage();         
     }
 }
