@@ -46,6 +46,26 @@ public class ProgramItem extends CinequestItem
 		return films;
 	}
 
+	/**
+	 * Return this item's image URL if present, or, if not,
+	 * the first non-null image URL in the associated films
+	 */
+	public String getImageURL() 
+	{
+		String url = super.getImageURL();
+		if (url != null) return url;
+		if (films != null)
+		{
+			for (int i = 0; i < films.size(); i++)
+			{
+				Film film = (Film) films.elementAt(0);
+				url = film.getImageURL();
+				if (url != null) return url;
+			}
+		}
+		return null;
+	}
+	
 	private Vector films;
 	
     /**
