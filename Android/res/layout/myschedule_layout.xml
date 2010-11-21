@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/transparent"
+    >
+    <RelativeLayout
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#A9A9A9"
+    >
+    <!-- -->
+    
+    <Button
+		android:id="@+id/sync_button"
+    	android:text="Sync"
+    	
+    	
+    	android:layout_width="60dip"
+    	android:layout_height="40dip"
+    	android:layout_alignParentLeft="true"
+    	android:layout_marginLeft="3dip"
+    	android:layout_marginTop="5dip"
+	/>
+	
+	<TextView  
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" 
+	    android:text="My Schedule"
+    	android:textStyle="bold"
+    	android:textColor="#FFF"
+    	android:textSize="16dip"
+    	android:gravity="center"
+    	android:layout_marginTop="10dip"
+    />
+    <Button
+		android:id="@+id/edit_button"
+    	android:text="Edit"
+    	
+    	
+    	android:layout_width="60dip"
+    	android:layout_height="40dip"
+    	android:layout_alignParentRight="true"
+    	android:layout_marginRight="3dip"
+    	android:layout_marginTop="5dip"
+	/>    
+    </RelativeLayout>
+    
+    <TextView  
+	    android:layout_width="fill_parent" 
+	    android:layout_height="20dip" 
+	    android:text="Wednesday, Feb 24"
+    	android:textStyle="bold"
+    	android:textColor="#FFF"
+    	android:textSize="14dip"
+    	android:background="#353F3E"
+    />
+    
+    <LinearLayout
+	  android:id="@+id/list_area"
+	  android:layout_width="fill_parent"
+	  android:layout_height="fill_parent"	  
+	  >
+	  <ListView
+		  android:id="@+id/android:list"
+		  android:layout_width="fill_parent"
+		  android:layout_height="wrap_content"
+		  android:background="@android:color/transparent"
+	  />
+  </LinearLayout>
+        
+</LinearLayout>
