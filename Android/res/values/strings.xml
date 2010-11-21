@@ -2,4 +2,13 @@
 <resources>
     <string name="hello">Hello World, Cinequest!</string>
     <string name="app_name">Cinequest</string>
+    <string name="login_prompt">This feature needs you to be logged in.\nWould you like to sign in now?</string>
+	<string name="login_instruction">Login using your cinequest.org interactive scheduler account email and password.</string>
+	<string name="register_instruction">Don\'t have a cinequest.org interactive scheduler account yet?</string>
+	<string name="scheduleraccount_info">The account is free and will allow your to save / update / download schedules you have created online or on the phone.</string>
+	<string name="email_hint">Email Address</string>
+	<string name="password_hint">Password</string>
+	<string name="retrieve_button_label">Retrieve Schedule</string>
+	<string name="save_button_label">Save Schedule</string>
+	<string name="signup_button_label">Sign-up for an account!</string>
 </resources>

@@ -37,18 +37,41 @@ public final class R {
         public static final int TextView01=0x7f050004;
         public static final int TextView02=0x7f050007;
         public static final int TextView03=0x7f050009;
+        public static final int accountsignup_button=0x7f050010;
         public static final int bydate_bt=0x7f050001;
         public static final int bytitle_bt=0x7f050002;
+        public static final int edit_button=0x7f050012;
+        public static final int list_area=0x7f050013;
         public static final int list_header_title=0x7f05000b;
+        public static final int login_email_box=0x7f05000c;
+        public static final int login_password_box=0x7f05000d;
+        public static final int retrieveschedule_button=0x7f05000e;
+        public static final int saveschedule_button=0x7f05000f;
+        public static final int sync_button=0x7f050011;
+        public static final int timetext=0x7f050015;
+        public static final int titletext=0x7f050014;
+        public static final int venuetext=0x7f050016;
     }
     public static final class layout {
         public static final int film_layout=0x7f030000;
         public static final int filmbydateitem=0x7f030001;
         public static final int list_header=0x7f030002;
-        public static final int main=0x7f030003;
+        public static final int login_layout_portrait=0x7f030003;
+        public static final int main=0x7f030004;
+        public static final int myschedule_layout=0x7f030005;
+        public static final int myschedule_row=0x7f030006;
     }
     public static final class string {
         public static final int app_name=0x7f040001;
+        public static final int email_hint=0x7f040006;
         public static final int hello=0x7f040000;
+        public static final int login_instruction=0x7f040003;
+        public static final int login_prompt=0x7f040002;
+        public static final int password_hint=0x7f040007;
+        public static final int register_instruction=0x7f040004;
+        public static final int retrieve_button_label=0x7f040008;
+        public static final int save_button_label=0x7f040009;
+        public static final int scheduleraccount_info=0x7f040005;
+        public static final int signup_button_label=0x7f04000a;
     }
 }

@@ -4,6 +4,7 @@ import edu.sjsu.cinequest.android.AndroidPlatform;
 import edu.sjsu.cinequest.comm.ImageManager;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.QueryManager;
+import edu.sjsu.cinequest.comm.cinequestitem.User;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.TabHost;
 public class MainTab extends TabActivity {
 	private static QueryManager queryManager;
 	private static ImageManager imageManager;
+	private static User user;
 	
     public void onCreate(Bundle savedInstanceState) {
     	    	
@@ -20,6 +22,7 @@ public class MainTab extends TabActivity {
         Platform.setInstance(new AndroidPlatform(getApplicationContext()));        
         queryManager = new QueryManager();
         imageManager = new ImageManager();
+        setUser(new User());
         // TODO: Persistent application user
         // user = new User();
         // Remove this to turn on test mode
@@ -78,5 +81,19 @@ public class MainTab extends TabActivity {
     
     public static ImageManager getImageManager() {
 		return imageManager;
+	}
+
+	/**
+	 * @param user the user to set
+	 */
+	public static void setUser(User user) {
+		MainTab.user = user;
+	}
+
+	/**
+	 * @return the user
+	 */
+	public static User getUser() {
+		return user;
 	}
 }
