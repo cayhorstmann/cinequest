@@ -1,5 +1,6 @@
 package edu.sjsu.cinequest;
 
+import edu.sjsu.cinequest.comm.cinequestitem.User;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,17 +13,23 @@ import android.widget.EditText;
  */
 public class LoginActivity extends Activity {
 	
-	Button retrieveScheduleButton;
-	Button saveScheduleButton;
-	Button accountSignupButton;
-	String email;
-	String password;
+	private Button retrieveScheduleButton;
+	private Button saveScheduleButton;
+	private Button accountSignupButton;
+	private String email;
+	private String password;
+	
+	private User user;
+	
+	
 	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout_portrait);
+        
+        user = MainTab.getUser();
         
         //get the buttons from layout
         retrieveScheduleButton = (Button) this.findViewById(R.id.retrieveschedule_button);
@@ -71,6 +78,8 @@ public class LoginActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				email = emailBox.getText().toString();
+				password = passwordBox.getText().toString();
 				
 			}        	
         });
