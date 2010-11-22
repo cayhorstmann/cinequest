@@ -45,12 +45,13 @@ public final class R {
         public static final int list_header_title=0x7f05000b;
         public static final int login_email_box=0x7f05000c;
         public static final int login_password_box=0x7f05000d;
+        public static final int myschedulelist=0x7f050014;
         public static final int retrieveschedule_button=0x7f05000e;
         public static final int saveschedule_button=0x7f05000f;
         public static final int sync_button=0x7f050011;
-        public static final int timetext=0x7f050015;
-        public static final int titletext=0x7f050014;
-        public static final int venuetext=0x7f050016;
+        public static final int timetext=0x7f050016;
+        public static final int titletext=0x7f050015;
+        public static final int venuetext=0x7f050017;
     }
     public static final class layout {
         public static final int film_layout=0x7f030000;
