@@ -23,6 +23,7 @@ import java.util.Vector;
 
 import junit.framework.TestCase;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
+import edu.sjsu.cinequest.comm.cinequestitem.ProgramItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.javase.JavaSEPlatform;
 
@@ -37,21 +38,21 @@ public class QueryManagerTest extends TestCase
 
     // essentially tests getFilm() and getSchedulesFilm() as they're both used
     // to put
-    // Film together.
+    // Film together.	
     public void testFilmSchedules()
     {
         TestCallback callback = new TestCallback();
-        mgr.getFilm(1577, callback);
+        mgr.getFilm(2973, callback);
         assertTrue(callback.getResult() instanceof Film);
         Film film = (Film) callback.getResult();
         Vector sched = film.getSchedules();
-        assertTrue(((Schedule) sched.elementAt(0)).getStartTime().startsWith("2009-02-28 10:00"));
+        assertTrue(((Schedule) sched.elementAt(0)).getStartTime().startsWith("2010-02-25 21:30:00"));
     }
 
     public void testSchedulesDay()
     {
         TestCallback callback = new TestCallback();
-        mgr.getSchedulesDay("2008-02-28", callback);
+        mgr.getSchedulesDay("2010-03-02", callback);
         assertTrue(callback.getResult() instanceof Vector);
         Vector schedules = (Vector) callback.getResult();
         for (int i = 0; i < schedules.size(); i++)
@@ -63,58 +64,50 @@ public class QueryManagerTest extends TestCase
     public void testBeaufort()
     {
         TestCallback callback = new TestCallback();
-        mgr.getSchedulesDay("2009-03-07", callback);
+        mgr.getSchedulesDay("2010-03-02", callback);
         Vector schedules = (Vector) callback.getResult();
         
         boolean found = false;
         for (int i = 0; !found && i < schedules.size(); i++)
         {
             Schedule sched = (Schedule) schedules.elementAt(i);
-            if (sched.getItemId() == 500)
+            if (sched.getItemId() == 1441)
             {
-                assertEquals("The Last Lullaby", sched.getTitle());
+                assertEquals("Starring Maja (Prinsessa)", sched.getTitle());
                 found = true;
             }
         }
         assertTrue(found);
         callback = new TestCallback();
-        mgr.getSchedulesDay("2008-03-08", callback);
+        mgr.getSchedulesDay("2010-02-25", callback);
         schedules = (Vector) callback.getResult();
         found = false;
         for (int i = 0; !found && i < schedules.size(); i++)
         {
             Schedule sched = (Schedule) schedules.elementAt(i);
-            if (sched.getItemId() == 500)
+            if (sched.getItemId() == 1441)
             {
-                assertEquals("The Last Lullaby", sched.getTitle());
+                assertEquals("Starring Maja (Prinsessa)", sched.getTitle());
                 found = true;
             }
         }
-        assertFalse(found);
+        assertTrue(found);
     }
 
-    public void testMock2()
+    public void testAmpersand()
     {
         TestCallback callback = new TestCallback();
-        mgr.getFilm(1677, callback);
-        assertTrue(callback.getResult() instanceof Film);
-        Film f = (Film) callback.getResult();
-        assertTrue(f.getTitle().startsWith("Shorts 8: In Search for I"));
-    }
-
-    public void testIskasJourney()
-    {
-        TestCallback callback = new TestCallback();
-        mgr.getFilm(1687, callback);
-        Film film = (Film) callback.getResult();
-        String title = film.getTitle();
-        assertEquals('\u0026', title.charAt(16));
+        mgr.getProgramItem(1462, callback);
+        ProgramItem item = (ProgramItem) callback.getResult();
+        String title = item.getTitle();
+        System.out.println(title);
+        assertTrue(title.contains("&"));
     }
     
     public void testSpecialItem()
     {
         TestCallback callback = new TestCallback();
-        mgr.getSchedulesDay("2009-03-08", callback);
+        mgr.getSchedulesDay("2010-02-26", callback);
         Vector result = (Vector) callback.getResult();
         boolean found = false;
         for (int i = 0; !found && i < result.size(); i++)
@@ -131,7 +124,7 @@ public class QueryManagerTest extends TestCase
         for (int i = 0; !found && i < result.size(); i++)
         {
             Schedule sched = (Schedule) result.elementAt(i);
-            if (sched.getItemId() == 560)
+            if (sched.getItemId() == 1460)
             {
                 found = true;
                 assertTrue(sched.isMobileItem());

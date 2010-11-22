@@ -52,7 +52,7 @@ public class TestCallback implements Callback
         // Do nothing        
     }
     
-    public void failure(Throwable t)
+    public synchronized void failure(Throwable t)
     {
         t.printStackTrace();
         this.result = null;

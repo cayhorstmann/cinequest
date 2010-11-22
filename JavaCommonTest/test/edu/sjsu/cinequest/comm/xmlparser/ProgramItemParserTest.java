@@ -23,20 +23,25 @@ import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.cinequestitem.ProgramItem;
 import edu.sjsu.cinequest.javase.JavaSEPlatform;
 
-public class ProgramItemParserTest extends TestCase
-{
-    protected void setUp() throws Exception
-    {
-        Platform.setInstance(new JavaSEPlatform());
-    }
+public class ProgramItemParserTest extends TestCase {
+	protected void setUp() throws Exception {
+		Platform.setInstance(new JavaSEPlatform());
+	}
 
-    public void testProgramItem1406() throws Exception
-    {
-        ProgramItem result = ProgramItemParser
-                .parseProgramItem(
-                        "http://mobile.cinequest.org/mobileCQ.php?type=program_item&id=1406",
-                        null);
-        assertEquals("Anyone You Want", result.getTitle());
-        assertEquals(1406, result.getId());
-    }
+	public void testProgramItem1406() throws Exception {
+		ProgramItem result = ProgramItemParser
+				.parseProgramItem(
+						"http://mobile.cinequest.org/mobileCQ.php?type=program_item&id=1406",
+						null);
+		assertEquals("Anyone You Want", result.getTitle());
+		assertEquals(1406, result.getId());
+	}
+
+	public void testImage() throws Exception {
+		ProgramItem result = ProgramItemParser
+				.parseProgramItem(
+						"http://mobile.cinequest.org/mobileCQ.php?type=program_item&id=1437",
+						null);
+		assertNotNull(result.getImageURL());
+	}
 }
