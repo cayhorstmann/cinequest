@@ -14,6 +14,7 @@
 		<activity android:name=".DVDActivity" />
 		<activity android:name=".EventsActivity" />
 		<activity android:name=".FilmsActivity" />
+		<activity android:name=".FilmDetail" />
 		<activity android:name=".ForumsActivity" />
 		<activity android:name=".ScheduleActivity" />
 		<activity android:name=".LoginActivity" />
