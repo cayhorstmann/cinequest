@@ -41,10 +41,10 @@ public class FilmsActivity extends Activity {
         byDate_bt = (Button)findViewById(R.id.bydate_bt);
         byTitle_bt = (Button)findViewById(R.id.bytitle_bt);
         
-////        TextView textView = new TextView(this); 
-////        textView.setText("header"); 
-//        filmsList.addHeaderView(textView);
-//        
+        TextView textView = new TextView(this); 
+        textView.setText("header"); 
+        filmsList.addHeaderView(textView);
+        
         //Action Listener
         filmsList.setOnItemClickListener(new ListView.OnItemClickListener() {
 
@@ -95,24 +95,14 @@ public class FilmsActivity extends Activity {
         if(filterStatus == FILMBYDATE)
         {
         	Log.v("Cinequest", "updatefilter-date");
-        	MainTab.getQueryManager().getSchedules(new Callback() {
+        	MainTab.getQueryManager().getSchedules(new ProgressMonitorCallback(this,
+        			"Loading films", "Unable to load films") {
 				public void invoke(Object result) {
-					
+					super.invoke(result);
 					schedules = (Vector<Schedule>) result;
 					FilmsActivity.this.scheduleList(schedules);	
-				}
-
-				@Override
-				public void progress(Object value) {
-			
-				}
-
-				@Override
-				public void failure(Throwable t) {
-				
 				}        	
         	});
-
         	
         } else
         {

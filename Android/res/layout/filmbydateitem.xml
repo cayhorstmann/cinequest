@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_height="wrap_content" android:layout_width="fill_parent" android:orientation="horizontal">
-<!-- <ImageButton android:id="@+id/ImageButton01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/unchecked" android:background="@android:color/transparent" android:layout_marginTop="20px"></ImageButton>
---><LinearLayout android:id="@+id/LinearLayout01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginLeft="20px">
+  android:layout_height="wrap_content" android:layout_width="fill_parent" android:orientation="horizontal"
+  android:onClick="checkEntireRow">
+<ImageButton android:id="@+id/ImageButton01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/unchecked" android:background="@android:color/transparent" android:layout_marginTop="20px" android:layout_marginLeft="5px" android:onClick="checkHandler"></ImageButton>
+<LinearLayout android:id="@+id/LinearLayout01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginLeft="20px">
 <TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/ScheduleTitle" android:layout_marginTop="5px" android:ellipsize="end" android:singleLine="true"></TextView>
 <LinearLayout android:id="@+id/LinearLayout02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5px" android:layout_marginBottom="5px">
 <TextView android:text="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/ScheduleTime"></TextView>
 <TextView android:text="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="10px" android:id="@+id/ScheduleVenue"></TextView>
 </LinearLayout>
 </LinearLayout>
+
 
 </LinearLayout>
