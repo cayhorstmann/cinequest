@@ -1,6 +1,8 @@
 package edu.sjsu.cinequest;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
@@ -22,10 +24,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 public class ScheduleActivity extends Activity {
-	private ProgressDialog m_ProgressDialog = null; 
+	private static ProgressDialog m_ProgressDialog = null; 
     private ArrayList<Schedule> m_scheduleItems = null;
     private ScheduleAdapter m_adapter;
     private User user;
@@ -46,18 +49,18 @@ public class ScheduleActivity extends Activity {
         
         m_scheduleItems = new ArrayList<Schedule>();
         this.m_adapter = new ScheduleAdapter(this, R.layout.myschedule_row, new ArrayList<Schedule>());
-        list.setAdapter(this.m_adapter);
+        //list.setAdapter(this.m_adapter);
         
 
         user = MainTab.getUser();
         userSchedule = user.getSchedule();
         
-        if (!userSchedule.isSaved()) {
-			boolean answer = DialogPrompt.confirmScheduleDiscard(this);
-			if (answer == false)
-				return;
-		}
-        this.readSchedule();
+//        if (!userSchedule.isSaved()) {
+//			boolean answer = DialogPrompt.confirmScheduleDiscard(this);
+//			//if (answer == false)
+//				
+//		}
+        
                 
         //OnClickListener for syncbutton
         syncButton.setOnClickListener(new View.OnClickListener(){
@@ -81,32 +84,29 @@ public class ScheduleActivity extends Activity {
         	
         });
         
-        Thread thread =  new Thread(null, viewSchedule, "view_schedule");
-        thread.start();
+
+        //m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, "Please wait...", "Retrieving data ...", true);
+        showDateSeparatedSchedule();
         
-        m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this,    
-              "Please wait...", "Retrieving data ...", true);
+//        Thread thread =  new Thread(null, viewSchedule, "view_schedule");
+//        thread.start();
+        
         
     }
     
     /**
-     * A runnable that fetches the schedule
-     */
-    Runnable viewSchedule = new Runnable(){
-        @Override
-        public void run() {
-            populateSchedule();
-        }
-    };
-    
-    /**
-     * Read the schedule from the persistable storage on local system
+     * Read the schedule from the server
      */
     private void readSchedule(){
+    	Log.d("SchedulActivity", "Reading schedule from server");
     	user.readSchedule(DialogPrompt.showLoginPrompt(this),
 				new Callback() {
 					public void invoke(Object result) {
-						//setScheduleItems();
+						userSchedule = (UserSchedule) result;
+						Log.d("ScheduleActivity","Result returned. Length="+userSchedule.getScheduleItems().length);
+						showDateSeparatedSchedule();
+//						Thread thread =  new Thread(null, viewSchedule, "view_schedule");
+//				        thread.start();
 					}
 
 					public void failure(Throwable t) {						
@@ -124,37 +124,37 @@ public class ScheduleActivity extends Activity {
     }
     
     /**
+     * A runnable that fetches the schedule
+     */
+    Runnable viewSchedule = new Runnable(){
+        @Override
+        public void run() {
+        	Log.d("SchedulActivity", "Viewing Schedule");
+            //populateSchedule();
+        	showDateSeparatedSchedule();
+        }
+    };
+    
+    /**
      * Populates a temp schedule to display for developement purpose 
      */
     //TODO Implement the proper read schedule method which reads the schedule from server
     private void populateSchedule(){
         try{
         	m_scheduleItems = new ArrayList<Schedule>();
-        	Schedule s1 = new Schedule();
-        	s1.setTitle("House of Fools");
-        	s1.setStartTime("02:00PM");
-        	s1.setEndTime("03:43PM");
-        	s1.setVenue("C12");
-            
-            Schedule s2 = new Schedule();
-            s2.setTitle("Third World");
-        	s2.setStartTime("07:00PM");
-        	s2.setEndTime("08:25PM");
-        	s2.setVenue("REP");
-            
-            m_scheduleItems.add(s1);
-            m_scheduleItems.add(s2);
-               Thread.sleep(2000);
+        	
+        	Schedule[] scheduleItems = user.getSchedule().getScheduleItems();
+        	Log.i("Items", ""+ scheduleItems.length);
+        	for(int i = 0; i < scheduleItems.length; i++){
+        		m_scheduleItems.add(scheduleItems[i]);
+        	}
+        	
             Log.i("ARRAY", ""+ m_scheduleItems.size());
           } catch (Exception e) { 
             Log.e("BACKGROUND_PROC", e.getMessage());
           }
           runOnUiThread(returnRes);
       }
-    
-    private void getSchedule(Context c){
-    	
-    }
     
     private Runnable returnRes = new Runnable() {
 
@@ -170,9 +170,55 @@ public class ScheduleActivity extends Activity {
         }
       };
     
+      private void showDateSeparatedSchedule()
+      {  	
+      	Log.v("ScheduleActivity","enter showDateSeparatedSchedule");
+      	Schedule[] scheduleItems = userSchedule.getScheduleItems();
+      	if (scheduleItems.length == 0){
+      		Log.d("ScheduleActivity","scheduleItems.length = 0");
+      		return;
+      	}
+      	
+      	DateUtils du = new DateUtils();
+  		DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);
+  		
+      	String previousDay = scheduleItems[0].getStartTime().substring(0, 10); 
+      	ArrayList<Schedule> tempList = new ArrayList<Schedule>();
+      	tempList.add(scheduleItems[0]);
+      	
+      	// create our list and custom adapter  
+      	SeparatedListAdapter separatedListAdapter = new SeparatedListAdapter(this);
+      	
+      	
+      	for(int i=1;i<scheduleItems.length;i++)
+      	{
+      		String day = scheduleItems[i].getStartTime().substring(0, 10);
+      		
+      		if(!day.equals(previousDay))
+      		{	
+      			Log.d("ScheduleActivity","Adding adapter for date:"+day);
+      			String title = du.format(previousDay, DateUtils.DATE_DEFAULT);
+      			separatedListAdapter.addSection(title,	new ScheduleAdapter(this, R.layout.myschedule_row,tempList)	);
+      			tempList = new ArrayList<Schedule>();
+      			previousDay = day;      			
+      		}else
+      		{
+      			tempList.add(scheduleItems[i]);
+      			Log.v("ScheduleActivity","Adding Movie: "+scheduleItems[i].getTitle()+"- ON:"+scheduleItems[i].getStartTime());
+      		}
+      	}
+      	//Log.d("ScheduleActivity","Adding adapter for date:"+day);
+		String title = du.format(previousDay, DateUtils.DATE_DEFAULT);
+		separatedListAdapter.addSection(title,	new ScheduleAdapter(this, R.layout.myschedule_row,tempList)	);
+      	
+        ScheduleActivity.this.list.setAdapter(separatedListAdapter);
+      	//m_ProgressDialog.dismiss();
+      	Log.v("ScheduleActivity","exit showDateSeparatedSchedule");
+  	}  
+      
     
     /**
-     * Temporary adapter to show the list 
+     * Adapter to show the schedule items in list 
      */
     //TODO Implement code to use SeparatedListAdapter instead of this implementation 
     private class ScheduleAdapter extends ArrayAdapter<Schedule>{
@@ -191,7 +237,7 @@ public class ScheduleActivity extends Activity {
                     LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     v = vi.inflate(R.layout.myschedule_row, null);
                 }
-                Log.d("ScheduleAdapter", "getView() called with Position=" + position);
+                //Log.d("ScheduleAdapter", "getView() called with Position=" + position);
                 //Log.d("NewsAdapter", "newsResultList size = "+newsResultsList.size());
                 
                 Schedule result = scheduleList.get(position);
@@ -239,6 +285,7 @@ public class ScheduleActivity extends Activity {
 		    		                //context.startActivity(i);
 		    		                //Instead of startActivity(i), use startActivityForResult, so we could return back to this activity after login finishes
 		    		        		((Activity) context).startActivityForResult(i, 0);
+		    		        		
 		    		           }
 		    		       })
 		    		       .setNegativeButton("No", new DialogInterface.OnClickListener() {

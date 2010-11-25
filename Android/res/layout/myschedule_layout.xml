@@ -11,7 +11,7 @@
     android:layout_height="wrap_content"
     android:background="#A9A9A9"
     >
-    <!-- -->
+    
     
     <Button
 		android:id="@+id/sync_button"
@@ -48,7 +48,7 @@
 	/>    
     </RelativeLayout>
     
-    <TextView  
+    <!-- <TextView  
 	    android:layout_width="fill_parent" 
 	    android:layout_height="20dip" 
 	    android:text="Wednesday, Feb 24"
@@ -56,7 +56,7 @@
     	android:textColor="#FFF"
     	android:textSize="14dip"
     	android:background="#353F3E"
-    />
+    />-->
     
     <LinearLayout
 	  android:id="@+id/list_area"

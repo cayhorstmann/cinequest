@@ -146,7 +146,8 @@ public class AndroidPlatform extends Platform {
        }         
        out.close();
        byte[] response = connection.getBytes();
-       sp.parse(new ByteArrayInputStream(response), handler);
+       InputSource inputSource = new InputSource(new ByteArrayInputStream(response));
+       sp.parse(inputSource, handler);       
 	}
 
 	@Override
