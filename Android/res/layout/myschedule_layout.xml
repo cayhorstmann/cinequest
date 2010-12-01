@@ -67,7 +67,8 @@
 		  android:id="@+id/myschedulelist"
 		  android:layout_width="fill_parent"
 		  android:layout_height="wrap_content"
-		  android:background="@android:color/transparent"
+		  android:background="@android:color/transparent" 
+		  android:drawSelectorOnTop="true"
 	  />
   </LinearLayout>
         
