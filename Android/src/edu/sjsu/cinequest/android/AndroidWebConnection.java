@@ -15,6 +15,7 @@ public class AndroidWebConnection extends WebConnection {
     public AndroidWebConnection(String url) throws IOException
     {
         connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setUseCaches(false);
     }
     
     public OutputStream getOutputStream() throws IOException
