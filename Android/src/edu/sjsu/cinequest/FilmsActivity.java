@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +17,8 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -33,40 +36,15 @@ public class FilmsActivity extends Activity {
 	private int filterStatus;
 	private Button byDate_bt;
 	private Button byTitle_bt;
-	
+	private Button imageButton;
+	private Vector<Schedule> checkedSchedules = new Vector<Schedule>();
+	private String[] scheduleTitle;
     public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
         setContentView(R.layout.film_layout);
         filmsList=(ListView)findViewById(R.id.ListView01);
         byDate_bt = (Button)findViewById(R.id.bydate_bt);
         byTitle_bt = (Button)findViewById(R.id.bytitle_bt);
-        
-        TextView textView = new TextView(this); 
-        textView.setText("header"); 
-        filmsList.addHeaderView(textView);
-        
-        //Action Listener
-        filmsList.setOnItemClickListener(new ListView.OnItemClickListener() {
-
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				Log.v("Cinequest", "item clicked, id=" + arg3);
-				//Intent intent = new Intent();
-				switch(filterStatus){
-					case FILMBYDATE:
-						break;
-					case FILMBYTITLE:
-						break;
-				}
-			/*	
-				intent.setClass(mainScreen.this, MyWebView.class);
-				Bundle bundle=new Bundle();
-				bundle.putString("url", url);
-				intent.putExtras(bundle);
-				startActivity(intent);
-				*/
-			}
-        });
         
         byDate_bt.setOnClickListener(new OnClickListener(){
     		public void onClick(View v){
@@ -83,13 +61,10 @@ public class FilmsActivity extends Activity {
     		}
     	});
 
-    	
         filterStatus = FILMBYDATE;
-        this.updatefilter(filterStatus);
-      
-              
-         
+        this.updatefilter(filterStatus);   
     }
+   
     private void updatefilter(int filterStatus)
     {
         if(filterStatus == FILMBYDATE)
@@ -99,6 +74,7 @@ public class FilmsActivity extends Activity {
 				public void invoke(Object result) {
 					
 					schedules = (Vector<Schedule>) result;
+					scheduleTitle = new String[schedules.size()];
 					FilmsActivity.this.scheduleList(schedules);	
 				}
 
@@ -112,7 +88,6 @@ public class FilmsActivity extends Activity {
 				
 				}        	
         	});
-
         	
         } else
         {
@@ -148,7 +123,8 @@ public class FilmsActivity extends Activity {
     	DateUtils du = new DateUtils();
 		DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);
 		
-    	String previousDay = schedule.get(0).getStartTime().substring(0, 10); 
+    	String previousDay = schedule.get(0).getStartTime().substring(0, 10);
+    	scheduleTitle[0] = schedule.get(0).getTitle();
     	Vector<Schedule> tempVect = new Vector<Schedule>();
     	tempVect.addElement(schedule.get(0));
     	// create our list and custom adapter  
@@ -157,6 +133,7 @@ public class FilmsActivity extends Activity {
     	for(int i=1;i<schedule.size();i++)
     	{
     		String day = schedule.get(i).getStartTime().substring(0, 10);
+    		scheduleTitle[i] = schedule.get(i).getTitle();
     		if(!day.equals(previousDay))
     		{
     			String title = du.format(previousDay, DateUtils.DATE_DEFAULT);
@@ -193,4 +170,54 @@ public class FilmsActivity extends Activity {
 			}
 		return list;
 	}
+    
+    
+    public void checkHandler(View v)
+    {
+    	
+    	LinearLayout vwParentRow = (LinearLayout)v.getParent();	
+    	ImageButton btnChild = (ImageButton) vwParentRow.getChildAt(0);
+ //   	TextView txtView = (TextView)vwParentRow.getChildAt(1);
+ //   
+    			Log.i("Cinequest", "choose"+ vwParentRow.getChildAt(1).toString());
+    			LinearLayout vwChildRow = (LinearLayout)vwParentRow.getChildAt(1);	
+    			Log.i("Cinequest", "choose"+ vwChildRow.getChildAt(0).toString());
+    			TextView txtView = (TextView)vwChildRow.getChildAt(0);
+    			for(int i = 0; i < scheduleTitle.length ; i++)
+    				   if(scheduleTitle[i].equalsIgnoreCase((String) txtView.getText()))
+    				   {
+    					   
+    					   btnChild.setImageResource(R.drawable.checked);
+    					   
+    				   }
+    			
+    			//Log.i("Cinequest", "choose"+ vwChildRow.getChildAt(3).toString());
+    			
+    	//if(checkedSchedules.contains(object))
+    	
+    }
+    
+    public void checkEntireRow(View v)
+    {
+    	Log.i("Cinequest", "click row");
+    	LinearLayout vwParentRow = (LinearLayout)v;	
+    	Log.i("Cinequest", "choose"+ vwParentRow.getChildAt(1).toString());
+    			LinearLayout vwChildRow = (LinearLayout)vwParentRow.getChildAt(1);	
+    			TextView txtView = (TextView)vwChildRow.getChildAt(0);
+    			Log.i("Cinequest", "choose"+ txtView.getText().toString());
+    			
+    			for(int i = 0; i < scheduleTitle.length ; i++)
+    				   if(scheduleTitle[i].equalsIgnoreCase(txtView.getText().toString()))
+    				   {
+    					   Log.i("Cinequest", "choose"+ schedules.get(i).getId());
+    					   Intent intent = new Intent();
+    					   intent.setClass(FilmsActivity.this, FilmDetail.class);
+    					   Bundle bundle=new Bundle();
+    					   bundle.putInt("id", schedules.get(i).getItemId());
+    					   intent.putExtras(bundle);
+    					   FilmsActivity.this.startActivity(intent);
+    					   
+    				   }
+    			
+    }
 }
