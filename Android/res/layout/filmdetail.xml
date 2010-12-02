@@ -1,17 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView android:id="@+id/ScrollView01" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
 <LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="wrap_content"
-  android:layout_height="wrap_content" android:orientation="vertical">
+
+  android:orientation="vertical" android:layout_height="fill_parent" android:layout_width="fill_parent">
   
-<TextView android:text="@+id/TextView01" 
+<TextView  
 android:layout_height="wrap_content" 
 android:layout_width="fill_parent" 
-android:paddingTop="2dip" 
+android:paddingTop="5dip" 
 android:paddingLeft="5dip" 
 android:paddingBottom="2dip" 
 android:id="@+id/film_title" 
-style="?android:attr/listSeparatorTextViewStyle"></TextView>
-<ImageView android:layout_height="wrap_content" android:layout_gravity="center_horizontal" android:layout_width="fill_parent" android:id="@+id/ImageURL"></ImageView>
-<TextView android:text="@+id/TextView01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/film_description"></TextView>
+></TextView>
+<ImageView android:layout_height="wrap_content" 
+	android:layout_gravity="center_horizontal" 
+	android:layout_width="fill_parent" 
+	android:id="@+id/ImageURL"
+	android:paddingTop="5dip"></ImageView>
+<TextView android:layout_height="wrap_content" 
+		android:layout_width="fill_parent" 
+		android:id="@+id/film_description"
+		android:paddingTop="5dip"></TextView>
+<LinearLayout android:id="@+id/LinearLayout01" android:layout_width="fill_parent" android:layout_height="200dip"><ListView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/ScheduleList">
+</ListView></LinearLayout>
 </LinearLayout>
+
+
+</ScrollView>

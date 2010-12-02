@@ -163,9 +163,9 @@ public class FilmsActivity extends Activity {
 			Schedule s = schedule.get(i);
 			map = new HashMap<String, Object>();
 			map.put("title", s.getTitle());
-			map.put("time", du.format(s.getStartTime(), DateUtils.TIME_SHORT) + " - " + 
+			map.put("time", "Time: "+du.format(s.getStartTime(), DateUtils.TIME_SHORT) + " - " + 
 					du.format(s.getEndTime(), DateUtils.TIME_SHORT));
-			map.put("venue", s.getVenue());
+			map.put("venue", "Venue: "+s.getVenue());
 			list.add(i, map);
 			}
 		return list;
@@ -177,8 +177,6 @@ public class FilmsActivity extends Activity {
     	
     	LinearLayout vwParentRow = (LinearLayout)v.getParent();	
     	ImageButton btnChild = (ImageButton) vwParentRow.getChildAt(0);
- //   	TextView txtView = (TextView)vwParentRow.getChildAt(1);
- //   
     			Log.i("Cinequest", "choose"+ vwParentRow.getChildAt(1).toString());
     			LinearLayout vwChildRow = (LinearLayout)vwParentRow.getChildAt(1);	
     			Log.i("Cinequest", "choose"+ vwChildRow.getChildAt(0).toString());
@@ -186,15 +184,8 @@ public class FilmsActivity extends Activity {
     			for(int i = 0; i < scheduleTitle.length ; i++)
     				   if(scheduleTitle[i].equalsIgnoreCase((String) txtView.getText()))
     				   {
-    					   
-    					   btnChild.setImageResource(R.drawable.checked);
-    					   
+    					   btnChild.setImageResource(R.drawable.checked);   
     				   }
-    			
-    			//Log.i("Cinequest", "choose"+ vwChildRow.getChildAt(3).toString());
-    			
-    	//if(checkedSchedules.contains(object))
-    	
     }
     
     public void checkEntireRow(View v)
@@ -204,12 +195,9 @@ public class FilmsActivity extends Activity {
     	Log.i("Cinequest", "choose"+ vwParentRow.getChildAt(1).toString());
     			LinearLayout vwChildRow = (LinearLayout)vwParentRow.getChildAt(1);	
     			TextView txtView = (TextView)vwChildRow.getChildAt(0);
-    			Log.i("Cinequest", "choose"+ txtView.getText().toString());
-    			
     			for(int i = 0; i < scheduleTitle.length ; i++)
     				   if(scheduleTitle[i].equalsIgnoreCase(txtView.getText().toString()))
     				   {
-    					   Log.i("Cinequest", "choose"+ schedules.get(i).getId());
     					   Intent intent = new Intent();
     					   intent.setClass(FilmsActivity.this, FilmDetail.class);
     					   Bundle bundle=new Bundle();
