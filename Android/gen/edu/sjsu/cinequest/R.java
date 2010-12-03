@@ -80,10 +80,16 @@ public final class R {
         public static final int hello=0x7f040000;
         public static final int login_instruction=0x7f040003;
         public static final int login_prompt=0x7f040002;
+        public static final int myschedule_loaded_msg=0x7f04000d;
+        public static final int myschedule_loggedin_loaded_msg=0x7f04000f;
+        public static final int myschedule_loggedin_saved_msg=0x7f04000e;
+        public static final int myschedule_login_promptmsg=0x7f040010;
+        public static final int myschedule_saved_msg=0x7f04000c;
         public static final int password_hint=0x7f040007;
         public static final int register_instruction=0x7f040004;
         public static final int retrieve_button_label=0x7f040008;
         public static final int save_button_label=0x7f040009;
+        public static final int schedule_conflict_dialogmsg=0x7f04000b;
         public static final int scheduleraccount_info=0x7f040005;
         public static final int signup_button_label=0x7f04000a;
     }

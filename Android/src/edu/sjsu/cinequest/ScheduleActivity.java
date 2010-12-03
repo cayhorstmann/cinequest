@@ -45,7 +45,7 @@ public class ScheduleActivity extends Activity {
     private ArrayList<String> movieIDList;
     private static final int SUB_ACTIVITY_READ_SCHEDULE = 0;
     private static final int SUB_ACTIVITY_WRITE_SCHEDULE = 1;
-    private final int ConflictScheduleColor = 0;
+    private final int ConflictScheduleColor = Color.DKGRAY;
     
     
     /** Called when the activity is first created. */
@@ -155,7 +155,11 @@ public class ScheduleActivity extends Activity {
 								+"Length="+user.getSchedule().getScheduleItems().length);
 						showDateSeparatedSchedule();
 						refreshMovieIDList();
-						m_ProgressDialog.dismiss();						
+						m_ProgressDialog.dismiss();
+						//Display a confirmation notification
+						Toast.makeText(ScheduleActivity.this, 
+								getString(R.string.myschedule_saved_msg), 
+								Toast.LENGTH_LONG).show();
 					}
 
 					@Override
@@ -174,7 +178,7 @@ public class ScheduleActivity extends Activity {
 							
 							
 							DialogPrompt.showOptionDialog(ScheduleActivity.this, 
-									"Conflicting schedule on server!! Which one to overwrite?", 
+									getResources().getString(R.string.schedule_conflict_dialogmsg), 
 									"On Server", new DialogInterface.OnClickListener(){
 										public void onClick(DialogInterface dialog,	int which) {
 											String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
@@ -227,6 +231,10 @@ public class ScheduleActivity extends Activity {
 						showDateSeparatedSchedule();
 						refreshMovieIDList();
 						m_ProgressDialog.dismiss();
+						//Display a confirmation notification
+						Toast.makeText(ScheduleActivity.this, 
+								getString(R.string.myschedule_loaded_msg), 
+								Toast.LENGTH_LONG).show();
 					}
 
 					public void failure(Throwable t) {
@@ -380,7 +388,7 @@ public class ScheduleActivity extends Activity {
                         
                         //if this schedule item conflicts with another, highlight it in ConflictSchedule Colors
                         if (user.getSchedule().conflictsWith(result) && user.getSchedule().isScheduled(result)){
-                        	v.setBackgroundColor(Color.DKGRAY);                        	
+                        	v.setBackgroundColor(ConflictScheduleColor);                        	
                         }                        
                         
                         //Set title and time text
@@ -546,11 +554,13 @@ public class ScheduleActivity extends Activity {
             switch (requestCode) {
               case SUB_ACTIVITY_READ_SCHEDULE:
             	  Log.d("ScheduleActivity","User Logged In. Schedule Loaded from again.");
-            	  Toast.makeText(this, "Logged in. Schedual successfully retrieved!", Toast.LENGTH_LONG).show();
+            	  Toast.makeText(this, getString(R.string.myschedule_loggedin_loaded_msg), 
+            			  Toast.LENGTH_LONG).show();
             	  break;
               case SUB_ACTIVITY_WRITE_SCHEDULE:
             	  Log.d("ScheduleActivity","User Logged In. Schedule Written to server.");
-            	  Toast.makeText(this, "Logged in. Schedual successfully saved!", Toast.LENGTH_LONG).show();
+            	  Toast.makeText(this, getString(R.string.myschedule_loggedin_saved_msg), 
+            			  Toast.LENGTH_LONG).show();
             	  break;
             }
           }
