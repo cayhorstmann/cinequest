@@ -69,7 +69,7 @@ public class LoginActivity extends Activity {
 					}
 
 					public void failure(Throwable t) {
-						Log.e("LoginActivity", t.getMessage()+"-->"+t.getClass().toString());
+						Log.e("LoginActivity", t.getMessage()+ "-->" + t.getClass().toString());
 						ScheduleActivity.DialogPrompt.showDialog(LoginActivity.this, 
 								user.isLoggedIn() ? "Unable to load schedule" : "Login failed.");
 					}
