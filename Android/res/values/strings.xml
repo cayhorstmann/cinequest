@@ -11,4 +11,10 @@
 	<string name="retrieve_button_label">Retrieve Schedule</string>
 	<string name="save_button_label">Save Schedule</string>
 	<string name="signup_button_label">Sign-up for an account!</string>
+	<string name="schedule_conflict_dialogmsg">Conflicting schedule on server!! Choose one to overwrite?</string>
+	<string name="myschedule_saved_msg">Schedule Successfully Saved!</string>
+	<string name="myschedule_loaded_msg">Schedule Successfully Retrieved!</string>
+	<string name="myschedule_loggedin_saved_msg">Logged in. Schedule Successfully Saved!</string>
+	<string name="myschedule_loggedin_loaded_msg">Logged in. Schedule Successfully Retrieved!!</string>
+	<string name="myschedule_login_promptmsg">This feature needs you to be logged in. \nWould you like to sign in now?</string>
 </resources>
