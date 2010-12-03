@@ -573,11 +573,11 @@ public class ScheduleActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.scheduleactivity_menu, menu);
+      //  inflater.inflate(R.menu.scheduleactivity_menu, menu);
         
         return true;
     }
-    
+   /* 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -592,20 +592,21 @@ public class ScheduleActivity extends Activity {
 	        default:
 	            return super.onOptionsItemSelected(item);
         }
+        
     }
-    
+    */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
  
     	//if user is logged out, dont show LogOut option in menu, show Login instead. And vice-versa
-        if(!user.isLoggedIn()){
+   /*     if(!user.isLoggedIn()){
         	menu.findItem(R.id.menu_option_logout).setVisible(false);
         	menu.findItem(R.id.menu_option_login).setVisible(true);
         }else{
         	menu.findItem(R.id.menu_option_logout).setVisible(true);
         	menu.findItem(R.id.menu_option_login).setVisible(false);
         }
-
+*/
     	return super.onPrepareOptionsMenu(menu);
     }
 
