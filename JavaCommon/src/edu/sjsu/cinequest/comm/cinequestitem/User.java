@@ -41,6 +41,11 @@ public class User {
 	public UserSchedule getSchedule() {
 		return schedule;
 	}
+	
+	public void setSchedule(UserSchedule newUserSchedule) {
+	    this.schedule = newUserSchedule;
+	    persistSchedule();
+	}
 
 	public boolean isLoggedIn() {
 		return loggedIn;

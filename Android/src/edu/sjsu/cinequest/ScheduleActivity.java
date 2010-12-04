@@ -3,6 +3,7 @@ package edu.sjsu.cinequest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
@@ -171,7 +172,7 @@ public class ScheduleActivity extends Activity {
 					public void failure(Throwable t) {
 						m_ProgressDialog.dismiss();
 						if(t instanceof User.ConflictingScheduleException){
-							UserSchedule userSchOnServer =  ((User.ConflictingScheduleException) t).getConflictingSchedule();
+							final UserSchedule userSchOnServer =  ((User.ConflictingScheduleException) t).getConflictingSchedule();
 							
 							Log.e("ScheduleActivity","Schedule Conflict. Server lastChanged="+userSchOnServer.getLastChanged()+
 									" -- Local lastChanged="+user.getSchedule().getLastChanged());
@@ -179,7 +180,7 @@ public class ScheduleActivity extends Activity {
 							
 							DialogPrompt.showOptionDialog(ScheduleActivity.this, 
 									getResources().getString(R.string.schedule_conflict_dialogmsg), 
-									"On Server", new DialogInterface.OnClickListener(){
+									"Overwrite On Server", new DialogInterface.OnClickListener(){
 										public void onClick(DialogInterface dialog,	int which) {
 											String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 										    SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
@@ -193,15 +194,43 @@ public class ScheduleActivity extends Activity {
 										    //Try to write schedule to server again
 										    writeSchedule();
 										}
-									},
-									"On Device", new DialogInterface.OnClickListener(){
+									}
+									,"Overwrite On Device", new DialogInterface.OnClickListener(){
 										public void onClick(DialogInterface dialog,	int which) {
 											
-											//TODO set user.setSchedule()
+											//TODO Use either readSchedule() or user.setSchedule()
 											Log.d("ScheduleActivity","Keeping server schedule");
-											readSchedule();
+											//readSchedule();
+											user.setSchedule(userSchOnServer);
+											showDateSeparatedSchedule();
+											refreshMovieIDList();
+											Toast.makeText(ScheduleActivity.this, "Schedule overwritten on device!!", 
+													Toast.LENGTH_LONG).show();
 										}
-									});
+									},
+									"Merge", new DialogInterface.OnClickListener() {
+										
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+											Log.d("ScheduleActivity","Merging Schedule.");
+											mergeSchedules(userSchOnServer);
+											
+											//Now update the time stamp on local schedule before sync with server
+											String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+										    SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+										    Calendar cal = Calendar.getInstance();
+										    String nowTime = sdf.format(cal.getTime());
+										    
+										    user.getSchedule().setLastChanged(nowTime);
+											
+										    //Show the merged list to user
+											showDateSeparatedSchedule();
+											refreshMovieIDList();
+											Toast.makeText(ScheduleActivity.this, "Schedule has been Merged! Please Sync with server now!", 
+													Toast.LENGTH_LONG).show();
+										}
+									}
+								);
 						} else{		//if t is some other kind of exception
 							Log.e("ScheduleActivity",t.getMessage());
 							DialogPrompt.showDialog(ScheduleActivity.this, user.isLoggedIn() ? "Unable to Save schedule.\nTry Syncing again."
@@ -533,7 +562,37 @@ public class ScheduleActivity extends Activity {
     		alert.show();
     		
     		return result;
-    	}   	
+    	}
+    	
+    	/**
+    	 * Shows a confirmation dialog with YES/NO options
+    	 * @param context the context which is requesting the prompt
+    	 * @param message the message to display
+    	 * @param firstButton the text of first button
+    	 * @param firstListener the OnClickListener for first button
+    	 * @param secondButton the text of second button
+    	 * @param secondListener the OnClickListener for second button
+    	 * @param thirdButton the text of third button
+    	 * @param thirdListener the OnClickListener for third button
+    	 */
+    	public static boolean showOptionDialog(Context context, String message, 
+				String firstButton, DialogInterface.OnClickListener firstListener,
+				String secondButton, DialogInterface.OnClickListener secondListener,
+				String thirdButton, DialogInterface.OnClickListener thirdListener){
+    		
+    		final Boolean result = false;
+    		
+    		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    		builder.setMessage(message)
+    		       .setCancelable(false)
+    		       .setPositiveButton(firstButton, firstListener)
+    		       .setNegativeButton(secondButton, secondListener)
+    		       .setNeutralButton(thirdButton, thirdListener);
+    		AlertDialog alert = builder.create();
+    		alert.show();
+    		
+    		return result;    		
+    	}
     	
     }
     
@@ -573,11 +632,11 @@ public class ScheduleActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-      //  inflater.inflate(R.menu.scheduleactivity_menu, menu);
+        inflater.inflate(R.menu.scheduleactivity_menu, menu);
         
         return true;
     }
-   /* 
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -594,19 +653,20 @@ public class ScheduleActivity extends Activity {
         }
         
     }
-    */
+    
+    
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
  
     	//if user is logged out, dont show LogOut option in menu, show Login instead. And vice-versa
-   /*     if(!user.isLoggedIn()){
+        if(!user.isLoggedIn()){
         	menu.findItem(R.id.menu_option_logout).setVisible(false);
         	menu.findItem(R.id.menu_option_login).setVisible(true);
         }else{
         	menu.findItem(R.id.menu_option_logout).setVisible(true);
         	menu.findItem(R.id.menu_option_login).setVisible(false);
         }
-*/
+
     	return super.onPrepareOptionsMenu(menu);
     }
 
@@ -632,5 +692,19 @@ public class ScheduleActivity extends Activity {
 	   	Intent i = new Intent(context, LoginActivity.class);		    		                
         //Instead of startActivity(i), use startActivityForResult, so we could return back to this activity after login finishes
 		((Activity) context).startActivityForResult(i, subActivityCode);
+    }
+    
+    private void mergeSchedules(UserSchedule conflictingSchedule){
+    	ArrayList<Schedule> currentScheduleItems = new ArrayList<Schedule>(Arrays.asList(user.getSchedule().getScheduleItems()));    	
+    	Schedule[] conflictingScheduleItems = conflictingSchedule.getScheduleItems();
+    	
+    	for(int i = 0; i < conflictingScheduleItems.length; i++){
+    		if(currentScheduleItems.contains( conflictingScheduleItems[i]))
+    			continue;
+    		else{
+    			user.getSchedule().add( conflictingScheduleItems[i]);
+    			currentScheduleItems.add( conflictingScheduleItems[i] );
+    		}
+    	}
     }
 }
