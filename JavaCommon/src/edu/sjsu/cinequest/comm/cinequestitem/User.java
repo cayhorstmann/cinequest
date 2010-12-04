@@ -113,7 +113,7 @@ public class User {
 					queryManager.getSchedule(callback, email,
 							password);
 				}
-			});
+			}, new Runnable() { public void run() { uiCallback.invoke(null); }});
 		} else
 			queryManager.getSchedule(callback, email, password);
 	}
@@ -131,8 +131,10 @@ public class User {
 	 */
 	public void writeSchedule(final CredentialsPrompt credPrompt,
 			final Callback uiCallback, final QueryManager queryManager) {
-		if (schedule.isSaved())
+		if (schedule.isSaved()) {
+			uiCallback.invoke(null); // to pop off progress screen
 			return;
+		}
 		
 		final Callback callback = new Callback() {
 			public void invoke(Object result) {
@@ -176,15 +178,23 @@ public class User {
 							queryManager.saveSchedule(callback,
 									email, password, schedule);
 						}
-					});
+					},
+					new Runnable() { public void run() { uiCallback.invoke(null);}});
 		} else
 			queryManager.saveSchedule(callback, email, password,
 					schedule);
 	}
+	
+	public void syncSchedule(final CredentialsPrompt credPrompt,
+	    final Callback uiCallback, final QueryManager queryManager) {
+		
+		
+		
+	}
 
 	public static interface CredentialsPrompt {
 		void promptForCredentials(String command, String defaultUsername,
-				String defaultPassword, CredentialsAction action);
+				String defaultPassword, CredentialsAction action, Runnable cancelAction);
 	}
 
 	public static interface CredentialsAction {

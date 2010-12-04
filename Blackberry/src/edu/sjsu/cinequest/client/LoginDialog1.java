@@ -64,20 +64,29 @@ public class LoginDialog1 extends CinequestScreen {
 
 	public static User.CredentialsPrompt getLoginPrompt() {
 		return new User.CredentialsPrompt() {
+			private boolean canceled = true;
+			private LoginDialog1 dialog;
 			public void promptForCredentials(String command, String defaultUsername,
-					String defaultPassword, final User.CredentialsAction action) {
+					String defaultPassword, final User.CredentialsAction action,
+					final Runnable cancelAction) {
 				// Array of size 1 avoids error that Runnable uses potentially
 				// uninitialized variable
-				final LoginDialog1[] dialog = new LoginDialog1[1];
-				dialog[0] = new LoginDialog1(command,
+				
+				dialog = new LoginDialog1(command,
 						defaultUsername, defaultPassword, new Runnable() {
 							public void run() {
-								Ui.getUiEngine().popScreen(dialog[0]);
-								action.actWithCredentials(dialog[0].getEmail(),
-										dialog[0].getPassword());
+								canceled = false;
+								Ui.getUiEngine().popScreen(dialog);
+								action.actWithCredentials(dialog.getEmail(),
+										dialog.getPassword());
 							}
-						});
-				Ui.getUiEngine().pushScreen(dialog[0]);
+						}) {
+					public boolean onClose() {
+						if (canceled) cancelAction.run();
+						return true;
+					};
+				};
+				Ui.getUiEngine().pushScreen(dialog);
 			}
 		};
 	}

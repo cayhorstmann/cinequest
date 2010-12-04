@@ -69,7 +69,8 @@ public class DateUtils
      */
     public static void setFestivalDates(String[] fdates)
     {
-    	festivalDates = fdates;
+    	if (mode == NORMAL_MODE) 
+    		festivalDates = fdates;
     }
  
     public static void setDvdLink(String link)
