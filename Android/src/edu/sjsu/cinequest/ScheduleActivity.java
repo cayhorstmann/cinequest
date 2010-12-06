@@ -5,6 +5,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeMap;
+
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
@@ -295,7 +301,7 @@ public class ScheduleActivity extends Activity {
     /**
      * Display the schedule to the user with date being separator-header.
      */
-      private void showDateSeparatedSchedule()
+      private void showDateSeparatedSchedule_old()
       {  	
       	
       	Schedule[] scheduleItems = user.getSchedule().getScheduleItems();
@@ -355,6 +361,70 @@ public class ScheduleActivity extends Activity {
 		Log.d("ScheduleActivity","Movies in "+previousDay +"= "+moviesInADay);
 		
         ScheduleActivity.this.list.setAdapter(separatedListAdapter);      	      	
+  	}
+      
+     /**
+      * Display the schedule to the user with date being separator-header.
+      */
+      private void showDateSeparatedSchedule()
+      {
+      	
+      	Schedule[] scheduleItems = user.getSchedule().getScheduleItems();
+      	Log.v("ScheduleActivity","Showing the Schedule List on Screen. Total Schedule items = "
+      			+ scheduleItems.length);
+      	
+      	if (scheduleItems.length == 0){
+      		//Clear the items of previous list being displayed (if any)
+      		list.setAdapter(new SeparatedListAdapter(this));
+      		return;
+      	}
+      	
+      	// create our list and custom adapter  
+      	SeparatedListAdapter separatedListAdapter = new SeparatedListAdapter(this);
+      	
+      	Hashtable<String, ArrayList<Schedule>> movieScheduleTable = new Hashtable<String, ArrayList<Schedule>>();
+      	TreeMap<String, ArrayList<Schedule>> movieScheduleMap = new TreeMap<String, ArrayList<Schedule>>();
+  		
+  		for(int k = 0; k < scheduleItems.length; k++){
+  			Schedule tempSchedule = scheduleItems[k];
+  			String day = scheduleItems[k].getStartTime().substring(0, 10);
+  			
+  			if(movieScheduleTable.containsKey(day))
+  				movieScheduleTable.get(day).add(tempSchedule);
+  			else{
+  				movieScheduleTable.put(day, new ArrayList<Schedule>());
+  				movieScheduleTable.get(day).add(tempSchedule);
+  			}
+  			
+  			if(movieScheduleMap.containsKey(day))
+  				movieScheduleMap.get(day).add(tempSchedule);
+  			else{
+  				movieScheduleMap.put(day, new ArrayList<Schedule>());
+  				movieScheduleMap.get(day).add(tempSchedule);
+  			}
+  		}
+  			
+  		//Enumeration<String> days = movieScheduleTable.keys();
+  		Set<String> days = movieScheduleMap.keySet();
+  		Iterator<String> iter = days.iterator();
+  		String alldays = "";
+  		
+  		while (iter.hasNext()){ 
+  			//String day = days.nextElement().toString();
+  			String day = (String) iter.next();
+  			ArrayList<Schedule> tempList = movieScheduleMap.get(day);
+  			
+  			DateUtils du = new DateUtils();
+  			//DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);
+  			String header = du.format(day, DateUtils.DATE_DEFAULT);
+  			separatedListAdapter.addSection(header,	new ScheduleAdapter(this, 
+  											R.layout.myschedule_row,tempList)	);
+  			
+  			alldays += day + ", ";
+  		}
+  		
+  		Log.i("ScheduleActivity", "Days=" + alldays);
+  		ScheduleActivity.this.list.setAdapter(separatedListAdapter);    	
   	}
       
     /**
@@ -710,11 +780,12 @@ public class ScheduleActivity extends Activity {
 		((Activity) context).startActivityForResult(i, subActivityCode);
     }
     
-    
+    /**
+     * This method merges the changes made on the server and locally
+     * @param conflictingSchedule returned by the server
+     */
     //TODO remove bugs from this feature
     private void mergeSchedules(UserSchedule conflictingSchedule){
-//    	ArrayList<Schedule> currentScheduleItems = 
-//    		new ArrayList<Schedule>(Arrays.asList(user.getSchedule().getScheduleItems()));    	
     	
     	Schedule[] conflictingScheduleItems = conflictingSchedule.getScheduleItems();
     	ArrayList<Integer> conflictScheduleItemIds = new ArrayList<Integer>();
@@ -751,5 +822,6 @@ public class ScheduleActivity extends Activity {
     					"New length of schedule="+user.getSchedule().getScheduleItems().length);    			    			
     		}
     	}
-    }
+    }    
+    
 }
