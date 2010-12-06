@@ -23,6 +23,7 @@ import java.util.Vector;
 import net.rim.blackberry.api.browser.Browser;
 import net.rim.blackberry.api.browser.BrowserSession;
 import net.rim.device.api.i18n.DateFormat;
+import net.rim.device.api.ui.DrawStyle;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.MenuItem;
 import net.rim.device.api.ui.component.Dialog;
@@ -40,78 +41,34 @@ import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
  * items for that date. It uses the QueryManager to issue a query for all
  * schedules for a specified date.
  * 
- * @author Ian Macauley
+ * @author Cay Horstmann
  * 
  */
 public class UserScheduleScreen extends CinequestScreen {
 	private Object[] sched; // mixture of date titles and Schedule items
 	private UserScheduleListField slf;
-	private HorizontalFieldManager hfm1;
-	private HorizontalFieldManager hfm2;
-	private int currentCommandSet = 1;
+	private HorizontalFieldManager fm;	
+	private Field loggedInAs;
+	private Field separator;
+	private Field logout;
+	
+	private static final int LOGGED_OUT = 1;
+	private static final int LOGGED_IN = 2;
+	
+	private int currentCommandSet = LOGGED_OUT;
 
-	Runnable load = new Runnable() {
+	static Runnable sync = new Runnable() {
 		public void run() {
 			final User user = Main.getUser();
-			final UserSchedule schedule = user.getSchedule();
-			if (!schedule.isSaved()) {
-				int answer = Dialog.ask(Dialog.D_YES_NO,
-						"Really discard the current schedule?");
-				if (answer != Dialog.OK)
-					return;
-			}
-
-			user.readSchedule(LoginDialog1.getLoginPrompt(),
+			user.syncSchedule(LoginDialog1.getLoginAction(),
+					SyncDialog.getSyncAction(),
 					new ProgressMonitorCallback() {
 						public void invoke(Object result) {
 							super.invoke(result);
-							setScheduleItems();
 						}
-
-						public void failure(Throwable t) {
-							super.failure(t);
-							Dialog.alert(user.isLoggedIn() ? "Unable to load schedule"
-									: "Login failed.");
-						}
-					}, Main.getQueryManager());
-		}
-	};
-
-	static Runnable save = new Runnable() {
-		public void run() {
-			final User user = Main.getUser();
-			final Callback[] callback = new Callback[1];
-			callback[0] = new ProgressMonitorCallback() {
-				public void failure(Throwable t) {
-					super.failure(t);
-					if (t instanceof User.ConflictingScheduleException) {
-						int answer = Dialog
-								.ask(Dialog.D_YES_NO,
-										"Conflicting schedule on server. Really save this schedule?");
-						if (answer == Dialog.OK) {
-							user.getSchedule().setLastChanged(
-									((User.ConflictingScheduleException) t)
-											.getConflictingSchedule()
-											.getLastChanged());
-							user.writeSchedule(null, callback[0], Main.getQueryManager());
-						}
-					} else
-						Dialog.alert("Unable to save schedule.");
-				}
-			};
-			user.writeSchedule(LoginDialog1.getLoginPrompt(), callback[0], Main.getQueryManager());
-		}
-	};
-
-	/**
-	 * Construct a SchedulesScreen with a list of Schedule items from the
-	 * specified date.
-	 * 
-	 * @param date
-	 *            the date for these schedule items
-	 * @param sched
-	 *            the schedule items to display
-	 */
+					}, Main.getQueryManager());				
+		}};
+	
 	public UserScheduleScreen() {
 		addMenuItem(new MenuItem("Remove", 1, 100) {
 			public void run() {
@@ -123,40 +80,22 @@ public class UserScheduleScreen extends CinequestScreen {
 		addMenuItem(MenuItem.separator(10));
 
 		add(new LabelField("Cinequest Interactive Schedule"));
-		hfm1 = new HorizontalFieldManager();
-		hfm2 = new HorizontalFieldManager();
-
-		hfm1.add(new ClickableField("Log in", load));
-		hfm1.add(new LabelField(" | "));
-		hfm1.add(new ClickableField("Register", new Runnable() {
-			public void run() {
-				BrowserSession browserSession = Browser.getDefaultSession();
-				browserSession.displayPage(QueryManager.registrationURL);
-			}
-		}));
-		hfm1.add(new LabelField(" | "));
-		hfm1.add(new ClickableField("Save", save));
-
-		hfm2.add(new ClickableField("Save", save));
-		hfm2.add(new LabelField(" | "));
-		hfm2.add(new ClickableField("Revert", load));
-		hfm2.add(new LabelField(" | "));
-		hfm2.add(new ClickableField("Log out", new Runnable() {
+				
+		fm = new HorizontalFieldManager();
+		fm.add(new ClickableField("Sync", sync));	
+		add(fm);
+		separator = new LabelField(" | ");
+		logout = new ClickableField("Log out", new Runnable() {
 			public void run() {
 				User user = Main.getUser();
-				if (user.getSchedule().isSaved()) {
-					int answer = Dialog.ask(Dialog.D_YES_NO, "Save schedule?");
-					if (answer == Dialog.OK) {
-						save.run();
-					}
+				if (user.getSchedule().isSaved() 
+					|| Dialog.ask(Dialog.D_YES_NO, "Discard schedule?") == Dialog.YES) {
+						user.logout();
+						setScheduleItems();					
 				}
-				user.logout();
-				setScheduleItems();
 			}
-		}));
-
-		add(hfm1);
-		currentCommandSet = 1;
+		});
+		
 		slf = new UserScheduleListField(DateFormat.TIME_SHORT);
 		add(slf);
 		Main.getUser().getSchedule().setDirty(true);
@@ -167,16 +106,18 @@ public class UserScheduleScreen extends CinequestScreen {
 		if (currentCommandSet == set)
 			return;
 		currentCommandSet = set;
-		if (set == 1)
-			replaceFields(hfm2, hfm1);
-		else
-			replaceFields(hfm1, hfm2);
+		if (set == LOGGED_OUT) { 
+			fm.delete(separator); 
+			fm.delete(logout); 
+			fm.delete(loggedInAs); 
+		}		
+		else { 
+			loggedInAs = new LabelField(" from " + Main.getUser().getEmail(), DrawStyle.ELLIPSIS);
+			fm.add(separator);
+			fm.add(logout);
+			fm.add(loggedInAs);
+		}
 		updateDisplay();
-	}
-
-	private void replaceFields(Field f1, Field f2) {
-		delete(f1);
-		add(f2);
 	}
 
 	protected void onExposed() // so it reflects schedule changes when popping
@@ -187,7 +128,7 @@ public class UserScheduleScreen extends CinequestScreen {
 	}
 
 	public void setScheduleItems()
-	// called after remove, read and onExposed
+	// called after remove, onExposed
 	{
 		UserSchedule schedule = Main.getUser().getSchedule();
 		if (schedule.isDirty()) {
@@ -208,9 +149,9 @@ public class UserScheduleScreen extends CinequestScreen {
 			invalidate();
 		}
 		if (Main.getUser().isLoggedIn())
-			setCommandSet(2);
+			setCommandSet(LOGGED_IN);
 		else
-			setCommandSet(1);
+			setCommandSet(LOGGED_OUT);
 	}
 
 	/**

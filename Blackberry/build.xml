@@ -1,4 +1,6 @@
 <project name="Cinequest" default="build">
+   <property name="build.dir" value="build" />
+
    <target name="init">
       <property file="build.properties" />
       <fail unless="jde.home" message="Set jde.home in build.properties"/>
@@ -46,7 +48,7 @@
 				</fileset>
 			</src>
 
-			<jdp title="${app.title}" vendor="${app.vendor}" version="${app.version}.${build.time.num}" description="${app.desc}" icon="../images/appicon.png" />
+			<jdp title="${app.title} ${build.time}" vendor="${app.vendor}" version="${app.version}.${build.time.num}" description="${app.desc} (Build ${build.time})" icon="../images/appicon.png" />
 		</rapc>
 	</target>
 

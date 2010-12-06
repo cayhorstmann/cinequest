@@ -19,6 +19,10 @@ public class UserSchedule
    private boolean saved = true;
    private boolean dirty = true;
    
+   public boolean isEmpty() {
+	   return confirmed.isEmpty() && moved.isEmpty() && removed.isEmpty();
+   }
+   
    public boolean isDirty()
    {
       return dirty;
@@ -97,6 +101,36 @@ public class UserSchedule
          if (s.getId() != item.getId() && item.overlaps(s)) return true;
       }
       return false;      
+   }
+   
+   public boolean contains(Schedule s)
+   {
+      for (int i = 0; i < confirmed.size(); i++)
+      {
+         Schedule item = (Schedule) confirmed.elementAt(i);
+         if (s.getId() == item.getId()) return true;
+      }
+      for (int i = 0; i < moved.size(); i++)
+      {
+         Schedule item = (Schedule) moved.elementAt(i);
+         if (s.getId() == item.getId()) return true;
+      }
+      return false;      
+   }
+   
+   public void mergeWith(UserSchedule other) {
+      for (int i = 0; i < other.confirmed.size(); i++)
+      {
+         Schedule item = (Schedule) other.confirmed.elementAt(i);
+         if (!contains(item)) add(item, CONFIRMED);
+      }
+      for (int i = 0; i < other.moved.size(); i++)
+      {
+         Schedule item = (Schedule) other.moved.elementAt(i);
+         if (!contains(item)) add(item, MOVED);
+      }
+      if (other.lastChanged.compareTo(lastChanged) > 0)
+    	  lastChanged = other.lastChanged;
    }
    
    public Vector getItemsOn(String date)

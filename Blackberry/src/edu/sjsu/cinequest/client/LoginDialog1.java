@@ -18,7 +18,12 @@
  */
 package edu.sjsu.cinequest.client;
 
+import edu.sjsu.cinequest.comm.Action;
+import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
+import net.rim.blackberry.api.browser.Browser;
+import net.rim.blackberry.api.browser.BrowserSession;
 import net.rim.device.api.ui.Ui;
 import net.rim.device.api.ui.component.EmailAddressEditField;
 import net.rim.device.api.ui.component.LabelField;
@@ -38,19 +43,34 @@ public class LoginDialog1 extends CinequestScreen {
 			"Password: ", "");
 
 	public LoginDialog1(String command, String email, String password,
-			Runnable runnable) {
+			final Runnable okRunnable, final Runnable cancelRunnable) {
 		emailField.setText(email);
 		passwordField.setText(password);
 		add(emailField);
 		add(passwordField);
 		HorizontalFieldManager hfm = new HorizontalFieldManager();
-		hfm.add(new ClickableField(command, runnable));
+		hfm.add(new ClickableField(command, new Runnable() {
+			public void run() {
+				Ui.getUiEngine().popScreen(LoginDialog1.this);
+				okRunnable.run();
+			}
+		}));
 		hfm.add(new LabelField(" | "));
 		hfm.add(new ClickableField("Cancel", new Runnable() {
 			public void run() {
 				Ui.getUiEngine().popScreen(LoginDialog1.this);
+				cancelRunnable.run();
 			}
 		}));
+		hfm.add(new LabelField(" | "));
+		hfm.add(new ClickableField("Register", new Runnable() {
+			public void run() {
+				Ui.getUiEngine().popScreen(LoginDialog1.this);
+				BrowserSession browserSession = Browser.getDefaultSession();
+				browserSession.displayPage(QueryManager.registrationURL);
+			}
+		}));
+		
 		add(hfm);
 	}
 
@@ -62,30 +82,45 @@ public class LoginDialog1 extends CinequestScreen {
 		return passwordField.getText();
 	}
 
+	public boolean onClose() {
+		return false;
+	}	
+	
 	public static User.CredentialsPrompt getLoginPrompt() {
 		return new User.CredentialsPrompt() {
-			private boolean canceled = true;
 			private LoginDialog1 dialog;
 			public void promptForCredentials(String command, String defaultUsername,
-					String defaultPassword, final User.CredentialsAction action,
-					final Runnable cancelAction) {
-				// Array of size 1 avoids error that Runnable uses potentially
-				// uninitialized variable
-				
+					String defaultPassword, final User.CredentialsAction action) {
 				dialog = new LoginDialog1(command,
-						defaultUsername, defaultPassword, new Runnable() {
+						defaultUsername, defaultPassword, 
+						new Runnable() {
 							public void run() {
-								canceled = false;
-								Ui.getUiEngine().popScreen(dialog);
 								action.actWithCredentials(dialog.getEmail(),
 										dialog.getPassword());
+							}},
+						new Runnable() { public void run() {							
+							}});				
+				Ui.getUiEngine().pushScreen(dialog);
+			}
+		};
+	}
+
+	public static Action getLoginAction() {
+		return new Action() {
+			private LoginDialog1 dialog;
+			public void start(Object in, final Callback cb) {
+				User.Credentials creds = (User.Credentials) in;
+				dialog = new LoginDialog1("Log in",
+						creds.email, creds.password, new Runnable() {
+							public void run() {
+								cb.invoke(new User.Credentials(dialog.getEmail(),
+										dialog.getPassword()));
 							}
-						}) {
-					public boolean onClose() {
-						if (canceled) cancelAction.run();
-						return true;
-					};
-				};
+						}, new Runnable() {
+							public void run() {
+								cb.failure(new RuntimeException("Login canceled"));
+							}
+						});
 				Ui.getUiEngine().pushScreen(dialog);
 			}
 		};
