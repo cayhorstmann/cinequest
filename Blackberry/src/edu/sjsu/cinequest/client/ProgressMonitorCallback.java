@@ -102,6 +102,10 @@ public abstract class ProgressMonitorCallback implements Callback
 
     public void failure(final Throwable t)
     {
+    	// TODO: For some classes of Throwable, just pop the dialog?
+    	// E.g. user canceling login dialog
+    	count = 0;
+    	progressIndicator.invalidate();
         label.setText("Application Error");
         progressScreen.add(new SeparatorField());
         LabelField report = new LabelField(t.getMessage());

@@ -53,6 +53,7 @@ public class CinequestScreen extends MainScreen
      */
     public CinequestScreen()
     {
+    	
         final Bitmap img = Bitmap.getBitmapResource("cinequestlogo.png");
         final Bitmap img2 = Bitmap.getBitmapResource("cinequestlogo2.png");
         // We are making the title focusable so that on a 7xxx device the user
@@ -60,9 +61,8 @@ public class CinequestScreen extends MainScreen
         BitmapField bf = new BitmapField(img, BitmapField.LEFT
                 | Field.FOCUSABLE)
         {
-            /**
-             * Overridden paint method for showing the title graphic.
-             */
+             // Overridden paint method for showing the title graphic.
+             
             public void paint(Graphics graphics)
             {
                 super.paint(graphics);
@@ -89,11 +89,11 @@ public class CinequestScreen extends MainScreen
                 Ui.getUiEngine().pushScreen(new UserScheduleScreen());
             }
         });
-        if (!DateUtils.isOffSeason()) addMenuItem(new MenuItem("Save schedule", 22, 100)
+        if (!DateUtils.isOffSeason()) addMenuItem(new MenuItem("Sync schedule", 22, 100)
         {
             public void run()
             {
-                UserScheduleScreen.save.run();
+                UserScheduleScreen.sync.run();
             }
         });        
         if (!DateUtils.isOffSeason()) addMenuItem(new MenuItem("Festival", 23, 80)

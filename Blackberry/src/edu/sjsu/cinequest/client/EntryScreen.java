@@ -46,6 +46,7 @@ public class EntryScreen extends CinequestScreen
        Main.getQueryManager().getFestivalDates(new Callback() {
           public void failure(Throwable t)
           {
+        	  Platform.getInstance().log(t.getMessage());
           }
           public void progress(Object value)
           {
@@ -132,6 +133,7 @@ public class EntryScreen extends CinequestScreen
 
                     public void failure(Throwable t)
                     {
+                  	  	Platform.getInstance().log(t.getMessage());                    	
                     }
                 }, "creative.png", false /* persistent */);
         image.setBitmap(bitmap);

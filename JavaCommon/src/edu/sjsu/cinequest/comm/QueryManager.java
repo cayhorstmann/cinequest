@@ -82,12 +82,12 @@ public class QueryManager
         return makeQuery(type, "" + arg);
     }
 
-    public interface Callable
+    private interface Callable
     {
         Object run() throws Throwable;
     }
 
-    public void getWebData(final Callback callback, final Callable task)
+    private void getWebData(final Callback callback, final Callable task)
     {
         if (callback == null || task == null)
             throw new NullPointerException();

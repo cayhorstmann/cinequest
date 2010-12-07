@@ -3,7 +3,14 @@ package edu.sjsu.cinequest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeMap;
+
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
@@ -45,7 +52,7 @@ public class ScheduleActivity extends Activity {
     private ArrayList<String> movieIDList;
     private static final int SUB_ACTIVITY_READ_SCHEDULE = 0;
     private static final int SUB_ACTIVITY_WRITE_SCHEDULE = 1;
-    private final int ConflictScheduleColor = 0;
+    private final int ConflictScheduleColor = Color.DKGRAY;
     
     
     /** Called when the activity is first created. */
@@ -124,6 +131,17 @@ public class ScheduleActivity extends Activity {
 							Log.d("ScheduleActivity","Removing from schedule movie: "+s.getTitle()+"[ID="+s.getId()+"]");
 						}
 					}
+					
+					Schedule[] items = user.getSchedule().getScheduleItems();
+					String allMovies = "";
+					for(Schedule s : items){
+						if(s.getTitle().length() > 9)
+							allMovies += s.getTitle().substring(0,9) + ".. , ";
+						else 
+							allMovies += s.getTitle() + ", ";
+					}
+					Log.d("ScheduleActivity","Current Movies: "+allMovies);
+					
 					//show the schedule on screen
 					showDateSeparatedSchedule();
 				}
@@ -155,7 +173,11 @@ public class ScheduleActivity extends Activity {
 								+"Length="+user.getSchedule().getScheduleItems().length);
 						showDateSeparatedSchedule();
 						refreshMovieIDList();
-						m_ProgressDialog.dismiss();						
+						m_ProgressDialog.dismiss();
+						//Display a confirmation notification
+						Toast.makeText(ScheduleActivity.this, 
+								getString(R.string.myschedule_saved_msg), 
+								Toast.LENGTH_LONG).show();
 					}
 
 					@Override
@@ -167,15 +189,15 @@ public class ScheduleActivity extends Activity {
 					public void failure(Throwable t) {
 						m_ProgressDialog.dismiss();
 						if(t instanceof User.ConflictingScheduleException){
-							UserSchedule userSchOnServer =  ((User.ConflictingScheduleException) t).getConflictingSchedule();
+							final UserSchedule userSchOnServer =  ((User.ConflictingScheduleException) t).getConflictingSchedule();
 							
 							Log.e("ScheduleActivity","Schedule Conflict. Server lastChanged="+userSchOnServer.getLastChanged()+
 									" -- Local lastChanged="+user.getSchedule().getLastChanged());
 							
 							
 							DialogPrompt.showOptionDialog(ScheduleActivity.this, 
-									"Conflicting schedule on server!! Which one to overwrite?", 
-									"On Server", new DialogInterface.OnClickListener(){
+									getResources().getString(R.string.schedule_conflict_dialogmsg), 
+									"Keep Server", new DialogInterface.OnClickListener(){
 										public void onClick(DialogInterface dialog,	int which) {
 											String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 										    SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
@@ -189,15 +211,43 @@ public class ScheduleActivity extends Activity {
 										    //Try to write schedule to server again
 										    writeSchedule();
 										}
-									},
-									"On Device", new DialogInterface.OnClickListener(){
+									}
+									,"Keep Device", new DialogInterface.OnClickListener(){
 										public void onClick(DialogInterface dialog,	int which) {
 											
-											//TODO set user.setSchedule()
+											//TODO Use either readSchedule() or user.setSchedule()
 											Log.d("ScheduleActivity","Keeping server schedule");
-											readSchedule();
+											//readSchedule();
+											user.setSchedule(userSchOnServer);
+											showDateSeparatedSchedule();
+											refreshMovieIDList();
+											Toast.makeText(ScheduleActivity.this, "Schedule overwritten on device!!", 
+													Toast.LENGTH_LONG).show();
 										}
-									});
+									},
+									"Merge Both", new DialogInterface.OnClickListener() {
+										
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+											Log.d("ScheduleActivity","Merging Schedule.");
+											mergeSchedules(userSchOnServer);
+											
+											//Now update the time stamp on local schedule before sync with server
+											String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+										    SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+										    Calendar cal = Calendar.getInstance();
+										    String nowTime = sdf.format(cal.getTime());
+										    
+										    user.getSchedule().setLastChanged(nowTime);
+											
+										    //Show the merged list to user
+											showDateSeparatedSchedule();
+											refreshMovieIDList();
+											Toast.makeText(ScheduleActivity.this, "Schedule has been Merged! Please Sync with server now!", 
+													Toast.LENGTH_LONG).show();
+										}
+									}
+								);
 						} else{		//if t is some other kind of exception
 							Log.e("ScheduleActivity",t.getMessage());
 							DialogPrompt.showDialog(ScheduleActivity.this, user.isLoggedIn() ? "Unable to Save schedule.\nTry Syncing again."
@@ -227,6 +277,10 @@ public class ScheduleActivity extends Activity {
 						showDateSeparatedSchedule();
 						refreshMovieIDList();
 						m_ProgressDialog.dismiss();
+						//Display a confirmation notification
+						Toast.makeText(ScheduleActivity.this, 
+								getString(R.string.myschedule_loaded_msg), 
+								Toast.LENGTH_LONG).show();
 					}
 
 					public void failure(Throwable t) {
@@ -247,18 +301,21 @@ public class ScheduleActivity extends Activity {
     /**
      * Display the schedule to the user with date being separator-header.
      */
-      private void showDateSeparatedSchedule()
+      private void showDateSeparatedSchedule_old()
       {  	
-      	Log.v("ScheduleActivity","Showing the Schedule List on Screen");
+      	
       	Schedule[] scheduleItems = user.getSchedule().getScheduleItems();
+      	Log.v("ScheduleActivity","Showing the Schedule List on Screen. Total Schedule items = "
+      			+ scheduleItems.length);
       	
       	if (scheduleItems.length == 0){
-      		Log.d("ScheduleActivity","scheduleItems.length = 0");
-      		
       		//Clear the items of previous list being displayed (if any)
       		list.setAdapter(new SeparatedListAdapter(this));
       		return;
       	}
+      	
+      	// create our list and custom adapter  
+      	SeparatedListAdapter separatedListAdapter = new SeparatedListAdapter(this);
       	
       	DateUtils du = new DateUtils();
   		DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);  		
@@ -269,22 +326,23 @@ public class ScheduleActivity extends Activity {
       	ArrayList<Schedule> tempList = new ArrayList<Schedule>();
       	int i = 0;
       	
+      	String moviesInADay = "";		//for debugging purpose only
+      	
       	//Add the first item in tempList and then increment to next day
       	tempList.add(scheduleItems[i]);
+      	moviesInADay += scheduleItems[i].getTitle() + ", ";
       	i++;
-      	
-      	// create our list and custom adapter  
-      	SeparatedListAdapter separatedListAdapter = new SeparatedListAdapter(this);
       	
       	//go through each item and add it to proper section based on its date
       	for(; i < scheduleItems.length; i++)
       	{
-      		
-      		String day = scheduleItems[i].getStartTime().substring(0, 10);
+      		String day = scheduleItems[i].getStartTime().substring(0, 10);     		
       		
       		if(!day.equals(previousDay))
       		{	
-      			//Log.d("ScheduleActivity","Adding adapter for date:"+day);
+      			//Log.d("ScheduleActivity","Adding adapter for date:"+previousDay);
+      			Log.d("ScheduleActivity","Movies in "+previousDay +"= "+moviesInADay); moviesInADay = "";
+      			
       			String title = du.format(previousDay, DateUtils.DATE_DEFAULT);
       			separatedListAdapter.addSection(title,	new ScheduleAdapter(this, R.layout.myschedule_row,tempList)	);
       			tempList = new ArrayList<Schedule>();
@@ -292,16 +350,81 @@ public class ScheduleActivity extends Activity {
       			i--;	//go back one loop to include first item of next loop
       		}else
       		{
-      			tempList.add(scheduleItems[i]);      			      			
+      			tempList.add(scheduleItems[i]);
+      			moviesInADay += scheduleItems[i].getTitle() + ", ";
       			//Log.v("ScheduleActivity","Adding Movie: "+scheduleItems[i].getTitle()+"- ON:"+scheduleItems[i].getStartTime());
       		}
       	}
       	//Log.d("ScheduleActivity","Adding adapter for date:"+day);
 		String title = du.format(previousDay, DateUtils.DATE_DEFAULT);
 		separatedListAdapter.addSection(title,	new ScheduleAdapter(this, R.layout.myschedule_row,tempList)	);
+		Log.d("ScheduleActivity","Movies in "+previousDay +"= "+moviesInADay);
+		
+        ScheduleActivity.this.list.setAdapter(separatedListAdapter);      	      	
+  	}
+      
+     /**
+      * Display the schedule to the user with date being separator-header.
+      */
+      private void showDateSeparatedSchedule()
+      {
       	
-        ScheduleActivity.this.list.setAdapter(separatedListAdapter);
-      	      	
+      	Schedule[] scheduleItems = user.getSchedule().getScheduleItems();
+      	Log.v("ScheduleActivity","Showing the Schedule List on Screen. Total Schedule items = "
+      			+ scheduleItems.length);
+      	
+      	if (scheduleItems.length == 0){
+      		//Clear the items of previous list being displayed (if any)
+      		list.setAdapter(new SeparatedListAdapter(this));
+      		return;
+      	}
+      	
+      	// create our list and custom adapter  
+      	SeparatedListAdapter separatedListAdapter = new SeparatedListAdapter(this);
+      	
+      	Hashtable<String, ArrayList<Schedule>> movieScheduleTable = new Hashtable<String, ArrayList<Schedule>>();
+      	TreeMap<String, ArrayList<Schedule>> movieScheduleMap = new TreeMap<String, ArrayList<Schedule>>();
+  		
+  		for(int k = 0; k < scheduleItems.length; k++){
+  			Schedule tempSchedule = scheduleItems[k];
+  			String day = scheduleItems[k].getStartTime().substring(0, 10);
+  			
+  			if(movieScheduleTable.containsKey(day))
+  				movieScheduleTable.get(day).add(tempSchedule);
+  			else{
+  				movieScheduleTable.put(day, new ArrayList<Schedule>());
+  				movieScheduleTable.get(day).add(tempSchedule);
+  			}
+  			
+  			if(movieScheduleMap.containsKey(day))
+  				movieScheduleMap.get(day).add(tempSchedule);
+  			else{
+  				movieScheduleMap.put(day, new ArrayList<Schedule>());
+  				movieScheduleMap.get(day).add(tempSchedule);
+  			}
+  		}
+  			
+  		//Enumeration<String> days = movieScheduleTable.keys();
+  		Set<String> days = movieScheduleMap.keySet();
+  		Iterator<String> iter = days.iterator();
+  		String alldays = "";
+  		
+  		while (iter.hasNext()){ 
+  			//String day = days.nextElement().toString();
+  			String day = (String) iter.next();
+  			ArrayList<Schedule> tempList = movieScheduleMap.get(day);
+  			
+  			DateUtils du = new DateUtils();
+  			//DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);
+  			String header = du.format(day, DateUtils.DATE_DEFAULT);
+  			separatedListAdapter.addSection(header,	new ScheduleAdapter(this, 
+  											R.layout.myschedule_row,tempList)	);
+  			
+  			alldays += day + ", ";
+  		}
+  		
+  		Log.i("ScheduleActivity", "Days=" + alldays);
+  		ScheduleActivity.this.list.setAdapter(separatedListAdapter);    	
   	}
       
     /**
@@ -380,7 +503,7 @@ public class ScheduleActivity extends Activity {
                         
                         //if this schedule item conflicts with another, highlight it in ConflictSchedule Colors
                         if (user.getSchedule().conflictsWith(result) && user.getSchedule().isScheduled(result)){
-                        	v.setBackgroundColor(Color.DKGRAY);                        	
+                        	v.setBackgroundColor(ConflictScheduleColor);                        	
                         }                        
                         
                         //Set title and time text
@@ -525,7 +648,37 @@ public class ScheduleActivity extends Activity {
     		alert.show();
     		
     		return result;
-    	}   	
+    	}
+    	
+    	/**
+    	 * Shows a confirmation dialog with YES/NO options
+    	 * @param context the context which is requesting the prompt
+    	 * @param message the message to display
+    	 * @param firstButton the text of first button
+    	 * @param firstListener the OnClickListener for first button
+    	 * @param secondButton the text of second button
+    	 * @param secondListener the OnClickListener for second button
+    	 * @param thirdButton the text of third button
+    	 * @param thirdListener the OnClickListener for third button
+    	 */
+    	public static boolean showOptionDialog(Context context, String message, 
+				String firstButton, DialogInterface.OnClickListener firstListener,
+				String secondButton, DialogInterface.OnClickListener secondListener,
+				String thirdButton, DialogInterface.OnClickListener thirdListener){
+    		
+    		final Boolean result = false;
+    		
+    		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    		builder.setMessage(message)
+    		       .setCancelable(false)
+    		       .setPositiveButton(firstButton, firstListener)
+    		       .setNegativeButton(secondButton, secondListener)
+    		       .setNeutralButton(thirdButton, thirdListener);
+    		AlertDialog alert = builder.create();
+    		alert.show();
+    		
+    		return result;    		
+    	}
     	
     }
     
@@ -546,11 +699,13 @@ public class ScheduleActivity extends Activity {
             switch (requestCode) {
               case SUB_ACTIVITY_READ_SCHEDULE:
             	  Log.d("ScheduleActivity","User Logged In. Schedule Loaded from again.");
-            	  Toast.makeText(this, "Logged in. Schedual successfully retrieved!", Toast.LENGTH_LONG).show();
+            	  Toast.makeText(this, getString(R.string.myschedule_loggedin_loaded_msg), 
+            			  Toast.LENGTH_LONG).show();
             	  break;
               case SUB_ACTIVITY_WRITE_SCHEDULE:
             	  Log.d("ScheduleActivity","User Logged In. Schedule Written to server.");
-            	  Toast.makeText(this, "Logged in. Schedual successfully saved!", Toast.LENGTH_LONG).show();
+            	  Toast.makeText(this, getString(R.string.myschedule_loggedin_saved_msg), 
+            			  Toast.LENGTH_LONG).show();
             	  break;
             }
           }
@@ -582,7 +737,9 @@ public class ScheduleActivity extends Activity {
 	        default:
 	            return super.onOptionsItemSelected(item);
         }
+        
     }
+    
     
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -622,4 +779,49 @@ public class ScheduleActivity extends Activity {
         //Instead of startActivity(i), use startActivityForResult, so we could return back to this activity after login finishes
 		((Activity) context).startActivityForResult(i, subActivityCode);
     }
+    
+    /**
+     * This method merges the changes made on the server and locally
+     * @param conflictingSchedule returned by the server
+     */
+    //TODO remove bugs from this feature
+    private void mergeSchedules(UserSchedule conflictingSchedule){
+    	
+    	Schedule[] conflictingScheduleItems = conflictingSchedule.getScheduleItems();
+    	ArrayList<Integer> conflictScheduleItemIds = new ArrayList<Integer>();
+    	for( int i = 0; i < conflictingScheduleItems.length; i++){
+    		conflictScheduleItemIds.add( conflictingScheduleItems[i].getId() );
+    	}
+    	
+    	Schedule[] currScheduleItems = user.getSchedule().getScheduleItems();
+    	
+    	//Remove items from local schedule which were removed at server already
+    	for(int i = 0; i < currScheduleItems.length; i++){
+    		if( !conflictScheduleItemIds.contains( currScheduleItems[i].getId() )){
+    			Log.i("ScheduleActivity", "Mergeing: REMOVING -- " + currScheduleItems[i].getTitle());
+    			user.getSchedule().remove( currScheduleItems[i]);
+    		}
+    	}
+    	
+    	//refresh the values in currScheduleItems and generate a ArrayList from its item's id's
+    	currScheduleItems = user.getSchedule().getScheduleItems();
+    	ArrayList<Integer> currentScheduleItemIds = new ArrayList<Integer>();
+    	for( int i = 0; i < currScheduleItems.length; i++){
+    		currentScheduleItemIds.add( currScheduleItems[i].getId() );
+    	}
+    	
+    	//Add the items to local schedule which were added to schedule on server
+    	for(int i = 0; i < conflictingScheduleItems.length; i++){
+    		Schedule item = conflictingScheduleItems[i];
+    		if( !currentScheduleItemIds.contains( item.getId() ) ){
+    			
+    			//user.getSchedule().add( item, user.getSchedule().getType(item) );
+    			user.getSchedule().add( item );
+    			Log.i("ScheduleActivity", "Mergeing: ADDING -- " + item.getTitle()+
+    					"[TYPE="+ user.getSchedule().getType(item)+"]. " +
+    					"New length of schedule="+user.getSchedule().getScheduleItems().length);    			    			
+    		}
+    	}
+    }    
+    
 }

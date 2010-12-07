@@ -59,269 +59,231 @@ import edu.sjsu.cinequest.comm.WebConnection;
  * @author Cay Horstmann
  * 
  */
-public class RIMPlatform extends Platform
-{
-   private Cache xmlRawBytesCache;
-   private static final int MAX_IMAGE_WIDTH = 500;
-   private static final int MAX_IMAGE_HEIGHT = 300;
-   private static final int MAX_CACHE_SIZE = 50;
-   // echo -n "edu.sjsu.cinequest.rim.RIMPlatform" | md5sum | cut -c1-16
-   private static final long PERSISTENCE_KEY = 0xcfbd786faca62011L;
+public class RIMPlatform extends Platform {
+	private Cache xmlRawBytesCache;
+	private static final int MAX_IMAGE_WIDTH = 500;
+	private static final int MAX_IMAGE_HEIGHT = 300;
+	private static final int MAX_CACHE_SIZE = 50;
+	// echo -n "edu.sjsu.cinequest.rim.RIMPlatform" | md5sum | cut -c1-16
+	private static final long PERSISTENCE_KEY = 0xcfbd786faca62011L;
 
-   public RIMPlatform()
-   {
-      xmlRawBytesCache = (Cache) loadPersistentObject(PERSISTENCE_KEY);
-      if (xmlRawBytesCache == null)
-      {
-         xmlRawBytesCache = new Cache(MAX_CACHE_SIZE);
-      }
-   }
+	public RIMPlatform() {
+		xmlRawBytesCache = (Cache) loadPersistentObject(PERSISTENCE_KEY);
+		if (xmlRawBytesCache == null) {
+			xmlRawBytesCache = new Cache(MAX_CACHE_SIZE);
+		}
+	}
 
-   public WebConnection createWebConnection(String url) throws IOException
-   {
-      return new RIMWebConnection(url);
-   }
+	public WebConnection createWebConnection(String url) throws IOException {
+		return new RIMWebConnection(url);
+	}
 
-   public Object convert(byte[] byteImageData)
-   {
-      return EncodedImage.createEncodedImage(byteImageData, 0,
-            byteImageData.length).getBitmap();
-   }
+	public Object convert(byte[] byteImageData) {
+		return EncodedImage.createEncodedImage(byteImageData, 0,
+				byteImageData.length).getBitmap();
+	}
 
-   public Object getLocalImage(String imageName)
-   {
-      Bitmap bitmap = Bitmap.getBitmapResource(imageName);
-      if (bitmap.getWidth() <= MAX_IMAGE_WIDTH
-            && bitmap.getHeight() <= MAX_IMAGE_HEIGHT)
-         return bitmap;
-      else
-         return null;
-   }
+	public Object getLocalImage(String imageName) {
+		Bitmap bitmap = Bitmap.getBitmapResource(imageName);
+		if (bitmap.getWidth() <= MAX_IMAGE_WIDTH
+				&& bitmap.getHeight() <= MAX_IMAGE_HEIGHT)
+			return bitmap;
+		else
+			return null;
+	}
 
-   public void parse(final String url, DefaultHandler handler, Callback callback)
-         throws SAXException, IOException
-   {
-      progress(callback, "Connecting...");
-      SAXParser parser = null;
-      InputSource inputSource = null;
-      WebConnection connection = null;
-      try
-      {
-         parser = factory.newSAXParser();
-      } 
-      catch (ParserConfigurationException e)
-      {
-         throw new SAXException(e.toString());
-      }
-      try
-      {
-         try
-         {         
-            connection = createWebConnection(url);
-            byte[] xmlSource = (byte[]) connection.getBytes();
-            // Store the xml source
-            xmlRawBytesCache.put(url, xmlSource);
-            inputSource = new InputSource(new InputStreamReader(
-                  new ByteArrayInputStream(xmlSource), "ISO-8859-1"));
-            parser.parse(inputSource, handler);
-         }
-         // Reading fails. Try to get XML from cache
-         catch (IOException e)
-         {
-            byte[] bytes = (byte[]) xmlRawBytesCache.get(url);
-            // XML exists in cache
-            if (bytes != null)
-            {
-               inputSource = new InputSource(new InputStreamReader(
-                  new ByteArrayInputStream(bytes), "ISO-8859-1"));
-               parser.parse(inputSource, handler);
-               return;
-            } else
-               // XML not found on cache.
-            throw e;
-         }
-      }
-      finally
-      {
-         if (connection != null) connection.close();
-      }
-   }
+	public void parse(final String url, DefaultHandler handler,
+			Callback callback) throws SAXException, IOException {
+		progress(callback, "Connecting...");
+		SAXParser parser = null;
+		InputSource inputSource = null;
+		WebConnection connection = null;
+		try {
+			parser = factory.newSAXParser();
+		} catch (ParserConfigurationException e) {
+			throw new SAXException(e.toString());
+		}
+		try {
+			try {
+				connection = createWebConnection(url);
+				byte[] xmlSource = (byte[]) connection.getBytes();
+				// Store the xml source
+				xmlRawBytesCache.put(url, xmlSource);
+				inputSource = new InputSource(new InputStreamReader(
+						new ByteArrayInputStream(xmlSource), "ISO-8859-1"));
+				parser.parse(inputSource, handler);
+			}
+			// Reading fails. Try to get XML from cache
+			catch (IOException e) {
+				byte[] bytes = (byte[]) xmlRawBytesCache.get(url);
+				// XML exists in cache
+				if (bytes != null) {
+					inputSource = new InputSource(new InputStreamReader(
+							new ByteArrayInputStream(bytes), "ISO-8859-1"));
+					parser.parse(inputSource, handler);
+					return;
+				} else
+					// XML not found on cache.
+					throw e;
+			}
+		} finally {
+			if (connection != null)
+				connection.close();
+		}
+	}
 
-   public void parse(final String url, Hashtable postData,
-         DefaultHandler handler, Callback callback) throws SAXException,
-         IOException
-   {
-      progress(callback, "Connecting...");
-      SAXParser parser = null;
-      try
-      {
-         parser = factory.newSAXParser();
-      } catch (ParserConfigurationException e)
-      {
-         throw new SAXException(e.toString());
-      }
-      WebConnection connection = createWebConnection(url);
-      try
-      {
-         URLEncodedPostData encodedPostData = new URLEncodedPostData(null, null);
-         Enumeration keys = postData.keys();
-         while (keys.hasMoreElements())
-         {
-            String key = keys.nextElement().toString();
-            String value = postData.get(key).toString();
-            encodedPostData.append(key, value);
-         }
-         OutputStream out = connection.getOutputStream();
-         byte[] request = encodedPostData.getBytes();
-         log(new String(request));
-         out.write(new String(request).getBytes());
-         byte[] response = connection.getBytes();
-         log(new String(response));
-         InputSource inputSource = new InputSource(new ByteArrayInputStream(
-               response));
-         parser.parse(inputSource, handler);
-      } finally
-      {
-         connection.close();
-      }
-   }
+	public void parse(final String url, Hashtable postData,
+			DefaultHandler handler, Callback callback) throws SAXException,
+			IOException {
+		progress(callback, "Connecting...");
+		SAXParser parser = null;
+		try {
+			parser = factory.newSAXParser();
+		} catch (ParserConfigurationException e) {
+			throw new SAXException(e.toString());
+		}
+		WebConnection connection = createWebConnection(url);
+		try {
+			URLEncodedPostData encodedPostData = new URLEncodedPostData(null,
+					null);
+			Enumeration keys = postData.keys();
+			while (keys.hasMoreElements()) {
+				String key = keys.nextElement().toString();
+				String value = postData.get(key).toString();
+				encodedPostData.append(key, value);
+			}
+			OutputStream out = connection.getOutputStream();
+			byte[] request = encodedPostData.getBytes();
+			log(new String(request));
+			out.write(new String(request).getBytes());
+			byte[] response = connection.getBytes();
+			log(new String(response));
+			InputSource inputSource = new InputSource(new ByteArrayInputStream(
+					response));
+			parser.parse(inputSource, handler);
+		} finally {
+			connection.close();
+		}
+	}
 
-   public void invoke(final Callback callback, final Object arg)
-   {
-      if (callback == null)
-         return;
-      UiApplication.getUiApplication().invokeLater(new Runnable()
-      {
-         public void run()
-         {
-            try
-            {
-               callback.invoke(arg);
-            } catch (Throwable t)
-            {
-               Ui.getUiEngine().pushScreen(new ErrorScreen(t.getMessage()));
-            }
-         }
-      });
-   }
+	public void invoke(final Callback callback, final Object arg) {
+		if (callback == null)
+			return;
+		UiApplication.getUiApplication().invokeLater(new Runnable() {
+			public void run() {
+				try {
+					callback.invoke(arg);
+				} catch (Throwable t) {
+					Ui.getUiEngine()
+							.pushScreen(new ErrorScreen(t.getMessage()));
+				}
+			}
+		});
+	}
 
-   public void failure(final Callback callback, final Throwable arg)
-   {
-      if (callback == null)
-         return;
-      UiApplication.getUiApplication().invokeLater(new Runnable()
-      {
-         public void run()
-         {
-            callback.failure(arg);
-         }
-      });
-   }
+	public void failure(final Callback callback, final Throwable arg) {
+		if (callback == null)
+			return;
+		UiApplication.getUiApplication().invokeLater(new Runnable() {
+			public void run() {
+				callback.failure(arg);
+			}
+		});
+	}
 
-   public void progress(final Callback callback, final Object arg)
-   {
-      if (callback == null)
-         return;
-      UiApplication.getUiApplication().invokeLater(new Runnable()
-      {
-         public void run()
-         {
-            callback.progress(arg);
-         }
-      });
-   }
+	public void progress(final Callback callback, final Object arg) {
+		if (callback == null)
+			return;
+		UiApplication.getUiApplication().invokeLater(new Runnable() {
+			public void run() {
+				callback.progress(arg);
+			}
+		});
+	}
 
-   public Object loadPersistentObject(long key)
-   {
-      PersistentObject pers = PersistentStore.getPersistentObject(key);
-      if (pers == null)
-         return null;
-      return pers.getContents();
-   }
+	public Object loadPersistentObject(long key) {
+		try {
+			PersistentObject pers = PersistentStore.getPersistentObject(key);
+			if (pers == null)
+				return null;
+			return pers.getContents();
+		} catch (Throwable t) {
+			log(t.getMessage());
+			return null;
+		}
+	}
 
-   public void storePersistentObject(long key, Object object)
-   {
-      PersistentObject pers = PersistentStore.getPersistentObject(key);
-      pers.setContents(object);
-      pers.commit();
-   }
+	public void storePersistentObject(long key, Object object) {
+		PersistentObject pers = PersistentStore.getPersistentObject(key);
+		pers.setContents(object);
+		pers.commit();
+	}
 
-   public MessageDigest getMessageDigestInstance(String name)
-   {
-      if (name.equals("SHA-1"))
-         return new MessageDigest()
-         {
-            private SHA1Digest delegate = new SHA1Digest();
+	public MessageDigest getMessageDigestInstance(String name) {
+		if (name.equals("SHA-1"))
+			return new MessageDigest() {
+				private SHA1Digest delegate = new SHA1Digest();
 
-            public void update(byte[] input)
-            {
-               delegate.update(input);
-            }
+				public void update(byte[] input) {
+					delegate.update(input);
+				}
 
-            public byte[] digest()
-            {
-               return delegate.getDigest();
-            }
-         };
+				public byte[] digest() {
+					return delegate.getDigest();
+				}
+			};
 
-      return null;
-   }
+		return null;
+	}
 
-   public Object crypt(Object obj, boolean decrypt)
-   {
-      if (decrypt)
-      {
-         try
-         {
-            return PersistentContent.decodeString(obj);
-         } catch (IllegalStateException e)
-         {
-            // unable to decode data; the device must be locked.
-            return null;
-         }
-      } else
-      {
-         if (obj instanceof String)
-            return PersistentContent.encode((String) obj);
-         else if (obj instanceof byte[])
-            return PersistentContent.encode((byte[]) obj);
-         else
-            return null;
-      }
-   }
+	public Object crypt(Object obj, boolean decrypt) {
+		if (decrypt) {
+			try {
+				return PersistentContent.decodeString(obj);
+			} catch (IllegalStateException e) {
+				// unable to decode data; the device must be locked.
+				return null;
+			}
+		} else {
+			if (obj instanceof String)
+				return PersistentContent.encode((String) obj);
+			else if (obj instanceof byte[])
+				return PersistentContent.encode((byte[]) obj);
+			else
+				return null;
+		}
+	}
 
-   public void log(String message)
-   {
-      // key produced by: echo -n "edu.sjsu.cinequest.client.Main" | md5sum | cut
-      // -c1-16
-      long APP_ID = 0xe2a3a144c78e37aaL;
-      if (!loggerRegistered)
-      {
-         EventLogger.register(APP_ID, "Cinequest", EventLogger.VIEWER_STRING);
-         loggerRegistered = true;
-      }
-      EventLogger.logEvent(APP_ID, message.getBytes());
-   }
+	public void log(String message) {
+		// key produced by: echo -n "edu.sjsu.cinequest.client.Main" | md5sum |
+		// cut
+		// -c1-16
+		long APP_ID = 0xe2a3a144c78e37aaL;
+		if (!loggerRegistered) {
+			EventLogger
+					.register(APP_ID, "Cinequest", EventLogger.VIEWER_STRING);
+			loggerRegistered = true;
+		}
+		EventLogger.logEvent(APP_ID, message.getBytes());
+	}
 
-   public Vector sort(Vector vec, final Platform.Comparator comp)
-   {
-      SimpleSortingVector svec = new SimpleSortingVector();
-      svec.setSortComparator(new net.rim.device.api.util.Comparator() {
-    	public int compare(Object obj1, Object obj2) {
-    		return comp.compare(obj1, obj2);
-    	}  
-      });
-      for (int i = 0; i < vec.size(); i++)
-         svec.add(vec.elementAt(i));
-      svec.reSort();
-      return svec.getVector();
-   }
+	public Vector sort(Vector vec, final Platform.Comparator comp) {
+		SimpleSortingVector svec = new SimpleSortingVector();
+		svec.setSortComparator(new net.rim.device.api.util.Comparator() {
+			public int compare(Object obj1, Object obj2) {
+				return comp.compare(obj1, obj2);
+			}
+		});
+		for (int i = 0; i < vec.size(); i++)
+			svec.add(vec.elementAt(i));
+		svec.reSort();
+		return svec.getVector();
+	}
 
-   public void close()
-   {
-      storePersistentObject(PERSISTENCE_KEY, xmlRawBytesCache);
-   }
+	public void close() {
+		storePersistentObject(PERSISTENCE_KEY, xmlRawBytesCache);
+	}
 
-   private static SAXParserFactory factory = SAXParserFactory.newInstance();
-   private boolean loggerRegistered;
+	private static SAXParserFactory factory = SAXParserFactory.newInstance();
+	private boolean loggerRegistered;
 }
