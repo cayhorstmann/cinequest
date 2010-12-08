@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +17,8 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -31,6 +34,8 @@ public class EventsActivity extends Activity {
 	private static final int FILMBYDATE = 0;
 	private static final int FILMBYTITLE = 1;
 	private int filterStatus;
+	private String[] scheduleTitle;
+	private boolean[] checked;
 	//private Button byDate_bt;
 	//private Button byTitle_bt;
 	
@@ -85,6 +90,8 @@ public class EventsActivity extends Activity {
 
 				public void invoke(Object result) {
 					schedules = (Vector<Schedule>) result;
+					scheduleTitle = new String[schedules.size()];
+					checked = new boolean[schedules.size()];
 					EventsActivity.this.scheduleList(schedules);	
 				}
 
@@ -132,7 +139,56 @@ public class EventsActivity extends Activity {
         }
 
     }
+    public void checkEntireRow(View v)
+    {
+    	Log.i("Cinequest", "click row");
+    	LinearLayout vwParentRow = (LinearLayout)v;	
+    	Log.i("Cinequest", "choose"+ vwParentRow.getChildAt(1).toString());
+    			LinearLayout vwChildRow = (LinearLayout)vwParentRow.getChildAt(1);	
+    			TextView txtView = (TextView)vwChildRow.getChildAt(0);
+    			Log.i("Cinequest", "choose"+ txtView.getText().toString());
+    			
+    			for(int i = 0; i < scheduleTitle.length ; i++)
+    				   if(scheduleTitle[i].equalsIgnoreCase(txtView.getText().toString()))
+    				   {
+    					   setContentView(R.layout.dvdinfo_layout);
+    					   
+    				   }
+    			
+    }
 
+    public void checkHandler(View v)
+    {
+    	
+    	LinearLayout vwParentRow = (LinearLayout)v.getParent();	
+    	ImageButton btnChild = (ImageButton) vwParentRow.getChildAt(0);
+ //   	TextView txtView = (TextView)vwParentRow.getChildAt(1);
+ //   
+    			Log.i("Cinequest", "choose"+ vwParentRow.getChildAt(1).toString());
+    			LinearLayout vwChildRow = (LinearLayout)vwParentRow.getChildAt(1);	
+    			Log.i("Cinequest", "choose"+ vwChildRow.getChildAt(0).toString());
+    			TextView txtView = (TextView)vwChildRow.getChildAt(0);
+    			for(int i = 0; i < scheduleTitle.length ; i++)
+    				   if(scheduleTitle[i].equalsIgnoreCase((String) txtView.getText()))
+    				   {
+    					   if(checked[i])
+    					   {
+    						   btnChild.setImageResource(R.drawable.unchecked);
+    						   checked[i] = false;
+    					   }
+    					   else
+    					   {
+    						   btnChild.setImageResource(R.drawable.checked);
+    						   checked[i] = true;
+    					   }
+    					   
+    				   }
+    			
+    			//Log.i("Cinequest", "choose"+ vwChildRow.getChildAt(3).toString());
+    			
+    	//if(checkedSchedules.contains(object))
+    	
+    }
     private void filmList(Vector<Filmlet> film)
     {
     	Log.i("block","priintTest");
@@ -155,6 +211,8 @@ public class EventsActivity extends Activity {
 		DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);
 		
     	String previousDay = schedule.get(0).getStartTime().substring(0, 10); 
+    	scheduleTitle[0] = schedule.get(0).getTitle();
+    	checked[0] = false;
     	Vector<Schedule> tempVect = new Vector<Schedule>();
     	tempVect.addElement(schedule.get(0));
     	// create our list and custom adapter  
@@ -164,7 +222,9 @@ public class EventsActivity extends Activity {
     	for(int i=1;i<schedule.size();i++)
     	{
     		
+    		checked[i] = false;
     		String day = schedule.get(i).getStartTime().substring(0, 10);
+    		scheduleTitle[i] = schedule.get(i).getTitle();
     		Log.i("Testing", day);
     		if(!day.equals(previousDay))
     		{

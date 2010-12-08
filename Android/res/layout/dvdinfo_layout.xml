@@ -37,6 +37,109 @@
     />
     
     </RelativeLayout>
-<TextView android:text="" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/DVDTitle" android:layout_marginTop="50px" android:singleLine="true"></TextView>
-  
+    
+<ScrollView  android:id="@+id/scView" 
+android:layout_height="fill_parent" 
+android:layout_width="fill_parent"  
+android:layout_y = "50px"
+android:scrollbars="vertical" >
+<RelativeLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/quote_table"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+>
+        
+<TextView android:text="" 
+android:layout_width="fill_parent" 
+android:layout_height="wrap_content" 
+android:layout_centerHorizontal="true" 
+android:id="@+id/DVDTitle" 
+android:layout_marginTop="0px" 
+android:singleLine="true"></TextView>
+<ImageView
+android:id="@+id/ImageTitle"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:layout_marginTop="25px"
+></ImageView>
+<TextView android:text="" 
+android:layout_width="wrap_content" 
+android:layout_height="wrap_content" 
+android:layout_below = "@+id/ImageTitle"
+android:id="@+id/SummaryTitle" 
+android:layout_marginTop="10px" 
+></TextView>
+<TextView android:text="" 
+android:layout_width="wrap_content" 
+android:layout_height="wrap_content"
+android:layout_below = "@+id/SummaryTitle" 
+android:id="@+id/tSpot1" 
+android:layout_marginTop="10px" 
+></TextView>
+<TextView android:text="" 
+android:layout_width="wrap_content" 
+android:layout_height="wrap_content"
+android:layout_below = "@+id/tSpot1" 
+android:id="@+id/tSpot2" 
+android:layout_marginTop="0px" 
+></TextView>
+<TextView android:text="" 
+android:layout_width="wrap_content" 
+android:layout_height="wrap_content"
+android:layout_below = "@+id/tSpot2" 
+android:id="@+id/tSpot3" 
+android:layout_marginTop="0px" 
+></TextView>
+<TextView android:text="" 
+android:layout_width="wrap_content" 
+android:layout_height="wrap_content"
+android:layout_below = "@+id/tSpot3" 
+android:id="@+id/tSpot4" 
+android:layout_marginTop="0px" 
+></TextView>
+<TextView android:text="" 
+android:layout_width="wrap_content" 
+android:layout_height="wrap_content"
+android:layout_below = "@+id/tSpot4" 
+android:id="@+id/tSpot5" 
+android:layout_marginTop="0px" 
+></TextView>
+<TextView android:text="" 
+android:layout_width="wrap_content" 
+android:layout_height="wrap_content"
+android:layout_below = "@+id/tSpot5" 
+android:id="@+id/tSpot6" 
+android:layout_marginTop="0px" 
+></TextView>
+<TextView android:text="" 
+android:layout_width="wrap_content" 
+android:layout_height="wrap_content"
+android:layout_below = "@+id/tSpot6" 
+android:id="@+id/tSpot7" 
+android:layout_marginTop="0px" 
+></TextView>
+<TextView android:text="" 
+android:layout_width="wrap_content" 
+android:layout_height="wrap_content"
+android:layout_below = "@+id/tSpot7" 
+android:id="@+id/tSpot8" 
+android:layout_marginTop="0px" 
+></TextView>
+<TextView android:text="" 
+android:layout_width="wrap_content" 
+android:layout_height="wrap_content"
+android:layout_below = "@+id/tSpot8" 
+android:id="@+id/tSpot9" 
+android:layout_marginTop="0px" 
+></TextView>
+<TextView android:text="" 
+android:layout_width="wrap_content" 
+android:layout_height="wrap_content"
+android:layout_below = "@+id/tSpot9" 
+android:id="@+id/tSpot10" 
+android:layout_marginTop="0px" 
+></TextView>
+</RelativeLayout>
+</ScrollView>  
   </LinearLayout>
