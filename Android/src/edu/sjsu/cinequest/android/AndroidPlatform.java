@@ -94,6 +94,8 @@ public class AndroidPlatform extends Platform {
 		try {
 			connection = createWebConnection(url);
 			byte[] xmlSource = (byte[]) connection.getBytes();
+		    if (xmlSource.length == 0) throw new IOException("No data received from server");
+
 	        // Store the xml source
 	        xmlRawBytesCache.put(url, xmlSource);
 	        InputSource in = new InputSource(new InputStreamReader(
@@ -146,6 +148,7 @@ public class AndroidPlatform extends Platform {
        }         
        out.close();
        byte[] response = connection.getBytes();
+       if (response.length == 0) throw new IOException("No data received from server");
        InputSource inputSource = new InputSource(new ByteArrayInputStream(response));
        sp.parse(inputSource, handler);       
 	}

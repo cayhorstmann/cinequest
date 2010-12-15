@@ -20,9 +20,11 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -62,8 +64,8 @@ public class DVDActivity extends Activity {
 	private TextView DVDTitle;
 	public View v;
 	private SeparatedListAdapter sAdapter;
-	//private Button byDate_bt;
-	//private Button byTitle_bt;
+	private Button cqButton;
+	private Button nrButton;
 	
     public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
@@ -104,9 +106,32 @@ public class DVDActivity extends Activity {
     	
         filterStatus = FILMBYDATE;
         this.updatefilter(filterStatus);
-      
+        setUpCQ();
+        setUpNR();
               
          
+    }
+    public void setUpCQ()
+    {
+    	cqButton = (Button)findViewById(R.id.CQ_button);	
+        cqButton.setOnClickListener(new OnClickListener(){
+    		public void onClick(View v){
+    			click(true);
+    						}
+    			
+    		
+    	});
+    }
+    public void setUpNR()
+    {
+    	nrButton = (Button)findViewById(R.id.nRelease_button);	
+        nrButton.setOnClickListener(new OnClickListener(){
+    		public void onClick(View v){
+    			click(false);
+    						}
+    			
+    		
+    	});
     }
     String url = "http://mobile.cinequest.org/mobileCQ.php?type=dvd&id=";
     SpannableString str = new SpannableString("");
@@ -132,6 +157,7 @@ public class DVDActivity extends Activity {
     							String up = url+id[i];
     						   u = new URL(up); 
     							Log.i("Cinequest", "choose"+ txtView.getText().toString());
+    					
     						} catch (MalformedURLException e) { 
     					
     						} 
@@ -279,6 +305,182 @@ public class DVDActivity extends Activity {
     					   
     				   }
     			
+    }
+    public void click(boolean CQ)
+    {
+    	String nurl;
+    	if(CQ)
+    	{
+    			nurl = "http://mobile.cinequest.org/mobileCQ.php?type=dvd&pick";
+    	}
+    	else
+    	{
+    			nurl = "http://mobile.cinequest.org/mobileCQ.php?type=dvd&release";
+    	}
+        	Log.i("Cinequest", "click row");
+        	//LinearLayout vwParentRow = (LinearLayout)v;	
+        	//Log.i("Cinequest", "choose"+ vwParentRow.getChildAt(1).toString());
+        			//LinearLayout vwChildRow = (LinearLayout)vwParentRow.getChildAt(0);	
+        			//TextView txtView = (TextView)vwChildRow.getChildAt(0);
+        			//Log.i("Cinequest", "choose"+ txtView.getText().toString());
+        			
+        					   setContentView(R.layout.dvdinfo_layout);
+        				       DVDTitle = (TextView)findViewById(R.id.DVDTitle);
+        			
+        				       URL u = null;
+        						String result = ""; 
+        						try { 
+        							//searchID = searchID.replaceAll(" ", "%20");
+        							String up = nurl;
+        						   u = new URL(up); 
+        							
+        						} catch (MalformedURLException e) { 
+        					
+        						} 
+
+        						   try { 
+        						      HttpURLConnection urlConn = 
+        						         (HttpURLConnection) u.openConnection();
+        						      result =  nurl;
+        						      BufferedReader in = 
+        						         new BufferedReader( 
+        						            new InputStreamReader( 
+        						               urlConn.getInputStream(),"ISO-8859-1")); 
+        						      //result +="e";
+        						      String inputLine;
+        						      //result +="b";
+        						      inputLine = in.readLine();
+        						      int x = 0;
+        						      while(inputLine != null) 
+        						      { 
+        						    	 
+        						    		 result +=  "" + inputLine; //+ "\n \n \n";
+        						    		 Log.e("WOW",inputLine);
+        						         inputLine = in.readLine();
+        						         x++;
+        						      } 
+        						      //result +="c";
+        						   }
+        						   catch (IOException e) { 
+        							   //result +="d"; 
+        						   }
+        						   
+        						   String q = splitter(result);
+        						   //list.setAdapter(a);
+        						   //return t + result; 
+        						 
+
+        						   Log.i("T", "RUN!!!!");  
+         					   //String t =txtView.getText().toString();
+         					   //DVDTitle.setText(t);
+         					  //sView.addView(DVDTitle);
+         					   DVDTitle.setGravity(Gravity.CENTER_HORIZONTAL); 
+         					   DVDTitle = (TextView)findViewById(R.id.DVDheader);
+         					   //DVDTitle.setText(t);
+         					  //sView.addView(DVDTitle);
+         					   DVDTitle = (TextView)findViewById(R.id.SummaryTitle);
+         					   StringBuffer s = new StringBuffer(str);
+         					  CharUtils.fixWin1252(s);
+         					   DVDTitle.setText(str);
+         					  //DVDTitle.setText(scheduleDes[i]); 
+         					  //DVDTitle.setText(descrip);
+         					  //sView.addView(DVDTitle);
+         					  try
+         					  {
+         						  	URL url = new URL(imageURL); 
+         					  		InputStream stream = url.openStream(); 
+         					  		Bitmap bmp = BitmapFactory.decodeStream(stream);
+         					  		ImageView iv = (ImageView)findViewById(R.id.ImageTitle);
+         					  		iv.setImageBitmap(bmp);
+         					  		stream.close();
+         					  } catch (Exception e) { 
+             					
+         					  }
+        				   
+         					  
+         					  int[] spots = {R.id.tSpot1, R.id.tSpot2, R.id.tSpot3, R.id.tSpot4, R.id.tSpot5, R.id.tSpot6, R.id.tSpot7,
+         							 R.id.tSpot8, R.id.tSpot9, R.id.tSpot10};
+         					 int holder = 0;
+         					  if(!genre.equals(""))
+         					  {
+         						  
+         						  DVDTitle = (TextView)findViewById(spots[holder]);
+         						  DVDTitle.setText(genre);
+         						  holder++;
+         					  }
+        					  //sView.addView(DVDTitle);
+         					if(!director.equals(""))
+        					{
+         						 DVDTitle = (TextView)findViewById(spots[holder]);
+         						 DVDTitle.setText(director);
+         						  holder++;
+        					}
+      					
+         					 //sView.addView(DVDTitle);
+         					if(!writer.equals(""))
+         					{
+           						DVDTitle = (TextView)findViewById(spots[holder]);
+           						DVDTitle.setText(writer);
+           						holder++;
+         					}
+      					
+           					if(!langauge.equals(""))
+             				{
+           						DVDTitle = (TextView)findViewById(spots[holder]);
+           						DVDTitle.setText(langauge);
+           					  holder++;
+       					  }
+      					
+           					if(!cast.equals(""))
+             				{
+           						DVDTitle = (TextView)findViewById(spots[holder]);
+           						DVDTitle.setText(cast);
+           						holder++;
+       					  	}
+      					
+           					if(!producer.equals(""))
+             				{
+           						DVDTitle = (TextView)findViewById(spots[holder]);
+           						DVDTitle.setText(producer);
+           						holder++;
+       					  	}
+      					
+           					if(!country.equals(""))
+             				{
+           						DVDTitle = (TextView)findViewById(spots[holder]);
+           						DVDTitle.setText(country);
+           						holder++;
+       					  	}
+      					
+           					if(!film_info.equals(""))
+             				{
+           						DVDTitle = (TextView)findViewById(spots[holder]);
+           						DVDTitle.setText(film_info);
+           						holder++;
+       					  	}
+      					
+           					if(!cinematographer.equals(""))
+             				{
+           						DVDTitle = (TextView)findViewById(spots[holder]);
+           						DVDTitle.setText(cinematographer);
+           						holder++;
+       					  	}
+      					
+           					if(!editor.equals(""))
+             				{
+           						DVDTitle = (TextView)findViewById(spots[holder]);
+           						DVDTitle.setText(editor);
+           						holder++;
+       					  	}
+      					
+
+        					  //sView.addView(DVDTitle);
+         					 
+         					setButtons();
+        					   Log.i("TEST", "");
+        					   
+        				   
+    	
     }
     String split = "";
     String descrip = "";
@@ -628,6 +830,8 @@ public class DVDActivity extends Activity {
     	back.setOnClickListener(new OnClickListener(){
     		public void onClick(View v){
     			setContentView(R.layout.dvd_layout);
+    			setUpCQ();
+    			setUpNR();
     			update();
     		}
     	});
