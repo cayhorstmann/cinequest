@@ -18,6 +18,9 @@ import android.widget.EditText;
  */
 public class LoginActivity extends Activity {
 	
+	//Registration URL
+	private static String REGISTRAION_URL = "http://www.cinequest.org/isch_reg.php";
+	
 	private Button retrieveScheduleButton;
 	private Button saveScheduleButton;
 	private Button accountSignupButton;
@@ -124,12 +127,21 @@ public class LoginActivity extends Activity {
 			}        	
         });
         
+        //Launch the Registration page 
         accountSignupButton.setOnClickListener(new View.OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				
+				//Create the intent
+		    	Intent i = new Intent(LoginActivity.this, RegistrationActivity.class);
+		    	//Create a bundle, save url into it and add it to intent
+				Bundle b = new Bundle();
+				b.putString("url", REGISTRAION_URL);
+				i.putExtras(b);				
+				
+				//launch registration page activity
+				startActivity(i);
 			}        	
         });
 

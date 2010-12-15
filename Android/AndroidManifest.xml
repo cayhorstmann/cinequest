@@ -18,6 +18,9 @@
 		<activity android:name=".ForumsActivity" />
 		<activity android:name=".ScheduleActivity" />
 		<activity android:name=".LoginActivity" />
+		<activity android:name=".RegistrationActivity"
+                  android:configChanges="orientation">
+        </activity>
     </application>
 
 
