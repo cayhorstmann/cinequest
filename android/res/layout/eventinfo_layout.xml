@@ -14,10 +14,10 @@
     
     <Button
 		android:id="@+id/backDVD_button"
-    	android:text="DVDs"
+    	android:text="Forums"
     	
     	
-    	android:layout_width="60dip"
+    	android:layout_width="80dip"
     	android:layout_height="40dip"
     	android:layout_alignParentLeft="true"
     	android:layout_marginLeft="3dip"
@@ -82,55 +82,6 @@ android:layout_marginTop="10px"
 android:layout_width="wrap_content" 
 android:layout_height="wrap_content"
 android:layout_below = "@+id/tSpot1" 
-android:id="@+id/tSpot2" 
-android:layout_marginTop="0px" 
-></TextView>
-<TextView android:text="" 
-android:layout_width="wrap_content" 
-android:layout_height="wrap_content"
-android:layout_below = "@+id/tSpot2" 
-android:id="@+id/tSpot3" 
-android:layout_marginTop="0px" 
-></TextView>
-<TextView android:text="" 
-android:layout_width="wrap_content" 
-android:layout_height="wrap_content"
-android:layout_below = "@+id/tSpot3" 
-android:id="@+id/tSpot4" 
-android:layout_marginTop="0px" 
-></TextView>
-<TextView android:text="" 
-android:layout_width="wrap_content" 
-android:layout_height="wrap_content"
-android:layout_below = "@+id/tSpot4" 
-android:id="@+id/tSpot5" 
-android:layout_marginTop="0px" 
-></TextView>
-<TextView android:text="" 
-android:layout_width="wrap_content" 
-android:layout_height="wrap_content"
-android:layout_below = "@+id/tSpot5" 
-android:id="@+id/tSpot6" 
-android:layout_marginTop="0px" 
-></TextView>
-<TextView android:text="" 
-android:layout_width="wrap_content" 
-android:layout_height="wrap_content"
-android:layout_below = "@+id/tSpot6" 
-android:id="@+id/tSpot7" 
-android:layout_marginTop="0px" 
-></TextView>
-<TextView android:text="" 
-android:layout_width="wrap_content" 
-android:layout_height="wrap_content"
-android:layout_below = "@+id/tSpot7" 
-android:id="@+id/tSpot8" 
-android:layout_marginTop="0px" 
-></TextView>
-<TextView android:text="" 
-android:layout_width="wrap_content" 
-android:layout_height="wrap_content"
-android:layout_below = "@+id/tSpot8" 
 android:id="@+id/tSpot9" 
 android:layout_marginTop="0px" 
 ></TextView>
@@ -141,6 +92,13 @@ android:layout_below = "@+id/tSpot9"
 android:id="@+id/tSpot10" 
 android:layout_marginTop="0px" 
 ></TextView>
+<Button android:id="@+id/call_button"
+    	android:text="Call Cinequest Ticketing Line"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+		android:layout_below = "@+id/tSpot9"
+    	android:layout_marginTop="5px"
+	/>
 </RelativeLayout>
 </ScrollView>  
   </LinearLayout>

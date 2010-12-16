@@ -1,23 +1,18 @@
 package edu.sjsu.cinequest;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
-
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
 import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,7 +31,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,12 +38,11 @@ import android.widget.Toast;
 public class ScheduleActivity extends Activity {
 	
 	private static ProgressDialog m_ProgressDialog = null; 
-    private User user;
-    private UserSchedule userSchedule;
+    private static User user;
     private ListView list;
     private Button syncButton, editButton;
     private boolean EDIT_MODE = false;
-    private ArrayList<String> movieIDList;
+    private static ArrayList<String> movieIDList;
     private static final int SUB_ACTIVITY_READ_SCHEDULE = 0;
     private static final int SUB_ACTIVITY_WRITE_SCHEDULE = 1;
     private final int ConflictScheduleColor = Color.DKGRAY;
@@ -67,7 +60,6 @@ public class ScheduleActivity extends Activity {
         editButton = (Button) this.findViewById(R.id.edit_button);
         
         user = MainTab.getUser();
-        userSchedule = user.getSchedule();
         
         
         //TODO see if next if block is actually needed in any use case
@@ -168,7 +160,6 @@ public class ScheduleActivity extends Activity {
 
 					@Override
 					public void invoke(Object result) {
-						userSchedule = (UserSchedule) result;
 						Log.d("ScheduleActivity","Schedule Saved to server. lastChanged="+ user.getSchedule().getLastChanged() 
 								+"Length="+user.getSchedule().getScheduleItems().length);
 						showDateSeparatedSchedule();
@@ -178,6 +169,8 @@ public class ScheduleActivity extends Activity {
 						Toast.makeText(ScheduleActivity.this, 
 								getString(R.string.myschedule_saved_msg), 
 								Toast.LENGTH_LONG).show();
+						
+						
 					}
 
 					@Override
@@ -270,7 +263,6 @@ public class ScheduleActivity extends Activity {
     	user.readSchedule(DialogPrompt.showLoginPrompt(this, SUB_ACTIVITY_READ_SCHEDULE),
 				new Callback() {
 					public void invoke(Object result) {
-						userSchedule = (UserSchedule) result;
 						user.getSchedule().setDirty(false);
 						Log.d("ScheduleActivity","Result returned. Length="+user.getSchedule().getScheduleItems().length);
 						
@@ -298,10 +290,8 @@ public class ScheduleActivity extends Activity {
     }
     
 
-    /**
-     * Display the schedule to the user with date being separator-header.
-     */
-      private void showDateSeparatedSchedule_old()
+    //TODO older version. remove this method after running tests on newer version.
+      public void showDateSeparatedSchedule_old()
       {  	
       	
       	Schedule[] scheduleItems = user.getSchedule().getScheduleItems();
@@ -318,7 +308,7 @@ public class ScheduleActivity extends Activity {
       	SeparatedListAdapter separatedListAdapter = new SeparatedListAdapter(this);
       	
       	DateUtils du = new DateUtils();
-  		DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);  		
+  		//DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);  		
   		
       	String previousDay = scheduleItems[0].getStartTime().substring(0, 10);
       	
@@ -430,7 +420,7 @@ public class ScheduleActivity extends Activity {
     /**
      * This refreshes the movieIDList and adds the id's of all movies in persistent schedule
      */
-     private void refreshMovieIDList(){
+     private static void refreshMovieIDList(){
     	 Log.v("ScheduleActivity","Refreshing movie-id-list");
     	 Schedule[] scheduleItems = user.getSchedule().getScheduleItems();
     	 movieIDList = new ArrayList<String>();
@@ -483,16 +473,18 @@ public class ScheduleActivity extends Activity {
 								String filmID = (String)checkbox.getTag();
 								
 								//if the checkbox is checked
-								if(isChecked==true){									
+								if(isChecked==true){				
 									movieIDList.remove(filmID);
+									
 									Log.d("ScheduleActivity","Checkbox ENABLED on:"+ result.getTitle()+"[ID="+filmID+"]. " +
 											"# of Schedule Items="+ movieIDList.size());
-								} else {
+								} else {		//if checkbox was later unchecked
 									if(!movieIDList.contains(filmID)){
 										movieIDList.add(filmID);
 										Log.d("ScheduleActivity","Checkbox DISABLED on:"+ result.getTitle()+"[ID="+filmID+"]. " +
 												"# of Schedule Items="+ movieIDList.size());
 									}
+									
 								}								
 							}
 						});
@@ -587,7 +579,7 @@ public class ScheduleActivity extends Activity {
 		    		builder.setMessage("This feature needs you to be logged in." +
 		    							"\nWould you like to sign in now?")
 		    			   .setTitle(command)
-		    		       .setCancelable(false)
+		    		       .setCancelable(true)
 		    		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 		    		           public void onClick(DialogInterface dialog, int id) {
 		    		                logIn(context, subActivityCode);
@@ -615,7 +607,7 @@ public class ScheduleActivity extends Activity {
     	public static void showDialog(Context context, String message){
     		AlertDialog.Builder builder = new AlertDialog.Builder(context);
     		builder.setMessage(message)
-    		       .setCancelable(false)
+    		       .setCancelable(true)
     		       .setNeutralButton("OK", new DialogInterface.OnClickListener() {
     		           public void onClick(DialogInterface dialog, int id) {
     		                return;    		                
@@ -641,7 +633,7 @@ public class ScheduleActivity extends Activity {
     		
     		AlertDialog.Builder builder = new AlertDialog.Builder(context);
     		builder.setMessage(message)
-    		       .setCancelable(false)
+    		       .setCancelable(true)
     		       .setPositiveButton(pButton, pListener)
     		       .setNegativeButton(nButton, nListener);
     		AlertDialog alert = builder.create();
@@ -670,7 +662,7 @@ public class ScheduleActivity extends Activity {
     		
     		AlertDialog.Builder builder = new AlertDialog.Builder(context);
     		builder.setMessage(message)
-    		       .setCancelable(false)
+    		       .setCancelable(true)
     		       .setPositiveButton(firstButton, firstListener)
     		       .setNegativeButton(secondButton, secondListener)
     		       .setNeutralButton(thirdButton, thirdListener);
@@ -780,6 +772,76 @@ public class ScheduleActivity extends Activity {
 		((Activity) context).startActivityForResult(i, subActivityCode);
     }
     
+    
+    public static void add(Schedule s){
+    	user.getSchedule().add(s);
+    	EditedSchedule.instance().add(s);
+    	refreshMovieIDList();
+    }
+    
+    public static void remove(Schedule s){
+    	user.getSchedule().remove(s);
+    	EditedSchedule.instance().remove(s);
+    	refreshMovieIDList();
+    }
+    
+    /**
+     * This class keeps track of schedule edits for undo and merge purpose
+     * (singleton class)
+     */
+    public static class EditedSchedule{
+    	private static ArrayList<Schedule> EventsAdded;
+    	private static ArrayList<Schedule> EventsDeleted;
+    	private static EditedSchedule editedSchedule = null;
+    	
+    	private EditedSchedule(){
+    		EventsAdded = new ArrayList<Schedule>();
+    		EventsDeleted = new ArrayList<Schedule>();
+    	}
+    	
+    	public static EditedSchedule instance(){
+    		if(editedSchedule == null)
+    			editedSchedule = new EditedSchedule();
+    		return editedSchedule;
+    	}
+    	
+    	public void reset(){
+    		EventsAdded = new ArrayList<Schedule>();
+    		EventsDeleted = new ArrayList<Schedule>();
+    	}
+    	
+    	public void add(Schedule s){
+    		for(int i = 0; i < EventsDeleted.size(); i++){
+    			Schedule temp = EventsDeleted.get(i);
+    			if(temp.getId() == s.getId())
+    				EventsDeleted.remove(i);
+    		}
+    		
+    		for(int i = 0; i < EventsAdded.size(); i++){
+    			Schedule temp = EventsAdded.get(i);
+    			if(temp.getId() == s.getId())
+    				return;
+    		}
+    		EventsAdded.add(s);
+    	}
+    	
+    	public void remove(Schedule s){
+    		for(int i = 0; i < EventsAdded.size(); i++){
+    			Schedule temp = EventsAdded.get(i);
+    			if(temp.getId() == s.getId())
+    				EventsAdded.remove(i);
+    		}
+    		
+    		
+    		for(int i = 0; i < EventsDeleted.size(); i++){
+    			Schedule temp = EventsDeleted.get(i);
+    			if(temp.getId() == s.getId())
+    				return;
+    		}
+    		EventsDeleted.add(s);
+    	}
+    }
+    
     /**
      * This method merges the changes made on the server and locally
      * @param conflictingSchedule returned by the server
@@ -822,6 +884,7 @@ public class ScheduleActivity extends Activity {
     					"New length of schedule="+user.getSchedule().getScheduleItems().length);    			    			
     		}
     	}
-    }    
+    }   
+    
     
 }
