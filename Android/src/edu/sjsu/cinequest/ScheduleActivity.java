@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
+import edu.sjsu.cinequest.comm.Action;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
@@ -26,11 +27,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -128,6 +127,94 @@ public class ScheduleActivity extends Activity {
         showDateSeparatedSchedule();
     }
     
+
+    /** When user clicks SYNC, do this*/
+    private void performSync(){
+    	
+//		if(user.getSchedule().isSaved()){
+//			ScheduleActivity.this.readSchedule();
+//		}else{
+//			ScheduleActivity.this.writeSchedule();
+//		}
+    	
+    	// TODO Fix it
+    	m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
+												"Please wait...", "Syncing data ...", true);
+    	user.syncSchedule(/*credentialAction*/ new Action(){
+
+					@Override
+					public void start(Object in, Callback cb) {
+							if(m_ProgressDialog != null)
+								m_ProgressDialog.dismiss();
+							LoginPrompt.showPrompt(ScheduleActivity.this);
+					}
+    		
+    		}, /*syncAction*/new Action(){
+
+				@Override
+				public void start(Object in, final Callback cb) {
+					if(m_ProgressDialog != null)
+						m_ProgressDialog.dismiss();
+					DialogPrompt.showOptionDialog(ScheduleActivity.this, 
+							getResources().getString(R.string.schedule_conflict_dialogmsg), 
+							"Keep Server", new DialogInterface.OnClickListener(){
+								public void onClick(DialogInterface dialog,	int which) {
+									cb.invoke(new Integer(User.SYNC_REVERT));
+									m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
+											"Please wait...", "Syncing data ...", true);
+								}
+							}
+							,"Keep Device", new DialogInterface.OnClickListener(){
+								public void onClick(DialogInterface dialog,	int which) {									
+									cb.invoke(new Integer(User.SYNC_SAVE));
+									m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
+											"Please wait...", "Syncing data ...", true);
+								}
+							},
+							"Merge Both", new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									cb.invoke(new Integer(User.SYNC_MERGE));
+									
+								}
+							}
+						);
+					
+				}
+    			
+    		}, new Callback(){
+
+				@Override
+				public void invoke(Object result) {
+					showDateSeparatedSchedule();
+					refreshMovieIDList();
+					m_ProgressDialog.dismiss();
+					//Display a confirmation notification
+					Toast.makeText(ScheduleActivity.this, 
+							getString(R.string.myschedule_synced_msg), 
+							Toast.LENGTH_LONG).show();					
+				}
+
+				@Override
+				public void progress(Object value) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void failure(Throwable t) {
+					m_ProgressDialog.dismiss();
+					Log.e("ScheduleActivity",t.getMessage());
+					DialogPrompt.showDialog(ScheduleActivity.this, 
+							user.isLoggedIn() 
+							? "Unable to Sync schedule.\nTry Syncing again."
+							: "Login failed.");
+				}
+    			
+    		}, MainTab.getQueryManager());
+    }
+    
     /**
      * Write the schedule to the server
      */
@@ -138,7 +225,7 @@ public class ScheduleActivity extends Activity {
     	Log.d("ScheduleActivity", "Writing schedule to server");
     	Log.d("ScheduleActivity", "Schedule isSaved="+user.getSchedule().isSaved());
     	
-    	user.writeSchedule(LoginPrompt.show(this, SUB_ACTIVITY_WRITE_SCHEDULE), 
+    	user.writeSchedule(LoginPrompt.show(this), 
     			new Callback(){
 
 					@Override
@@ -243,7 +330,7 @@ public class ScheduleActivity extends Activity {
     	
     	Log.d("ScheduleActivity", "Reading schedule from server");
     	
-    	user.readSchedule(LoginPrompt.show(this, SUB_ACTIVITY_READ_SCHEDULE),
+    	user.readSchedule(LoginPrompt.show(this),
 				new Callback() {
 					public void invoke(Object result) {
 						user.getSchedule().setDirty(false);
@@ -272,70 +359,6 @@ public class ScheduleActivity extends Activity {
 				}, MainTab.getQueryManager());
     }
     
-
-    //TODO older version. remove this method after running tests on newer version.
-      public void showDateSeparatedSchedule_old()
-      {  	
-      	
-      	Schedule[] scheduleItems = user.getSchedule().getScheduleItems();
-      	Log.v("ScheduleActivity","Showing the Schedule List on Screen. Total Schedule items = "
-      			+ scheduleItems.length);
-      	
-      	if (scheduleItems.length == 0){
-      		//Clear the items of previous list being displayed (if any)
-      		list.setAdapter(new SeparatedListAdapter(this));
-      		return;
-      	}
-      	
-      	// create our list and custom adapter  
-      	SeparatedListAdapter separatedListAdapter = new SeparatedListAdapter(this);
-      	
-      	DateUtils du = new DateUtils();
-  		//DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);  		
-  		
-      	String previousDay = scheduleItems[0].getStartTime().substring(0, 10);
-      	
-      	//Create a temp List to store films for one day
-      	ArrayList<Schedule> tempList = new ArrayList<Schedule>();
-      	int i = 0;
-      	
-      	String moviesInADay = "";		//for debugging purpose only
-      	
-      	//Add the first item in tempList and then increment to next day
-      	tempList.add(scheduleItems[i]);
-      	moviesInADay += scheduleItems[i].getTitle() + ", ";
-      	i++;
-      	
-      	//go through each item and add it to proper section based on its date
-      	for(; i < scheduleItems.length; i++)
-      	{
-      		String day = scheduleItems[i].getStartTime().substring(0, 10);     		
-      		
-      		if(!day.equals(previousDay))
-      		{	
-      			//Log.d("ScheduleActivity","Adding adapter for date:"+previousDay);
-      			Log.d("ScheduleActivity","Movies in "+previousDay +"= "+moviesInADay); moviesInADay = "";
-      			
-      			String title = du.format(previousDay, DateUtils.DATE_DEFAULT);
-      			separatedListAdapter.addSection(title,	new ScheduleAdapter(this, R.layout.myschedule_row,tempList)	);
-      			tempList = new ArrayList<Schedule>();
-      			previousDay = day;
-      			i--;	//go back one loop to include first item of next loop
-      		}else
-      		{
-      			tempList.add(scheduleItems[i]);
-      			moviesInADay += scheduleItems[i].getTitle() + ", ";
-      			//Log.v("ScheduleActivity","Adding Movie: "+scheduleItems[i].getTitle()+"- ON:"+scheduleItems[i].getStartTime());
-      		}
-      	}
-      	//Log.d("ScheduleActivity","Adding adapter for date:"+day);
-		String title = du.format(previousDay, DateUtils.DATE_DEFAULT);
-		separatedListAdapter.addSection(title,	new ScheduleAdapter(this, R.layout.myschedule_row,tempList)	);
-		Log.d("ScheduleActivity","Movies in "+previousDay +"= "+moviesInADay);
-		
-        ScheduleActivity.this.list.setAdapter(separatedListAdapter);      	      	
-  	}
-      
      /**
       * Display the schedule to the user with date being separator-header.
       */
@@ -533,22 +556,11 @@ public class ScheduleActivity extends Activity {
     public static class LoginPrompt {
     	
     	/**
-    	 * Overloaded version of showLoginPrompt
-    	 * @param context the context which is requesting the prompt
-    	 * @return CredentialPrompt
-    	 */
-    	public static User.CredentialsPrompt show(final Context context){
-    		return show(context, null);
-    	}
-    	
-    	/**
     	 * Shows a login prompt to user while accessing scheduler if the user is not logged in.
     	 * @param context the context which is requesting the prompt
-    	 * @param subActivityCode the request code for starting a login sub-activity
     	 * @return CredentialPrompt
     	 */    	
-    	public static User.CredentialsPrompt show(final Context context, 
-    													     final Integer subActivityCode){
+    	public static User.CredentialsPrompt show(final Context context){
     		
     		return new User.CredentialsPrompt(){
     			public void promptForCredentials(String command, String defaultUsername,
@@ -565,7 +577,7 @@ public class ScheduleActivity extends Activity {
 		    		       .setCancelable(true)
 		    		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 		    		           public void onClick(DialogInterface dialog, int id) {
-		    		                logIn(context, subActivityCode);
+		    		                logIn(context);
 		    		        		
 		    		           }
 		    		       })
@@ -579,6 +591,36 @@ public class ScheduleActivity extends Activity {
     			}
     		};
     	}
+    	
+    	/**
+    	 * Shows a login prompt to user while syncing data if the user is not logged in.
+    	 * @param context the context which is requesting the prompt    	 * 
+    	 */
+    	public static void showPrompt(final Context context){
+    		
+    		if(m_ProgressDialog != null)
+    	    			m_ProgressDialog.dismiss();
+    				
+    		Log.d("ScheduleActivity","Prompting user for login credentials");
+		    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		    builder.setMessage("This feature needs you to be logged in." +
+		    					"\nWould you like to sign in now?")
+		    	   .setCancelable(true)
+		           .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		               public void onClick(DialogInterface dialog, int id) {
+		                    logIn(context);
+		            		
+		               }
+		           })
+		           .setNegativeButton("No", new DialogInterface.OnClickListener() {
+		        	   public void onClick(DialogInterface dialog, int id) {		    		        	   
+		    		              dialog.cancel();
+		    		   }
+		           });
+		    AlertDialog alert = builder.create();
+		    alert.show();
+    	}   	
+    	
     	
     }
     
@@ -612,15 +654,6 @@ public class ScheduleActivity extends Activity {
     	
     }
     
-    /** When user clicks SYNC, do this*/
-    private void performSync(){
-    	//Log.d("ScheduleActivity","UserSchedule Saved=" + user.getSchedule().isSaved());
-		if(user.getSchedule().isSaved()){
-			ScheduleActivity.this.readSchedule();
-		}else{
-			ScheduleActivity.this.writeSchedule();
-		}
-    }
     
     /** When user clicks either Edit or Done*/
     //TODO choose some other name for function
@@ -683,7 +716,7 @@ public class ScheduleActivity extends Activity {
 	            logOut();
 	            return true;
 	        case R.id.menu_option_login:
-	            logIn(ScheduleActivity.this, SUB_ACTIVITY_READ_SCHEDULE);
+	            logIn(ScheduleActivity.this);
 	            return true;
 	        case R.id.menu_option_sync:
 	            performSync();
@@ -750,84 +783,14 @@ public class ScheduleActivity extends Activity {
     /**
      * Take user to loginActivity to login
      */
-    private static void logIn(Context context, int subActivityCode){    	
+    private static void logIn(Context context){    	
     	Log.d("ScheduleActivity","Launching LoginActivity");
     	
 	   	Intent i = new Intent(context, LoginActivity.class);		    		                
         //Instead of startActivity(i), use startActivityForResult, so we could return back to this activity after login finishes
-		((Activity) context).startActivityForResult(i, subActivityCode);
+		((Activity) context).startActivityForResult(i, 0);
     }
     
-    
-    //TODO Eliminate - add and remove methods and EditedSchedule class??
-    public static void add(Schedule s){
-    	user.getSchedule().add(s);
-    	EditedSchedule.instance().add(s);
-    	refreshMovieIDList();
-    }
-    
-    public static void remove(Schedule s){
-    	user.getSchedule().remove(s);
-    	EditedSchedule.instance().remove(s);
-    	refreshMovieIDList();
-    }
-    
-    /**
-     * This class keeps track of schedule edits for undo and merge purpose
-     * (singleton class)
-     */
-    public static class EditedSchedule{
-    	private static ArrayList<Schedule> EventsAdded;
-    	private static ArrayList<Schedule> EventsDeleted;
-    	private static EditedSchedule editedSchedule = null;
-    	
-    	private EditedSchedule(){
-    		EventsAdded = new ArrayList<Schedule>();
-    		EventsDeleted = new ArrayList<Schedule>();
-    	}
-    	
-    	public static EditedSchedule instance(){
-    		if(editedSchedule == null)
-    			editedSchedule = new EditedSchedule();
-    		return editedSchedule;
-    	}
-    	
-    	public void reset(){
-    		EventsAdded = new ArrayList<Schedule>();
-    		EventsDeleted = new ArrayList<Schedule>();
-    	}
-    	
-    	public void add(Schedule s){
-    		for(int i = 0; i < EventsDeleted.size(); i++){
-    			Schedule temp = EventsDeleted.get(i);
-    			if(temp.getId() == s.getId())
-    				EventsDeleted.remove(i);
-    		}
-    		
-    		for(int i = 0; i < EventsAdded.size(); i++){
-    			Schedule temp = EventsAdded.get(i);
-    			if(temp.getId() == s.getId())
-    				return;
-    		}
-    		EventsAdded.add(s);
-    	}
-    	
-    	public void remove(Schedule s){
-    		for(int i = 0; i < EventsAdded.size(); i++){
-    			Schedule temp = EventsAdded.get(i);
-    			if(temp.getId() == s.getId())
-    				EventsAdded.remove(i);
-    		}
-    		
-    		
-    		for(int i = 0; i < EventsDeleted.size(); i++){
-    			Schedule temp = EventsDeleted.get(i);
-    			if(temp.getId() == s.getId())
-    				return;
-    		}
-    		EventsDeleted.add(s);
-    	}
-    }
     
     /**
      * This method merges the changes made on the server and locally

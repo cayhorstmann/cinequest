@@ -5,6 +5,8 @@
     android:layout_height="fill_parent"
     android:background="@android:color/transparent"
     >
+    
+    <!-- Change the android:visibility="gone" to "visible" to show the action bar -->
     <RelativeLayout
     android:id="@+id/schedule_action_bar"
     android:orientation="horizontal"

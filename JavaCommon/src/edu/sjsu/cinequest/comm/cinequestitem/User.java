@@ -312,11 +312,12 @@ public class User {
 		
 		Actions.andThen(auth, 
 			Actions.andThen(load, 
-			Actions.andThen(
-				Actions.ifThen(checkConflict, 
-						Actions.andThen(syncAction, resolveConflict)),
-				saveIfNeeded)))	
-			.start(new Credentials(email, password), uiCallback);
+					Actions.andThen(
+							Actions.ifThen(checkConflict, Actions.andThen(syncAction, resolveConflict)), 
+					saveIfNeeded
+					)
+			)
+		).start(new Credentials(email, password), uiCallback);
 	}
 
 	public static interface CredentialsPrompt {

@@ -10,6 +10,7 @@ import edu.sjsu.cinequest.R;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
@@ -19,7 +20,7 @@ import android.widget.BaseAdapter;
 public class SeparatedListAdapter extends BaseAdapter {
 	public final Map<String,Adapter> sections = new LinkedHashMap<String,Adapter>();  
     public final ArrayAdapter<String> headers;  
-    public Vector<Schedule> list = new Vector<Schedule> ();
+    public Vector<Schedule> list;
     public final static int TYPE_SECTION_HEADER = 0;  
     private int _selectedIndex;
     public SeparatedListAdapter(Context context) {  
@@ -32,7 +33,7 @@ public class SeparatedListAdapter extends BaseAdapter {
     }
     public void addSection(String section, Adapter adapter) {  
         this.headers.add(section);  
-        this.sections.put(section, adapter);  
+        this.sections.put(section, adapter);
     }  
     
     
@@ -45,9 +46,13 @@ public class SeparatedListAdapter extends BaseAdapter {
 	}
 
 	public Object getItem(int position) {
-		Schedule schedule = list.get(position-1);
-		return schedule;
-		/*
+		//If the list is used to store the sections, return from it
+		if(list != null){
+			Schedule schedule = list.get(position-1);
+			return schedule;
+		}
+		
+		//else return from the sections Map
 		for(Object section : this.sections.keySet()) {
             Adapter adapter = sections.get(section);  
             
@@ -61,7 +66,7 @@ public class SeparatedListAdapter extends BaseAdapter {
             position -= size;  
         }  
 		return null;
-		*/
+		
 	}
 
 	public int getViewTypeCount() {  
