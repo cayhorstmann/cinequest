@@ -39,13 +39,33 @@ public class FilmsActivity extends Activity {
 	private Button imageButton;
 	private Vector<Schedule> checkedSchedules = new Vector<Schedule>();
 	private String[] scheduleTitle;
+	private SeparatedListAdapter adapter;
     public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
         setContentView(R.layout.film_layout);
         filmsList=(ListView)findViewById(R.id.ListView01);
         byDate_bt = (Button)findViewById(R.id.bydate_bt);
         byTitle_bt = (Button)findViewById(R.id.bytitle_bt);
-        
+        adapter = new SeparatedListAdapter(this);
+        /*
+        filmsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				Schedule schedule = (Schedule)adapter.getItem(arg2);
+				Log.e("arg2","clicked "+ schedule.getTitle());
+				Intent intent = new Intent();
+				intent.setClass(FilmsActivity.this, FilmDetail.class);
+				Bundle bundle=new Bundle();
+				bundle.putInt("id", schedule.getId());
+				intent.putExtras(bundle);
+				FilmsActivity.this.startActivity(intent);
+				
+			}
+		});
+		*/
+    
         byDate_bt.setOnClickListener(new OnClickListener(){
     		public void onClick(View v){
     			System.out.println("date button got clicked");
@@ -74,6 +94,7 @@ public class FilmsActivity extends Activity {
 				public void invoke(Object result) {
 					
 					schedules = (Vector<Schedule>) result;
+					adapter.setList(schedules);
 					scheduleTitle = new String[schedules.size()];
 					FilmsActivity.this.scheduleList(schedules);	
 				}
@@ -129,7 +150,7 @@ public class FilmsActivity extends Activity {
     	tempVect.addElement(schedule.get(0));
     	// create our list and custom adapter  
     	// TODO: This code takes a REALLY long time
-    	SeparatedListAdapter adapter = new SeparatedListAdapter(this);
+    	
     	for(int i=1;i<schedule.size();i++)
     	{
     		String day = schedule.get(i).getStartTime().substring(0, 10);
@@ -198,13 +219,14 @@ public class FilmsActivity extends Activity {
     			for(int i = 0; i < scheduleTitle.length ; i++)
     				   if(scheduleTitle[i].equalsIgnoreCase(txtView.getText().toString()))
     				   {
+    					   Log.e("","got it");
     					   Intent intent = new Intent();
     					   intent.setClass(FilmsActivity.this, FilmDetail.class);
     					   Bundle bundle=new Bundle();
     					   bundle.putInt("id", schedules.get(i).getItemId());
     					   intent.putExtras(bundle);
     					   FilmsActivity.this.startActivity(intent);
-    					   
+    					   break;
     				   }
     			
     }

@@ -31,19 +31,24 @@ public class FilmDetail extends Activity {
 	private ListView scheduleList;
 	private TextView title,description;
 	private ImageView image;
+	private static int chosenId;
 	public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
         setContentView(R.layout.filmdetail);
+        Log.e("Cinequest","FilmDetail");
         title = (TextView)findViewById(R.id.film_title);
         description = (TextView)findViewById(R.id.film_description);
         image = (ImageView)findViewById(R.id.ImageURL);
         scheduleList = (ListView)findViewById(R.id.ScheduleList);
         Bundle bundle = this.getIntent().getExtras();
-		   int chosenId = bundle.getInt("id");
+		chosenId = bundle.getInt("id");
+		Log.e("Cinequest","chosenId"+chosenId);
 	MainTab.getQueryManager().getProgramItem(chosenId, new Callback()
 	{
+		
 		@Override
 		public void invoke(Object result) {
+			Log.e("Cinequest","invoke");
 			FilmDetail.this.castResult(result);
 		}
 		@Override
@@ -51,6 +56,7 @@ public class FilmDetail extends Activity {
 		}
 		@Override
 		public void failure(Throwable t) {
+			Log.e("Cinequest","failure"+t.toString());
 		}
 	});
 	
@@ -129,4 +135,35 @@ public class FilmDetail extends Activity {
 		}
 		
 	}
+	/*
+	public void onStart()
+	{
+		Log.e("","start");
+	}
+    
+	public void onRestart()
+    {
+    	Log.e("","restart");
+    }
+
+	public void onResume()
+    {
+    	Log.e("","resume");
+    }
+
+	public void onPause()
+    {
+    	Log.e("","pause");
+    }
+
+	public void onStop()
+    {
+    	Log.e("","stop");
+    }
+
+	public void onDestroy()
+    {
+    	Log.e("","destryo");
+    }
+	*/
 }
