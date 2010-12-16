@@ -26,7 +26,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -63,7 +67,7 @@ public class ScheduleActivity extends Activity {
         
         
         //TODO see if next if block is actually needed in any use case
-        if (user.getSchedule().isSaved()) {						
+        /*if (user.getSchedule().isSaved()) {						
 			DialogPrompt.showOptionDialog(this, 
 									"Really discard the current schedule?", 
 									"Yes", new DialogInterface.OnClickListener(){
@@ -79,22 +83,16 @@ public class ScheduleActivity extends Activity {
 											//TODO
 											
 										}
-									});
-		}
+			});
+		}*/
         
                 
         //OnClickListener for syncbutton
         syncButton.setOnClickListener(new View.OnClickListener(){
 
 			@Override
-			public void onClick(View v) {
-				
-				//Log.d("ScheduleActivity","UserSchedule Saved=" + user.getSchedule().isSaved());
-				if(user.getSchedule().isSaved()){
-					ScheduleActivity.this.readSchedule();
-				}else{
-					ScheduleActivity.this.writeSchedule();
-				}
+			public void onClick(View v) {				
+				performSync();
 			}
         	
         });
@@ -104,42 +102,27 @@ public class ScheduleActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				if(editButton.getText().toString().equalsIgnoreCase("Edit")){
-					EDIT_MODE = true;
-					editButton.setText("Done");
-					syncButton.setVisibility(View.GONE);
-					showDateSeparatedSchedule();
-				}else if(editButton.getText().toString().equalsIgnoreCase("Done")){
-					EDIT_MODE = false;
-					editButton.setText("Edit");
-					syncButton.setVisibility(View.VISIBLE);
-					
-					//remove the items that user checked on edit screen from user.getSchedule()
-					Schedule[] scheduleItems = user.getSchedule().getScheduleItems();					
-					for(int i = 0; i < scheduleItems.length; i++){
-						Schedule s = scheduleItems[i];
-						if(!movieIDList.contains(""+s.getId())){							
-							user.getSchedule().remove(s);
-							Log.d("ScheduleActivity","Removing from schedule movie: "+s.getTitle()+"[ID="+s.getId()+"]");
-						}
-					}
-					
-					Schedule[] items = user.getSchedule().getScheduleItems();
-					String allMovies = "";
-					for(Schedule s : items){
-						if(s.getTitle().length() > 9)
-							allMovies += s.getTitle().substring(0,9) + ".. , ";
-						else 
-							allMovies += s.getTitle() + ", ";
-					}
-					Log.d("ScheduleActivity","Current Movies: "+allMovies);
-					
-					//show the schedule on screen
-					showDateSeparatedSchedule();
-				}
+				performEdit( v.getId() );
 			}
         	
         });
+        
+        //Upon clicking the item in list
+        list.setOnItemClickListener( new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, 
+									int position, long id) {
+				Schedule schedule = (Schedule) list.getItemAtPosition( position );
+				
+				Intent intent = new Intent();
+				intent.setClass(ScheduleActivity.this, FilmDetail.class);
+				Bundle bundle = new Bundle();
+				bundle.putInt("id", schedule.getItemId());
+				intent.putExtras(bundle);
+				ScheduleActivity.this.startActivity(intent);
+			}
+		});
         
         refreshMovieIDList();
         showDateSeparatedSchedule();
@@ -155,7 +138,7 @@ public class ScheduleActivity extends Activity {
     	Log.d("ScheduleActivity", "Writing schedule to server");
     	Log.d("ScheduleActivity", "Schedule isSaved="+user.getSchedule().isSaved());
     	
-    	user.writeSchedule(DialogPrompt.showLoginPrompt(this, SUB_ACTIVITY_WRITE_SCHEDULE), 
+    	user.writeSchedule(LoginPrompt.show(this, SUB_ACTIVITY_WRITE_SCHEDULE), 
     			new Callback(){
 
 					@Override
@@ -260,7 +243,7 @@ public class ScheduleActivity extends Activity {
     	
     	Log.d("ScheduleActivity", "Reading schedule from server");
     	
-    	user.readSchedule(DialogPrompt.showLoginPrompt(this, SUB_ACTIVITY_READ_SCHEDULE),
+    	user.readSchedule(LoginPrompt.show(this, SUB_ACTIVITY_READ_SCHEDULE),
 				new Callback() {
 					public void invoke(Object result) {
 						user.getSchedule().setDirty(false);
@@ -547,15 +530,15 @@ public class ScheduleActivity extends Activity {
     /**
      * This class handles the dialog prompts for getting user input and showing info
      */
-    public static class DialogPrompt{
+    public static class LoginPrompt {
     	
     	/**
     	 * Overloaded version of showLoginPrompt
     	 * @param context the context which is requesting the prompt
     	 * @return CredentialPrompt
     	 */
-    	public static User.CredentialsPrompt showLoginPrompt(final Context context){
-    		return showLoginPrompt(context, null);
+    	public static User.CredentialsPrompt show(final Context context){
+    		return show(context, null);
     	}
     	
     	/**
@@ -563,8 +546,8 @@ public class ScheduleActivity extends Activity {
     	 * @param context the context which is requesting the prompt
     	 * @param subActivityCode the request code for starting a login sub-activity
     	 * @return CredentialPrompt
-    	 */
-    	public static User.CredentialsPrompt showLoginPrompt(final Context context, 
+    	 */    	
+    	public static User.CredentialsPrompt show(final Context context, 
     													     final Integer subActivityCode){
     		
     		return new User.CredentialsPrompt(){
@@ -595,81 +578,6 @@ public class ScheduleActivity extends Activity {
 		    		alert.show();
     			}
     		};
-    	}
-    	
-    	
-    	
-    	/**
-    	 * Shows a general purpose dialog
-    	 * @param context the context which is requesting the prompt
-    	 * @param message the message to display
-    	 */
-    	public static void showDialog(Context context, String message){
-    		AlertDialog.Builder builder = new AlertDialog.Builder(context);
-    		builder.setMessage(message)
-    		       .setCancelable(true)
-    		       .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-    		           public void onClick(DialogInterface dialog, int id) {
-    		                return;    		                
-    		           }
-    		       });
-    		AlertDialog alert = builder.create();
-    		alert.show();
-    	}
-    	
-    	/**
-    	 * Shows a confirmation dialog with YES/NO options
-    	 * @param context the context which is requesting the prompt
-    	 * @param message the message to display
-    	 * @param pButton the text of positive button
-    	 * @param pListener the OnClickListener for positive button
-    	 * @param nButton the text of negative button
-    	 * @param nListener the OnClickListener for negative button
-    	 */
-    	public static boolean showOptionDialog(Context context, String message, 
-    									String pButton, DialogInterface.OnClickListener pListener,
-    									String nButton, DialogInterface.OnClickListener nListener){
-    		final Boolean result = false;
-    		
-    		AlertDialog.Builder builder = new AlertDialog.Builder(context);
-    		builder.setMessage(message)
-    		       .setCancelable(true)
-    		       .setPositiveButton(pButton, pListener)
-    		       .setNegativeButton(nButton, nListener);
-    		AlertDialog alert = builder.create();
-    		alert.show();
-    		
-    		return result;
-    	}
-    	
-    	/**
-    	 * Shows a confirmation dialog with YES/NO options
-    	 * @param context the context which is requesting the prompt
-    	 * @param message the message to display
-    	 * @param firstButton the text of first button
-    	 * @param firstListener the OnClickListener for first button
-    	 * @param secondButton the text of second button
-    	 * @param secondListener the OnClickListener for second button
-    	 * @param thirdButton the text of third button
-    	 * @param thirdListener the OnClickListener for third button
-    	 */
-    	public static boolean showOptionDialog(Context context, String message, 
-				String firstButton, DialogInterface.OnClickListener firstListener,
-				String secondButton, DialogInterface.OnClickListener secondListener,
-				String thirdButton, DialogInterface.OnClickListener thirdListener){
-    		
-    		final Boolean result = false;
-    		
-    		AlertDialog.Builder builder = new AlertDialog.Builder(context);
-    		builder.setMessage(message)
-    		       .setCancelable(true)
-    		       .setPositiveButton(firstButton, firstListener)
-    		       .setNegativeButton(secondButton, secondListener)
-    		       .setNeutralButton(thirdButton, thirdListener);
-    		AlertDialog alert = builder.create();
-    		alert.show();
-    		
-    		return result;    		
     	}
     	
     }
@@ -704,6 +612,57 @@ public class ScheduleActivity extends Activity {
     	
     }
     
+    /** When user clicks SYNC, do this*/
+    private void performSync(){
+    	//Log.d("ScheduleActivity","UserSchedule Saved=" + user.getSchedule().isSaved());
+		if(user.getSchedule().isSaved()){
+			ScheduleActivity.this.readSchedule();
+		}else{
+			ScheduleActivity.this.writeSchedule();
+		}
+    }
+    
+    /** When user clicks either Edit or Done*/
+    //TODO choose some other name for function
+    private void performEdit( int viewID ){
+    	
+    	if(editButton.getText().toString().equalsIgnoreCase("Edit") 
+    			|| viewID == R.id.menu_option_edit){
+			EDIT_MODE = true;
+			editButton.setText("Done");
+			syncButton.setVisibility(View.GONE);
+			showDateSeparatedSchedule();
+		}else if(editButton.getText().toString().equalsIgnoreCase("Done")
+				|| viewID == R.id.menu_option_done_editing){
+			EDIT_MODE = false;
+			editButton.setText("Edit");
+			syncButton.setVisibility(View.VISIBLE);
+			
+			//remove the items that user checked on edit screen from user.getSchedule()
+			Schedule[] scheduleItems = user.getSchedule().getScheduleItems();					
+			for(int i = 0; i < scheduleItems.length; i++){
+				Schedule s = scheduleItems[i];
+				if(!movieIDList.contains(""+s.getId())){							
+					user.getSchedule().remove(s);
+					Log.d("ScheduleActivity","Removing from schedule movie: "+s.getTitle()+"[ID="+s.getId()+"]");
+				}
+			}
+			
+			Schedule[] items = user.getSchedule().getScheduleItems();
+			String allMovies = "";
+			for(Schedule s : items){
+				if(s.getTitle().length() > 9)
+					allMovies += s.getTitle().substring(0,9) + ".. , ";
+				else 
+					allMovies += s.getTitle() + ", ";
+			}
+			Log.d("ScheduleActivity","Current Movies: "+allMovies);
+			
+			//show the schedule on screen
+			showDateSeparatedSchedule();
+		}
+    }
+    
     /**
      * Create a menu to be displayed when user hits Menu key on device
      */
@@ -715,6 +674,7 @@ public class ScheduleActivity extends Activity {
         return true;
     }
     
+    /** Menu Item Click Listener*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -725,6 +685,15 @@ public class ScheduleActivity extends Activity {
 	        case R.id.menu_option_login:
 	            logIn(ScheduleActivity.this, SUB_ACTIVITY_READ_SCHEDULE);
 	            return true;
+	        case R.id.menu_option_sync:
+	            performSync();
+	            return true;
+	        case R.id.menu_option_edit:
+	            performEdit( item.getItemId() );
+	            return true;
+	        case R.id.menu_option_done_editing:
+	            performEdit( item.getItemId() );
+	            return true;	            
 	        
 	        default:
 	            return super.onOptionsItemSelected(item);
@@ -732,18 +701,35 @@ public class ScheduleActivity extends Activity {
         
     }
     
-    
+    /** This method is called before showing the menu to user after user clicks menu button*/
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
- 
-    	//if user is logged out, dont show LogOut option in menu, show Login instead. And vice-versa
-        if(!user.isLoggedIn()){
-        	menu.findItem(R.id.menu_option_logout).setVisible(false);
-        	menu.findItem(R.id.menu_option_login).setVisible(true);
-        }else{
-        	menu.findItem(R.id.menu_option_logout).setVisible(true);
-        	menu.findItem(R.id.menu_option_login).setVisible(false);
-        }
+    	
+    	if(EDIT_MODE == true){
+    		menu.findItem(R.id.menu_option_done_editing).setVisible(true);
+    		menu.findItem(R.id.menu_option_sync).setVisible(false);
+    		menu.findItem(R.id.menu_option_edit).setVisible(false);
+    		menu.findItem(R.id.menu_option_login).setVisible(false);
+    		menu.findItem(R.id.menu_option_logout).setVisible(false);
+    		
+    	} else {
+    		
+    		menu.findItem(R.id.menu_option_done_editing).setVisible(false);
+    		menu.findItem(R.id.menu_option_sync).setVisible(true);
+    		
+    		
+	    	/* if user is logged out, dont show LogOut option in menu, 
+    		show Login instead. And vice-versa */
+	        if( user.isLoggedIn() ){
+	        	menu.findItem(R.id.menu_option_logout).setVisible(true);
+	        	menu.findItem(R.id.menu_option_login).setVisible(false);
+	        	menu.findItem(R.id.menu_option_edit).setVisible(true);
+	        }else{
+	        	menu.findItem(R.id.menu_option_logout).setVisible(false);
+	        	menu.findItem(R.id.menu_option_login).setVisible(true);
+	        	menu.findItem(R.id.menu_option_edit).setVisible(false);
+	        }
+    	}
 
     	return super.onPrepareOptionsMenu(menu);
     }
@@ -773,6 +759,7 @@ public class ScheduleActivity extends Activity {
     }
     
     
+    //TODO Eliminate - add and remove methods and EditedSchedule class??
     public static void add(Schedule s){
     	user.getSchedule().add(s);
     	EditedSchedule.instance().add(s);

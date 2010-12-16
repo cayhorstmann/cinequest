@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/transparent"
+>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
@@ -32,32 +39,17 @@
  	android:minWidth="250dip"
  />
  
- <RelativeLayout
- 	android:orientation="horizontal"
- 	android:layout_width="fill_parent"
- 	android:layout_height="wrap_content"
- >
+ 
  <Button
- 	android:id="@+id/retrieveschedule_button"
- 	android:layout_width="110dip"
+ 	android:id="@+id/sync_button"
+ 	android:layout_width="240dip"
  	android:layout_height="wrap_content"
  	android:textStyle="bold"
  	android:textColor="#000"
- 	android:text="@string/retrieve_button_label"
+ 	android:text="@string/loginscreen_sync_button_label"
  	android:minWidth="110dip"
- 	android:layout_alignParentLeft="true"
+ 	android:layout_gravity="center_horizontal"
  />
- <Button
- 	android:id="@+id/saveschedule_button"
- 	android:layout_width="110dip"
- 	android:layout_height="wrap_content"
- 	android:textStyle="bold"
- 	android:textColor="#000"
- 	android:text="@string/save_button_label"
- 	android:minWidth="110dip"
- 	android:layout_alignParentRight="true"
- />
- </RelativeLayout>
 
 <TextView  
     android:layout_width="fill_parent" 
@@ -90,3 +82,4 @@
 /> 
  
 </LinearLayout>
+</ScrollView>

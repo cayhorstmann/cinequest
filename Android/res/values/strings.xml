@@ -8,8 +8,7 @@
 	<string name="scheduleraccount_info">The account is free and will allow your to save / update / download schedules you have created online or on the phone.</string>
 	<string name="email_hint">Email Address</string>
 	<string name="password_hint">Password</string>
-	<string name="retrieve_button_label">Retrieve Schedule</string>
-	<string name="save_button_label">Save Schedule</string>
+	<string name="loginscreen_sync_button_label">Sync Schedule</string>
 	<string name="signup_button_label">Sign-up for an account!</string>
 	<string name="schedule_conflict_dialogmsg">Conflicting schedule on server!! Which one to keep?</string>
 	<string name="myschedule_saved_msg">Schedule Successfully Saved!</string>

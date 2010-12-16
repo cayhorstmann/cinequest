@@ -4,6 +4,7 @@ import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,8 +22,8 @@ public class LoginActivity extends Activity {
 	//Registration URL
 	private static String REGISTRAION_URL = "http://www.cinequest.org/isch_reg.php";
 	
-	private Button retrieveScheduleButton;
-	private Button saveScheduleButton;
+	private static ProgressDialog m_ProgressDialog = null;
+	private Button syncScheduleButton;
 	private Button accountSignupButton;
 	private String email;
 	private String password;
@@ -40,8 +41,7 @@ public class LoginActivity extends Activity {
         user = MainTab.getUser();
         
         //get the buttons from layout
-        retrieveScheduleButton = (Button) this.findViewById(R.id.retrieveschedule_button);
-        saveScheduleButton = (Button) this.findViewById(R.id.saveschedule_button);
+        syncScheduleButton = (Button) this.findViewById(R.id.sync_button);
         accountSignupButton = (Button) this.findViewById(R.id.accountsignup_button);
         
         //get the edittext boxes
@@ -49,10 +49,13 @@ public class LoginActivity extends Activity {
         final EditText passwordBox = (EditText) this.findViewById(R.id.login_password_box);
         
         //OnClickListeners for the buttons
-        retrieveScheduleButton.setOnClickListener(new View.OnClickListener(){
+        syncScheduleButton.setOnClickListener(new View.OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
+				
+				m_ProgressDialog = ProgressDialog.show(LoginActivity.this, 
+						"Please wait...", "Syncing data ...", true);
 				
 				email = emailBox.getText().toString();
 				password = passwordBox.getText().toString();
@@ -61,10 +64,9 @@ public class LoginActivity extends Activity {
 					public void invoke(Object result) {
 						if(result == null){	//login failed
 							//TODO
-						} else {							
+						} else {					
+							m_ProgressDialog.dismiss();
 							//Since this is a sub-activity, set result=ok and finish it.
-							
-							
 							Intent i = new Intent();
 							setResult(RESULT_OK, i);
 			                finish();				//finish the activity and return to search view
@@ -72,8 +74,10 @@ public class LoginActivity extends Activity {
 					}
 
 					public void failure(Throwable t) {
+						m_ProgressDialog.dismiss();
+						
 						Log.e("LoginActivity", t.getMessage()+ "-->" + t.getClass().toString());
-						ScheduleActivity.DialogPrompt.showDialog(LoginActivity.this, 
+						DialogPrompt.showDialog(LoginActivity.this, 
 								user.isLoggedIn() ? "Unable to load schedule" : "Login failed.");
 					}
 
@@ -86,46 +90,8 @@ public class LoginActivity extends Activity {
 				user.readSchedule(LoginActivity.this.attemptLogin(), 
 								callback, MainTab.getQueryManager());
 			}        	
-        });
-        
-        saveScheduleButton.setOnClickListener(new View.OnClickListener(){
+        });        
 
-			@Override
-			public void onClick(View v) {
-				
-				email = emailBox.getText().toString();
-				password = passwordBox.getText().toString();
-				
-				Callback callback = new Callback() {
-					public void invoke(Object result) {
-						if(result == null){	//login failed
-							//TODO
-						} else {							
-							//Since this is a sub-activity, set result=ok and finish it.
-							Intent i = new Intent();
-							setResult(RESULT_OK, i);
-			                finish();	//finish the activity and return to search view
-						}
-					}
-
-					public void failure(Throwable t) {
-						Log.e("LoginActivity", t.getMessage());
-						ScheduleActivity.DialogPrompt.showDialog(LoginActivity.this,
-								user.isLoggedIn() ? "Unable to Save schedule" : "Login failed.");
-					}
-
-					@Override
-					public void progress(Object value) {
-						// TODO Auto-generated method stub
-						
-					}
-				};
-				
-				user.writeSchedule(LoginActivity.this.attemptLogin(), 
-									callback, MainTab.getQueryManager());
-				
-			}        	
-        });
         
         //Launch the Registration page 
         accountSignupButton.setOnClickListener(new View.OnClickListener(){
