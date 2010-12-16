@@ -12,7 +12,7 @@ android:paddingTop="5dip"
 android:paddingLeft="5dip" 
 android:paddingBottom="2dip" 
 android:id="@+id/film_title" 
-></TextView>
+android:text="text"></TextView>
 <ImageView android:layout_height="wrap_content" 
 	android:layout_gravity="center_horizontal" 
 	android:layout_width="fill_parent" 
