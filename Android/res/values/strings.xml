@@ -14,6 +14,7 @@
 	<string name="myschedule_saved_msg">Schedule Successfully Saved!</string>
 	<string name="myschedule_loaded_msg">Schedule Successfully Retrieved!</string>
 	<string name="myschedule_synced_msg">Schedule Successfully Synced!</string>
+	<string name="myschedule_loggedin_synced_msg">Logged in. Schedule Successfully Synced!</string>
 	<string name="myschedule_loggedin_saved_msg">Logged in. Schedule Successfully Saved!</string>
 	<string name="myschedule_loggedin_loaded_msg">Logged in. Schedule Successfully Retrieved!!</string>
 	<string name="myschedule_login_promptmsg">This feature needs you to be logged in. \nWould you like to sign in now?</string>

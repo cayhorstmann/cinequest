@@ -46,8 +46,9 @@ public class ScheduleActivity extends Activity {
     private Button syncButton, editButton;
     private boolean EDIT_MODE = false;
     private static ArrayList<String> movieIDList;
-    private static final int SUB_ACTIVITY_READ_SCHEDULE = 0;
+    private static final int SUB_ACTIVITY_SYNC_SCHEDULE = 0;
     private static final int SUB_ACTIVITY_WRITE_SCHEDULE = 1;
+    private static final int SUB_ACTIVITY_READ_SCHEDULE = 2;
     private final int ConflictScheduleColor = Color.DKGRAY;
     
     
@@ -650,8 +651,13 @@ public class ScheduleActivity extends Activity {
         	refreshMovieIDList();
         	
             switch (requestCode) {
+              case SUB_ACTIVITY_SYNC_SCHEDULE:
+	          	  Log.d("ScheduleActivity","User Logged In. Schedule Synced with server.");
+	          	  Toast.makeText(this, getString(R.string.myschedule_loggedin_synced_msg), 
+	          			  Toast.LENGTH_LONG).show();
+          	  	  break;
               case SUB_ACTIVITY_READ_SCHEDULE:
-            	  Log.d("ScheduleActivity","User Logged In. Schedule Loaded from again.");
+            	  Log.d("ScheduleActivity","User Logged In. Schedule Loaded from server again.");
             	  Toast.makeText(this, getString(R.string.myschedule_loggedin_loaded_msg), 
             			  Toast.LENGTH_LONG).show();
             	  break;
@@ -659,9 +665,12 @@ public class ScheduleActivity extends Activity {
             	  Log.d("ScheduleActivity","User Logged In. Schedule Written to server.");
             	  Toast.makeText(this, getString(R.string.myschedule_loggedin_saved_msg), 
             			  Toast.LENGTH_LONG).show();
-            	  break;
+            	  break;            
             }
-          }
+        }
+        else if (resultCode == LoginActivity.SYNC_ERROR_ENCOUNTERED){
+        	performSync();
+        }
     	
     }
     
@@ -799,7 +808,7 @@ public class ScheduleActivity extends Activity {
     	
 	   	Intent i = new Intent(context, LoginActivity.class);		    		                
         //Instead of startActivity(i), use startActivityForResult, so we could return back to this activity after login finishes
-		((Activity) context).startActivityForResult(i, 0);
+		((Activity) context).startActivityForResult(i, SUB_ACTIVITY_SYNC_SCHEDULE);
     }
     
     

@@ -4,16 +4,13 @@ import edu.sjsu.cinequest.comm.Action;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 /**
  * @author Prabh
@@ -29,7 +26,7 @@ public class LoginActivity extends Activity {
 	private Button accountSignupButton;
 	private String email;
 	private String password;
-	
+	public static int SYNC_ERROR_ENCOUNTERED = 2;
 	private User user;
 	
 	
@@ -62,35 +59,12 @@ public class LoginActivity extends Activity {
 				email = emailBox.getText().toString();
 				password = passwordBox.getText().toString();
 				
-				Callback callback = new Callback() {
-					public void invoke(Object result) {
-						if(result == null){	//login failed
-							//TODO
-						} else {					
-							m_ProgressDialog.dismiss();
-							//Since this is a sub-activity, set result=ok and finish it.
-							Intent i = new Intent();
-							setResult(RESULT_OK, i);
-			                finish();				//finish the activity and return to search view
-						}
-					}
-
-					public void failure(Throwable t) {
-						m_ProgressDialog.dismiss();
-						
-						Log.e("LoginActivity", t.getMessage()+ "-->" + t.getClass().toString());
-						DialogPrompt.showDialog(LoginActivity.this, 
-								user.isLoggedIn() ? "Unable to load schedule" : "Login failed.");
-					}
-
-					@Override
-					public void progress(Object value) {
-						// TODO Auto-generated method stub
-						
-					}
-				};
-				user.readSchedule(LoginActivity.this.attemptLogin(), 
-								callback, MainTab.getQueryManager());
+				//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+				//TODO delete it. If email field is empty, use Prabh's credentials
+				if(email.length()==0) {email = "prabhjeetsg@gmail.com"; password="mm";}
+				
+				//Start the sync operation
+				performSync();
 			}        	
         });        
 
@@ -116,38 +90,17 @@ public class LoginActivity extends Activity {
     }
     
     /**
-	 * Attempts to login using user entered email and password.
-	 * 
-	 */
-	public User.CredentialsPrompt attemptLogin(){
-		
-		return new User.CredentialsPrompt(){
-			public void promptForCredentials(String command, String defaultUsername,
-					String defaultPassword, final User.CredentialsAction action) {
-					
-				//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-				//TODO delete it. If email field is empty, use Prabh's credentials
-				if(email.length()==0) {email = "prabhjeetsg@gmail.com"; password="mm";}
-				
-				Log.d("LoginActivity", "Logging in with (Username, Password)=="+ email+", "+password);
-				action.actWithCredentials(email, password);
-			}
-		};
-	}
-	
-private void performSync(){
-	
-    	m_ProgressDialog = ProgressDialog.show(LoginActivity.this, 
-									"Please wait...", "Syncing data ...", true);
+     * Performs the sync operation. 
+     * If successful result is returned (in invoke method)n finish the activity with Result = RESULT_OK
+     * If error occurs (in failure method), show a popup and ask user to try again
+     * If a schedule conflict is detected (in syncAction), finish the activity with Result = SYNC_ERROR_ENCOUNTERED 
+     */
+	private void performSync(){	
+    	
     	user.syncSchedule(/*credentialAction*/ new Action(){
-
 					@Override
-					public void start(Object in, Callback cb) {
-							if(m_ProgressDialog != null){
-								m_ProgressDialog.dismiss();
-								m_ProgressDialog = null;
-							}
-							//LoginPrompt.showPrompt(LoginActivity.this);
+					public void start(Object in, Callback cb) {							
+							cb.invoke(new User.Credentials(email, password));
 					}
     		
     		}, /*syncAction*/new Action(){
@@ -158,50 +111,20 @@ private void performSync(){
 						m_ProgressDialog.dismiss();
 						m_ProgressDialog = null;
 					}
-					DialogPrompt.showOptionDialog(LoginActivity.this, 
-							getResources().getString(R.string.schedule_conflict_dialogmsg), 
-							"Keep Server", new DialogInterface.OnClickListener(){
-								public void onClick(DialogInterface dialog,	int which) {
-									m_ProgressDialog = ProgressDialog.show(LoginActivity.this, 
-											"Please wait...", "Syncing data ...", true);
-									cb.invoke(new Integer(User.SYNC_REVERT));									
-								}
-							}
-							,"Keep Device", new DialogInterface.OnClickListener(){
-								public void onClick(DialogInterface dialog,	int which) {									
-									cb.invoke(new Integer(User.SYNC_SAVE));
-									m_ProgressDialog = ProgressDialog.show(LoginActivity.this, 
-											"Please wait...", "Syncing data ...", true);
-								}
-							},
-							"Merge Both", new DialogInterface.OnClickListener() {
-								
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									m_ProgressDialog = ProgressDialog.show(LoginActivity.this, 
-											"Please wait...", "Syncing data ...", true);
-									cb.invoke(new Integer(User.SYNC_MERGE));
-									
-								}
-							}
-						);
 					
+					//Since this is a sub-activity, set result=ok and finish it.
+					Intent i = new Intent();
+					setResult(SYNC_ERROR_ENCOUNTERED, i);
+		            finish();				//finish the activity and return to search view
 				}
     			
     		}, new Callback(){
 
 				@Override
 				public void invoke(Object result) {
-					Log.d("LoginActivity","Result returned...");
-					//showDateSeparatedSchedule();
-					//refreshMovieIDList();
+					Log.d("LoginActivity","Invoke method called. Result = RESULT_OK");					
 					m_ProgressDialog.dismiss();
-					//Display a confirmation notification
-					Toast.makeText(LoginActivity.this, 
-							getString(R.string.myschedule_synced_msg), 
-							Toast.LENGTH_LONG).show();
 					
-					m_ProgressDialog.dismiss();
 					//Since this is a sub-activity, set result=ok and finish it.
 					Intent i = new Intent();
 					setResult(RESULT_OK, i);
@@ -216,6 +139,7 @@ private void performSync(){
 
 				@Override
 				public void failure(Throwable t) {
+					
 					m_ProgressDialog.dismiss();
 					Log.e("LoginActivity",t.getMessage());
 					DialogPrompt.showDialog(LoginActivity.this, 
@@ -226,5 +150,53 @@ private void performSync(){
     			
     		}, MainTab.getQueryManager());
     }
+	
+	private void performSync_old(){
+		Callback callback = new Callback() {
+			public void invoke(Object result) {
+				if(result == null){	//login failed
+					//TODO
+				} else {					
+					m_ProgressDialog.dismiss();
+					//Since this is a sub-activity, set result=ok and finish it.
+					Intent i = new Intent();
+					setResult(RESULT_OK, i);
+	                finish();				//finish the activity and return to search view
+				}
+			}
 
+			public void failure(Throwable t) {
+				m_ProgressDialog.dismiss();
+				
+				Log.e("LoginActivity", t.getMessage()+ "-->" + t.getClass().toString());
+				DialogPrompt.showDialog(LoginActivity.this, 
+						user.isLoggedIn() ? "Unable to load schedule" : "Login failed.");
+			}
+
+			@Override
+			public void progress(Object value) {
+				// TODO Auto-generated method stub
+				
+			}
+		};
+		user.readSchedule(LoginActivity.this.attemptLogin(), 
+						callback, MainTab.getQueryManager());
+	}
+	
+	/**
+	 * Attempts to login using user entered email and password.
+	 * 
+	 */
+	public User.CredentialsPrompt attemptLogin(){
+		
+		return new User.CredentialsPrompt(){
+			public void promptForCredentials(String command, String defaultUsername,
+					String defaultPassword, final User.CredentialsAction action) {
+				
+				Log.d("LoginActivity", "Logging in with (Username, Password)=="+ email+", "+password);
+				action.actWithCredentials(email, password);
+			}
+		};
+	}
+	
 }
