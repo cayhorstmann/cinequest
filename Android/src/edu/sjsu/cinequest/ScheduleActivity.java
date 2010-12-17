@@ -1,5 +1,7 @@
 package edu.sjsu.cinequest;
 
+//Color codes from: http://www.computerhope.com/htmcolor.htm
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -49,7 +51,7 @@ public class ScheduleActivity extends Activity {
     private static final int SUB_ACTIVITY_SYNC_SCHEDULE = 0;
     private static final int SUB_ACTIVITY_WRITE_SCHEDULE = 1;
     private static final int SUB_ACTIVITY_READ_SCHEDULE = 2;
-    private final int ConflictScheduleColor = Color.DKGRAY;
+    private final int ConflictScheduleColor = Color.parseColor("#E42217");//Firebrick2
     
     
     /** Called when the activity is first created. */
