@@ -734,6 +734,9 @@ public class ScheduleActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+        	case R.id.menu_option_home:
+	            goHome();
+	            return true;
 	        case R.id.menu_option_logout:
 	            logOut();
 	            return true;
@@ -766,11 +769,13 @@ public class ScheduleActivity extends Activity {
     		menu.findItem(R.id.menu_option_edit).setVisible(false);
     		menu.findItem(R.id.menu_option_login).setVisible(false);
     		menu.findItem(R.id.menu_option_logout).setVisible(false);
+    		menu.findItem(R.id.menu_option_home).setVisible(false);
     		
     	} else {
     		
     		menu.findItem(R.id.menu_option_done_editing).setVisible(false);
     		menu.findItem(R.id.menu_option_sync).setVisible(true);
+    		menu.findItem(R.id.menu_option_home).setVisible(true);
     		
     		
 	    	/* if user is logged out, dont show LogOut option in menu, 
@@ -788,7 +793,14 @@ public class ScheduleActivity extends Activity {
 
     	return super.onPrepareOptionsMenu(menu);
     }
-
+    
+    /**
+     * Take the user to home activity
+     */
+    private void goHome(){
+    	Intent i = new Intent(ScheduleActivity.this, HomeActivity.class);
+    	this.startActivity(i);
+    }
     
         
     /**
