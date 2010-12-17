@@ -1,5 +1,6 @@
 package edu.sjsu.cinequest;
 
+import edu.sjsu.cinequest.comm.Action;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
 import android.app.Activity;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * @author Prabh
@@ -132,5 +134,97 @@ public class LoginActivity extends Activity {
 			}
 		};
 	}
+	
+private void performSync(){
+	
+    	m_ProgressDialog = ProgressDialog.show(LoginActivity.this, 
+									"Please wait...", "Syncing data ...", true);
+    	user.syncSchedule(/*credentialAction*/ new Action(){
+
+					@Override
+					public void start(Object in, Callback cb) {
+							if(m_ProgressDialog != null){
+								m_ProgressDialog.dismiss();
+								m_ProgressDialog = null;
+							}
+							//LoginPrompt.showPrompt(LoginActivity.this);
+					}
+    		
+    		}, /*syncAction*/new Action(){
+
+				@Override
+				public void start(Object in, final Callback cb) {
+					if(m_ProgressDialog != null){
+						m_ProgressDialog.dismiss();
+						m_ProgressDialog = null;
+					}
+					DialogPrompt.showOptionDialog(LoginActivity.this, 
+							getResources().getString(R.string.schedule_conflict_dialogmsg), 
+							"Keep Server", new DialogInterface.OnClickListener(){
+								public void onClick(DialogInterface dialog,	int which) {
+									m_ProgressDialog = ProgressDialog.show(LoginActivity.this, 
+											"Please wait...", "Syncing data ...", true);
+									cb.invoke(new Integer(User.SYNC_REVERT));									
+								}
+							}
+							,"Keep Device", new DialogInterface.OnClickListener(){
+								public void onClick(DialogInterface dialog,	int which) {									
+									cb.invoke(new Integer(User.SYNC_SAVE));
+									m_ProgressDialog = ProgressDialog.show(LoginActivity.this, 
+											"Please wait...", "Syncing data ...", true);
+								}
+							},
+							"Merge Both", new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									m_ProgressDialog = ProgressDialog.show(LoginActivity.this, 
+											"Please wait...", "Syncing data ...", true);
+									cb.invoke(new Integer(User.SYNC_MERGE));
+									
+								}
+							}
+						);
+					
+				}
+    			
+    		}, new Callback(){
+
+				@Override
+				public void invoke(Object result) {
+					Log.d("LoginActivity","Result returned...");
+					//showDateSeparatedSchedule();
+					//refreshMovieIDList();
+					m_ProgressDialog.dismiss();
+					//Display a confirmation notification
+					Toast.makeText(LoginActivity.this, 
+							getString(R.string.myschedule_synced_msg), 
+							Toast.LENGTH_LONG).show();
+					
+					m_ProgressDialog.dismiss();
+					//Since this is a sub-activity, set result=ok and finish it.
+					Intent i = new Intent();
+					setResult(RESULT_OK, i);
+		            finish();				//finish the activity and return to search view
+				}
+
+				@Override
+				public void progress(Object value) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void failure(Throwable t) {
+					m_ProgressDialog.dismiss();
+					Log.e("LoginActivity",t.getMessage());
+					DialogPrompt.showDialog(LoginActivity.this, 
+							user.isLoggedIn() 
+							? "Unable to Sync schedule.\nTry Syncing again."
+							: "Login failed.");
+				}
+    			
+    		}, MainTab.getQueryManager());
+    }
 
 }
