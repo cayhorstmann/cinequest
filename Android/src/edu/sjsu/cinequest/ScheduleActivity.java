@@ -144,8 +144,10 @@ public class ScheduleActivity extends Activity {
 
 					@Override
 					public void start(Object in, Callback cb) {
-							if(m_ProgressDialog != null)
+							if(m_ProgressDialog != null){
 								m_ProgressDialog.dismiss();
+								m_ProgressDialog = null;
+							}
 							LoginPrompt.showPrompt(ScheduleActivity.this);
 					}
     		
@@ -153,15 +155,17 @@ public class ScheduleActivity extends Activity {
 
 				@Override
 				public void start(Object in, final Callback cb) {
-					if(m_ProgressDialog != null)
+					if(m_ProgressDialog != null){
 						m_ProgressDialog.dismiss();
+						m_ProgressDialog = null;
+					}
 					DialogPrompt.showOptionDialog(ScheduleActivity.this, 
 							getResources().getString(R.string.schedule_conflict_dialogmsg), 
 							"Keep Server", new DialogInterface.OnClickListener(){
 								public void onClick(DialogInterface dialog,	int which) {
-									cb.invoke(new Integer(User.SYNC_REVERT));
 									m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
 											"Please wait...", "Syncing data ...", true);
+									cb.invoke(new Integer(User.SYNC_REVERT));									
 								}
 							}
 							,"Keep Device", new DialogInterface.OnClickListener(){
@@ -175,6 +179,8 @@ public class ScheduleActivity extends Activity {
 								
 								@Override
 								public void onClick(DialogInterface dialog, int which) {
+									m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
+											"Please wait...", "Syncing data ...", true);
 									cb.invoke(new Integer(User.SYNC_MERGE));
 									
 								}
@@ -187,6 +193,7 @@ public class ScheduleActivity extends Activity {
 
 				@Override
 				public void invoke(Object result) {
+					Log.d("ScheduleActivity","Result returned...");
 					showDateSeparatedSchedule();
 					refreshMovieIDList();
 					m_ProgressDialog.dismiss();
@@ -566,8 +573,10 @@ public class ScheduleActivity extends Activity {
     			public void promptForCredentials(String command, String defaultUsername,
     					String defaultPassword, final User.CredentialsAction action) {
     				
-    				if(m_ProgressDialog != null)
+    				if(m_ProgressDialog != null){
     	    			m_ProgressDialog.dismiss();
+    	    			m_ProgressDialog = null;
+    				}
     				
     				Log.d("ScheduleActivity","Prompting user for login credentials");
 		    		AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -598,8 +607,10 @@ public class ScheduleActivity extends Activity {
     	 */
     	public static void showPrompt(final Context context){
     		
-    		if(m_ProgressDialog != null)
+    		if(m_ProgressDialog != null){
     	    			m_ProgressDialog.dismiss();
+    	    			m_ProgressDialog = null;
+    		}
     				
     		Log.d("ScheduleActivity","Prompting user for login credentials");
 		    AlertDialog.Builder builder = new AlertDialog.Builder(context);

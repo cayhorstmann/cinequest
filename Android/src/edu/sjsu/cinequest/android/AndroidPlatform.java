@@ -162,10 +162,12 @@ public class AndroidPlatform extends Platform {
 				try {
 					callback.invoke(arg);
 				} catch (Throwable t) {
-					log(t.getMessage());
-					// TODO: Show to user
-					// Ui.getUiEngine().pushScreen(new
-					// ErrorScreen(t.getMessage()));
+					
+					String error = "Exception during AndroidPlatform.invoke(). Type=" + t.getClass().toString();
+					if(t.getMessage() != null)
+						error += ", Message=" + t.getMessage();
+					
+					log(error);					
 				}
 			}
 		});
