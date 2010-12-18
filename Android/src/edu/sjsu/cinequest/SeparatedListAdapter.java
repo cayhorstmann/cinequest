@@ -10,12 +10,15 @@ import edu.sjsu.cinequest.R;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.provider.BaseColumns;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 
 public class SeparatedListAdapter extends BaseAdapter {
 	public final Map<String,Adapter> sections = new LinkedHashMap<String,Adapter>();  
@@ -106,8 +109,24 @@ public class SeparatedListAdapter extends BaseAdapter {
 		return position; 
 	}
 
+	/* public void bindView( View view, Context context, Cursor cursor){
+	        CheckBox checker = (CheckBox)view.findViewById(R.id.CheckBox);
 
+	       // checker.setOnCheckedChangeListener(context);
+	        checker.setTag(Long.valueOf(cursor.getLong(cursor.getColumnIndex(BaseColumns._ID))));
+	        // call super class for default binding
+	        super.getView(view,context,cursor);
+	    }
+*/
 	public View getView(int position, View convertView, ViewGroup parent) {
+		/* CheckBox checker = (CheckBox)convertView.findViewById(R.id.CheckBox);
+
+	       // checker.setOnCheckedChangeListener(context);
+	        checker.setTag(position);
+	        // call super class for default binding
+	     //   super.getView(view,context,cursor);
+	      * */
+	      
 		int sectionnum = 0;  
         for(Object section : this.sections.keySet()) {  
             Adapter adapter = sections.get(section);  

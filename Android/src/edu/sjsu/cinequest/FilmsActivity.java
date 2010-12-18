@@ -17,6 +17,9 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -25,11 +28,13 @@ import android.widget.TextView;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
+import edu.sjsu.cinequest.comm.cinequestitem.User;
 
 public class FilmsActivity extends Activity {
 	private ListView filmsList;
 	private Vector<Filmlet> films = new Vector<Filmlet>();
 	private Vector<Schedule> schedules = new Vector<Schedule>();
+	private Vector<Schedule> refineSchedules = new Vector<Schedule> ();
 	private String[] title ;
 	private static final int FILMBYDATE = 0;
 	private static final int FILMBYTITLE = 1;
@@ -37,6 +42,10 @@ public class FilmsActivity extends Activity {
 	private Button byDate_bt;
 	private Button byTitle_bt;
 	private Button imageButton;
+	private Button refineButton;
+	private Button addButton;
+	private CheckBox checkbox;
+	private boolean[] checked;
 	private Vector<Schedule> checkedSchedules = new Vector<Schedule>();
 	private String[] scheduleTitle;
 	private SeparatedListAdapter adapter;
@@ -46,8 +55,10 @@ public class FilmsActivity extends Activity {
         filmsList=(ListView)findViewById(R.id.ListView01);
         byDate_bt = (Button)findViewById(R.id.bydate_bt);
         byTitle_bt = (Button)findViewById(R.id.bytitle_bt);
+        checkbox = (CheckBox)findViewById(R.id.CheckBox);
+        
         adapter = new SeparatedListAdapter(this);
-        /*
+       
         filmsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 			@Override
@@ -64,7 +75,7 @@ public class FilmsActivity extends Activity {
 				
 			}
 		});
-		*/
+		
     
         byDate_bt.setOnClickListener(new OnClickListener(){
     		public void onClick(View v){
@@ -82,9 +93,124 @@ public class FilmsActivity extends Activity {
     	});
 
         filterStatus = FILMBYDATE;
-        this.updatefilter(filterStatus);   
+        updatefilter(filterStatus); 
+        setUpRefine();
+        setUpAdd();
     }
    
+    public void setUpRefine()
+    {
+    	refineButton = (Button)findViewById(R.id.refine_bt);	
+        refineButton.setOnClickListener(new OnClickListener(){
+    		public void onClick(View v){
+    			Log.e("refine","click");
+    			if(refineButton.getText().equals("Refine"))
+    			{
+    				Log.e("refine","is refine");
+    				refineButton.setText("Back");
+    				
+    				//refineButton.setBackgroundColor(Color.BLUE);
+    				if(filterStatus == FILMBYDATE)
+    					FilmsActivity.this.refine(FILMBYDATE);
+    				else
+    					FilmsActivity.this.refine(FILMBYTITLE);
+    				/*
+    				setUpCheck(true);
+    				for(int x = 0; x < checked.length; x++)
+    		        {
+    		        	/////checked[x] = false;
+    		        }
+    		        */
+    			}
+    			else 
+    			{
+    				if(refineButton.getText().equals("Back"))
+    				{
+    				refineButton.setText("Refine");
+    				//refineButton.setBackgroundColor(Color.RED);
+    				
+    				/*sAdapter = mAdapter;
+    				//ForumsActivity.this.refine(schedules);
+    				setUpCheck(false);
+    				filmsList.setAdapter(mAdapter);
+    				for(int x = 0; x < schedules.size(); x++)
+    				{
+    					if(checked[x])
+    					{
+    						//filmsList.getV
+    					}
+    				}
+    				*/
+    				}
+    			}
+    			//update();
+    			 
+    		}
+    	});     
+    }
+    LinearLayout masterParentRow;
+    LinearLayout[] ll;
+    private User user;
+    private void refine(int filterStatus)
+    {	
+    	if(filterStatus == FILMBYDATE)
+    	{
+    		refineSchedules = new Vector<Schedule>();
+        	for(int i = 0; i < schedules.size(); i ++)
+        	{
+        		if(checked[i])
+        		{
+        			refineSchedules.addElement(schedules.get(i));
+        		}
+        	}
+        	Log.e("vector size","size"+refineSchedules.size());
+        	scheduleList(refineSchedules);
+      /*  	LinearLayout vwParentRow = masterParentRow;
+        	for(int i = 0; i < tempVect.size(); i++)
+        	{
+        	//	LinearLayout vwChildRow = (LinearLayout)vwParentRow.getChildAt(i);
+        	//	Log.i("Cinequest", "choose"+ vwChildRow.getChildAt(0).toString());
+        	//	TextView txtView = (TextView)vwChildRow.getChildAt(0);
+        		checkbox = (CheckBox)vwParentRow.getChildAt(0); 
+        		checkbox.setChecked(true);
+        		
+        	}
+        	
+        	//ListView vwRootRow = (ListView) vwParentRow.getParent();
+        //	Log.e("child amount",""+vwParentRow.t);
+        //	Log.e("root amount",""+vwParentRow.getParent().toString());
+ 
+         */
+    	}
+    	
+    	else
+    	{
+    			
+    	}
+    	
+    }
+    private void setUpAdd()
+    {
+    	addButton = (Button)findViewById(R.id.add_bt);	
+    	addButton.setOnClickListener(new OnClickListener()
+    	{
+			@Override
+			public void onClick(View v) 
+			{
+				  Log.i("Film","add button got clicked");
+				  
+		    		  for(int i = 0; i < refineSchedules.size(); i++)
+		    		  {
+		    			  Log.i("Film","add films to schedule");
+		    			  Schedule schedule = (Schedule)refineSchedules.get(i);
+		    			  MainTab.getUser().getSchedule().add(schedule);
+		    		  }
+		          
+			}
+    		
+    	});
+    }
+    
     private void updatefilter(int filterStatus)
     {
         if(filterStatus == FILMBYDATE)
@@ -94,6 +220,7 @@ public class FilmsActivity extends Activity {
 				public void invoke(Object result) {
 					
 					schedules = (Vector<Schedule>) result;
+					checked = new boolean[schedules.size()];
 					adapter.setList(schedules);
 					scheduleTitle = new String[schedules.size()];
 					FilmsActivity.this.scheduleList(schedules);	
@@ -139,6 +266,7 @@ public class FilmsActivity extends Activity {
 
     private void scheduleList(Vector<Schedule> schedule)
     {  	
+    	adapter = new SeparatedListAdapter(FilmsActivity.this);
     	Log.v("Cinequest","enter scheduleList");
     	if (schedule.size() == 0) return;
     	DateUtils du = new DateUtils();
@@ -158,9 +286,12 @@ public class FilmsActivity extends Activity {
     		if(!day.equals(previousDay))
     		{
     			String title = du.format(previousDay, DateUtils.DATE_DEFAULT);
-    			adapter.addSection(title, new SimpleAdapter(this,getData(tempVect),R.layout.filmbydateitem, new String[]{"title","time","venue"}, 
-    	    			new int[]{R.id.ScheduleTitle ,R.id.ScheduleTime ,R.id.ScheduleVenue}));
-    			tempVect.removeAllElements();
+    			if(tempVect.size()!=0)
+    			{
+    				adapter.addSection(title, new SimpleAdapter(this,getData(tempVect),R.layout.filmbydateitem, new String[]{"title","time","venue"}, 
+        	    			new int[]{R.id.ScheduleTitle ,R.id.ScheduleTime ,R.id.ScheduleVenue}));
+        			tempVect.removeAllElements();
+    			}
     			previousDay = day;
     		}else
     		{
@@ -197,16 +328,21 @@ public class FilmsActivity extends Activity {
     {
     	
     	LinearLayout vwParentRow = (LinearLayout)v.getParent();	
-    	ImageButton btnChild = (ImageButton) vwParentRow.getChildAt(0);
-    			Log.i("Cinequest", "choose"+ vwParentRow.getChildAt(1).toString());
-    			LinearLayout vwChildRow = (LinearLayout)vwParentRow.getChildAt(1);	
-    			Log.i("Cinequest", "choose"+ vwChildRow.getChildAt(0).toString());
-    			TextView txtView = (TextView)vwChildRow.getChildAt(0);
-    			for(int i = 0; i < scheduleTitle.length ; i++)
-    				   if(scheduleTitle[i].equalsIgnoreCase((String) txtView.getText()))
-    				   {
-    					   btnChild.setImageResource(R.drawable.checked);   
-    				   }
+    	masterParentRow = vwParentRow;
+    	LinearLayout vwChildRow = (LinearLayout)vwParentRow.getChildAt(1);	
+		Log.i("Cinequest", "choose"+ vwChildRow.getChildAt(0).toString());
+		TextView txtView = (TextView)vwChildRow.getChildAt(0);
+		checkbox = (CheckBox)vwParentRow.getChildAt(0);
+		if(checkbox.isChecked())
+    	{
+			for(int i = 0; i < scheduleTitle.length ; i++)
+				   if(scheduleTitle[i].equalsIgnoreCase((String) txtView.getText()))
+				   {
+					   checked[i] = true; 
+					  // break;
+				   }	
+    	}
+				   
     }
     
     public void checkEntireRow(View v)

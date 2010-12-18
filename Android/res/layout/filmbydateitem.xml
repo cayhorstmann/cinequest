@@ -4,7 +4,14 @@
   android:layout_height="wrap_content" android:layout_width="fill_parent" android:orientation="horizontal"
   android:onClick="checkEntireRow">
 
-<CheckBox android:id="@+id/CheckBox01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5dip" android:layout_marginTop="5dip" android:focusable="false"></CheckBox>
+<CheckBox android:id="@+id/CheckBox" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content" 
+		android:layout_marginLeft="5dip" 
+		android:layout_marginTop="5dip" 
+		android:focusable="false"
+		android:onClick="checkHandler">
+</CheckBox>
 <LinearLayout android:id="@+id/LinearLayout01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginLeft="20px">
 <TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/ScheduleTitle" android:layout_marginTop="5px" android:ellipsize="end" android:singleLine="true"></TextView>
 <LinearLayout android:id="@+id/LinearLayout02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5px" android:layout_marginBottom="5px">
