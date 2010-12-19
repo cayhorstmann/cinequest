@@ -1,6 +1,5 @@
 package edu.sjsu.cinequest;
 
-import edu.sjsu.cinequest.android.AndroidPlatform;
 import edu.sjsu.cinequest.comm.ImageManager;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.QueryManager;
@@ -14,15 +13,18 @@ public class MainTab extends TabActivity {
 	private static QueryManager queryManager;
 	private static ImageManager imageManager;
 	private static User user;
+	public static TabHost tabHost;
 	
     public void onCreate(Bundle savedInstanceState) {
     	    	
         super.onCreate(savedInstanceState);
 
-        Platform.setInstance(new AndroidPlatform(getApplicationContext()));        
-        queryManager = new QueryManager();
+        //Platform.setInstance(new AndroidPlatform(getApplicationContext()));        
+        //queryManager = new QueryManager();
+        queryManager = HomeActivity.getQueryManager();
         imageManager = new ImageManager();
         setUser(new User());
+        
         // TODO: Persistent application user
         // user = new User();
         // Remove this to turn on test mode
@@ -34,7 +36,7 @@ public class MainTab extends TabActivity {
         	t.printStackTrace();
         }
         // Get host object from super class
-        TabHost tabHost = getTabHost();
+        tabHost = getTabHost();
         TabHost.TabSpec spec;
         
         // Create the intent associated with the activity
@@ -63,7 +65,7 @@ public class MainTab extends TabActivity {
         tabHost.addTab(spec);
 
         // Display the first tab
-        tabHost.setCurrentTab(0);
+        tabHost.setCurrentTab(HomeActivity.OPEN_TAB);
 
     }
     

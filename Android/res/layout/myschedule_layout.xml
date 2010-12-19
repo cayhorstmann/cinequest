@@ -72,6 +72,17 @@
 		  android:background="@android:color/transparent" 
 		  android:drawSelectorOnTop="false"
 	  />
+	  
+	  <TextView
+	  	android:id="@+id/msg_for_empty_schedyle"
+	  	android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:textColor="#FFFFFF"
+		android:textStyle="italic"
+		android:layout_gravity="center_vertical|center_horizontal"
+		android:text="@string/myschedule_msg_for_emptyschd"
+		android:layout_margin="14dip"
+		/>
   </LinearLayout>
         
 </LinearLayout>

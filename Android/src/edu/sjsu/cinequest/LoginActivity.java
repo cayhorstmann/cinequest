@@ -112,7 +112,7 @@ public class LoginActivity extends Activity {
 						m_ProgressDialog = null;
 					}
 					
-					//Since this is a sub-activity, set result=ok and finish it.
+					//Since this is a sub-activity, set result=SYNC_ERROR_ENCOUNTERED and finish it.
 					Intent i = new Intent();
 					setResult(SYNC_ERROR_ENCOUNTERED, i);
 		            finish();				//finish the activity and return to search view

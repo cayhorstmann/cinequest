@@ -46,6 +46,7 @@ public class ScheduleActivity extends Activity {
     private static User user;
     private ListView list;
     private Button syncButton, editButton;
+    private TextView emptyScheduleMessage;
     private boolean EDIT_MODE = false;
     private static ArrayList<String> movieIDList;
     private static final int SUB_ACTIVITY_SYNC_SCHEDULE = 0;
@@ -64,6 +65,8 @@ public class ScheduleActivity extends Activity {
         list = (ListView)this.findViewById(R.id.myschedulelist);
         syncButton = (Button) this.findViewById(R.id.sync_button);
         editButton = (Button) this.findViewById(R.id.edit_button);
+        emptyScheduleMessage = (TextView)this.findViewById(R.id.msg_for_empty_schedyle);
+        //emptyScheduleMessage.setVisibility(View.GONE);
         
         user = MainTab.getUser();
         
@@ -382,8 +385,14 @@ public class ScheduleActivity extends Activity {
       	if (scheduleItems.length == 0){
       		//Clear the items of previous list being displayed (if any)
       		list.setAdapter(new SeparatedListAdapter(this));
+      		list.setVisibility(View.GONE);
+      		emptyScheduleMessage.setVisibility(View.VISIBLE);
       		return;
       	}
+      	
+      	//display the list and hide the message for empty schedyle
+      	list.setVisibility(View.VISIBLE);
+  		emptyScheduleMessage.setVisibility(View.GONE);
       	
       	// create our list and custom adapter  
       	SeparatedListAdapter separatedListAdapter = new SeparatedListAdapter(this);
@@ -786,7 +795,7 @@ public class ScheduleActivity extends Activity {
 	        	menu.findItem(R.id.menu_option_edit).setVisible(true);
 	        }else{
 	        	menu.findItem(R.id.menu_option_logout).setVisible(false);
-	        	menu.findItem(R.id.menu_option_login).setVisible(true);
+	        	menu.findItem(R.id.menu_option_login).setVisible(false);
 	        	menu.findItem(R.id.menu_option_edit).setVisible(false);
 	        }
     	}
@@ -798,8 +807,11 @@ public class ScheduleActivity extends Activity {
      * Take the user to home activity
      */
     private void goHome(){
-    	Intent i = new Intent(ScheduleActivity.this, HomeActivity.class);
-    	this.startActivity(i);
+//    	Intent i = new Intent(ScheduleActivity.this, HomeActivity.class);
+//    	this.startActivity(i);
+    	Intent i = new Intent();
+		setResult(RESULT_OK, i);
+        finish();
     }
     
         
