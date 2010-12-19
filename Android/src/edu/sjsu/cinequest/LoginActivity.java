@@ -5,7 +5,10 @@ import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -53,6 +56,12 @@ public class LoginActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				
+				if(isNetworkAvailable() == false){
+					DialogPrompt.showDialog(LoginActivity.this, 
+							getResources().getString(R.string.no_network_prompt));
+					return;
+				}
+				
 				m_ProgressDialog = ProgressDialog.show(LoginActivity.this, 
 						"Please wait...", "Syncing data ...", true);
 				
@@ -75,6 +84,12 @@ public class LoginActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				
+				if(isNetworkAvailable() == false){
+					DialogPrompt.showDialog(LoginActivity.this, 
+							getResources().getString(R.string.no_network_prompt));
+					return;
+				}
+				
 				//Create the intent
 		    	Intent i = new Intent(LoginActivity.this, RegistrationActivity.class);
 		    	//Create a bundle, save url into it and add it to intent
@@ -87,6 +102,20 @@ public class LoginActivity extends Activity {
 			}        	
         });
 
+    }
+    
+    /**
+     * Check for active internet connection
+     */
+    public boolean isNetworkAvailable() {
+    	ConnectivityManager cMgr 
+		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cMgr.getActiveNetworkInfo();
+        
+        if( netInfo != null)
+        	return netInfo.isAvailable();
+        else
+        	return false;
     }
     
     /**

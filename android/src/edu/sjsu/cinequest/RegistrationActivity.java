@@ -1,9 +1,15 @@
 package edu.sjsu.cinequest;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -11,6 +17,7 @@ import android.webkit.WebViewClient;
 
 
 public class RegistrationActivity extends Activity {
+	WebView webview;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -26,7 +33,7 @@ public class RegistrationActivity extends Activity {
         setContentView(R.layout.registrationpage_layout);
  
         //get the webview
-	   final WebView webview = (WebView) this.findViewById(R.id.webview);
+	   webview = (WebView) this.findViewById(R.id.webview);
 	   //set JavaScript
 	   webview.getSettings().setJavaScriptEnabled(true);
 	   
@@ -59,8 +66,15 @@ public class RegistrationActivity extends Activity {
                 }
        });
        
-       //Load the URL
-       webview.loadUrl(url);       
+       if( isNetworkAvailable() == false ){
+    	   webview.setNetworkAvailable(false);
+			DialogPrompt.showDialog(RegistrationActivity.this, 
+					getResources().getString(R.string.no_network_prompt));			
+		}else{
+			webview.setNetworkAvailable(true);
+	       //Load the URL
+	       webview.loadUrl(url);
+		}
     }
     
     /**
@@ -85,4 +99,65 @@ public class RegistrationActivity extends Activity {
 	            return true;
 	        }
 	}
+	
+	/**
+     * Check for active internet connection
+     */
+    public boolean isNetworkAvailable() {
+    	ConnectivityManager cMgr 
+		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cMgr.getActiveNetworkInfo();
+        
+        if( netInfo != null)
+        	return netInfo.isAvailable();
+        else
+        	return false;
+    }
+    
+    /**
+     * Create a menu to be displayed when user hits Menu key on device
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.registrationactivity_menu, menu);
+        
+        return true;
+    }
+    
+    /** Menu Item Click Listener*/
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+        	case R.id.menu_option_goback:
+	            webview.goBack();
+	            return true;
+        	case R.id.menu_option_goforward:
+	            webview.goForward();
+	            return true;
+        	case R.id.menu_option_reload:
+	            webview.reload();
+	            return true;
+	        
+	        default:
+	            return super.onOptionsItemSelected(item);
+        }
+        
+    }
+    
+    /** This method is called before showing the menu to user after user clicks menu button*/
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+    	if( !webview.canGoBack() )
+    		menu.findItem(R.id.menu_option_goback).setEnabled(false);
+    	else
+    		menu.findItem(R.id.menu_option_goback).setEnabled(true);
+    	
+    	if( !webview.canGoForward() )
+    		menu.findItem(R.id.menu_option_goforward).setEnabled(false);
+    	else
+    		menu.findItem(R.id.menu_option_goforward).setEnabled(true);
+    	return super.onPrepareOptionsMenu(menu);
+    }
 }

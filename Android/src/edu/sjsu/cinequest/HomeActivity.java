@@ -19,6 +19,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -98,12 +101,13 @@ public class HomeActivity extends Activity {
     	
     	//check network connection
     	if( isNetworkAvailable() == false ){
-    		refreshScreen();
-    		Toast.makeText(this, "Network connection is unavailable", Toast.LENGTH_LONG).show();
+    		refreshHeaderImage(null);    		
+    		Toast.makeText(this, getResources().getString(R.string.no_network_msg), 
+    				Toast.LENGTH_LONG).show();
     		return;
     	}
     	
-    	//get the event/news data
+    	//if network is available, get the event/news data
   	    getEventData();
     }
     
@@ -118,8 +122,10 @@ public class HomeActivity extends Activity {
 
 			@Override
 			public void invoke(Object result) {
-				Log.d("HomeActivity","Result returned");
+				Log.d("HomeActivity","Home screen query result returned");
 				mNewsSections = (Vector<Section>) result;
+				//TODO remove this call to image refresh after xml is fixed
+				refreshHeaderImage("http://mobile.cinequest.org/imgs/mobile/creative.gif");
 				refreshScreen();
 				
 				m_ProgressDialog.dismiss();
@@ -139,9 +145,28 @@ public class HomeActivity extends Activity {
 				if(t.getMessage() != null)
 					error += " Message=" + t.getMessage();
 				Log.e("HomeActivity",error);
+				refreshHeaderImage(null);
+				
+				DialogPrompt.showDialog(HomeActivity.this, "Error in receiving updates. Try again!!");
 			}        	
         });
     }
+    
+    /**
+     * Invalidate the header image 
+     */
+     private void refreshHeaderImage(String imageurl){
+    	 
+    	 Drawable image;
+    	 if (imageurl == null){
+    		 image = getResources().getDrawable( R.drawable.creative );    		 
+    	 }else{
+    		 image = LoadImageFromWebOperations( imageurl );
+    		 if( image == null)
+    	 			image = getResources().getDrawable( R.drawable.creative );    	 
+    	 }
+    	 title_image.setImageDrawable( image );    	 
+     }     
     
     /**
      * Display the header image and schedule to the user with 
@@ -151,15 +176,6 @@ public class HomeActivity extends Activity {
      {
      	Log.v("HomeActivity","Showing the News/Event List on Screen. Total Section items = "
      			+ mNewsSections.size());
-     	
-     	//hard code the image temporarily
-        Drawable image = LoadImageFromWebOperations(
-        		"http://mobile.cinequest.org/imgs/mobile/creative.gif");
-		if( image == null)
-			image = getResources().getDrawable( R.drawable.creative );
-		
-		title_image.setImageDrawable( image );
-		
      	
 		//if there is no news to display, return
      	if (mNewsSections.size() == 0){
@@ -186,18 +202,14 @@ public class HomeActivity extends Activity {
      				//If item is a header item, set the image and continue
      				if( header.equalsIgnoreCase("Header") ){
      					
-     					Drawable headerImage = LoadImageFromWebOperations(((MobileItem)items.get(j)).getImageURL());
-		     			
-     					if(headerImage == null)
-     						headerImage = getResources().getDrawable( R.drawable.creative );
-     					
-     					title_image.setImageDrawable(headerImage);     					
+     					refreshHeaderImage( ((MobileItem)items.get(j)).getImageURL() );
      					continue OuterLoop;
      				}
-     				
+     				//it the item is anything but header, add their titles to arraylist
      				eventTitles.add( ((MobileItem)items.get(j)).getTitle() );     	 			
      			}
      		}
+     		//add section to listseparator
      		separatedListAdapter.addSection(header, new ArrayAdapter<String>(this, R.layout.home_event_row, eventTitles));     				
      	}
      	
@@ -225,7 +237,7 @@ public class HomeActivity extends Activity {
     
     /**
      * Get the QueryManager
-     * @return querymanager
+     * @return queryManager
      */
     public static QueryManager getQueryManager() {
 		return queryManager;
@@ -243,5 +255,31 @@ public class HomeActivity extends Activity {
         	return netInfo.isAvailable();
         else
         	return false;
+    }
+    
+    /**
+     * Create a menu to be displayed when user hits Menu key on device
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.homeactivity_menu, menu);
+        
+        return true;
+    }
+    
+    /** Menu Item Click Listener*/
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+        	case R.id.menu_option_about:
+	            //TODO show about screen
+	            return true;	        	            
+	        
+	        default:
+	            return super.onOptionsItemSelected(item);
+        }
+        
     }
 }

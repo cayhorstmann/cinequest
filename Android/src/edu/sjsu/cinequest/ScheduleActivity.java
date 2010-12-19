@@ -22,6 +22,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -142,6 +144,12 @@ public class ScheduleActivity extends Activity {
 //		}else{
 //			ScheduleActivity.this.writeSchedule();
 //		}
+    	
+    	if(user.isLoggedIn()==true && isNetworkAvailable() == false){
+			DialogPrompt.showDialog(ScheduleActivity.this, 
+					getResources().getString(R.string.no_network_prompt));
+			return;
+		}
     	
     	// TODO Fix it
     	m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
@@ -760,6 +768,9 @@ public class ScheduleActivity extends Activity {
 	            return true;
 	        case R.id.menu_option_done_editing:
 	            performEdit( item.getItemId() );
+	            return true;
+	        case R.id.menu_option_about:
+	            //TODO show about screen
 	            return true;	            
 	        
 	        default:
@@ -779,13 +790,14 @@ public class ScheduleActivity extends Activity {
     		menu.findItem(R.id.menu_option_login).setVisible(false);
     		menu.findItem(R.id.menu_option_logout).setVisible(false);
     		menu.findItem(R.id.menu_option_home).setVisible(false);
+    		menu.findItem(R.id.menu_option_about).setVisible(false);
     		
     	} else {
     		
     		menu.findItem(R.id.menu_option_done_editing).setVisible(false);
     		menu.findItem(R.id.menu_option_sync).setVisible(true);
     		menu.findItem(R.id.menu_option_home).setVisible(true);
-    		
+    		menu.findItem(R.id.menu_option_about).setVisible(true);
     		
 	    	/* if user is logged out, dont show LogOut option in menu, 
     		show Login instead. And vice-versa */
@@ -827,6 +839,20 @@ public class ScheduleActivity extends Activity {
     }
     
     /**
+     * Check for active internet connection
+     */
+    public boolean isNetworkAvailable() {
+    	ConnectivityManager cMgr 
+		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cMgr.getActiveNetworkInfo();
+        
+        if( netInfo != null)
+        	return netInfo.isAvailable();
+        else
+        	return false;
+    }
+    
+    /**
      * Take user to loginActivity to login
      */
     private static void logIn(Context context){    	
@@ -837,7 +863,7 @@ public class ScheduleActivity extends Activity {
 		((Activity) context).startActivityForResult(i, SUB_ACTIVITY_SYNC_SCHEDULE);
     }
     
-    
+        
     /**
      * This method merges the changes made on the server and locally
      * @param conflictingSchedule returned by the server

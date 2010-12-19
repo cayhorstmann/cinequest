@@ -1,5 +1,6 @@
 local.properties
 default.properties
+build.properties
 bin
 gen
 .project

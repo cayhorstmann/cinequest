@@ -21,4 +21,6 @@
 	<string name="myschedule_loggedin_saved_msg">Logged in. Schedule Successfully Saved!</string>
 	<string name="myschedule_loggedin_loaded_msg">Logged in. Schedule Successfully Retrieved!!</string>
 	<string name="myschedule_login_promptmsg">This feature needs you to be logged in. \nWould you like to sign in now?</string>
+	<string name="no_network_prompt">No network connection available. Please connect to Internet first!</string>
+	<string name="no_network_msg">Network connection is unavailable!</string>
 </resources>
