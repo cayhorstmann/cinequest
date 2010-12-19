@@ -5,6 +5,8 @@
   <LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:background="@android:color/transparent">
   <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="By Date" android:background="@android:color/transparent" android:textColor="#ffffff" android:id="@+id/bydate_bt"></Button>
 <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="By Title" android:background="@android:color/transparent" android:textColor="#ffffff" android:id="@+id/bytitle_bt" android:layout_marginLeft="30px"></Button>
+<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Refine" android:background="@android:color/transparent" android:textColor="#ffffff" android:id="@+id/refine_bt" android:layout_marginLeft="30px"></Button>
+<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Add" android:background="@android:color/transparent" android:textColor="#ffffff" android:id="@+id/add_bt" android:layout_marginLeft="30px"></Button>
 </LinearLayout>
 <ListView android:id="@+id/ListView01"
  android:layout_width="fill_parent"
