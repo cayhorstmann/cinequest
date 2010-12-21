@@ -6,5 +6,6 @@
     android:textSize="16sp"
     android:textStyle="bold"
     android:textColor="#FFFFFF"
+    android:id="@+id/news_event_title"
     >
 </TextView>

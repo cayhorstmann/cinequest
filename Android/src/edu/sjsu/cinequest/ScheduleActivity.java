@@ -670,6 +670,7 @@ public class ScheduleActivity extends Activity {
         	refreshMovieIDList();
         	
             switch (requestCode) {
+              //only this case is used in latest iternation of code, as others are now redundant
               case SUB_ACTIVITY_SYNC_SCHEDULE:
 	          	  Log.d("ScheduleActivity","User Logged In. Schedule Synced with server.");
 	          	  Toast.makeText(this, getString(R.string.myschedule_loggedin_synced_msg), 
@@ -770,7 +771,7 @@ public class ScheduleActivity extends Activity {
 	            performEdit( item.getItemId() );
 	            return true;
 	        case R.id.menu_option_about:
-	            //TODO show about screen
+	            DialogPrompt.showAppAboutDialog(this);
 	            return true;	            
 	        
 	        default:

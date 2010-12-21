@@ -1,8 +1,17 @@
 package edu.sjsu.cinequest;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.view.Display;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 public class DialogPrompt {
 	
@@ -77,6 +86,46 @@ public class DialogPrompt {
 		alert.show();
 		
 		return result;    		
+	}
+	
+	/**
+	 * Shows the About dialog with information and credits about the app
+	 */
+	public static void showAppAboutDialog(Context ctx){
+		//get display width
+		 Display display = ((WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay(); 
+		 int width = display.getWidth();
+		
+		//set up dialog
+        final Dialog dialog = new Dialog(ctx);
+        dialog.setContentView(R.layout.about_dialog);
+        dialog.setTitle("About Cinequest");
+        dialog.setCancelable(true);
+        dialog.setCancelable(true);
+        
+        //get dialog parameters, set custom width and reset the parameters
+        WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+        params.width= width * 90/100;
+        dialog.getWindow().setAttributes(params);
+
+        //set up image view
+        ImageView logo = (ImageView) dialog.findViewById(R.id.sjsu_logo);
+        logo.setImageResource(R.drawable.sjsulogo_new_sjsu4);
+        
+        //set up scrollview
+        ScrollView scroller = (ScrollView) dialog.findViewById(R.id.about_dialog_scrollview);
+        scroller.getLayoutParams().height = 200;
+        
+        //set up button
+        Button button = (Button) dialog.findViewById(R.id.about_dialog_okbutton);
+        button.setOnClickListener(new View.OnClickListener() {
+        @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        //now that the dialog is set up, show it    
+        dialog.show();
 	}
 
 }

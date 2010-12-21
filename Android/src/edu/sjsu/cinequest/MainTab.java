@@ -1,5 +1,6 @@
 package edu.sjsu.cinequest;
 
+import edu.sjsu.cinequest.android.AndroidPlatform;
 import edu.sjsu.cinequest.comm.ImageManager;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.QueryManager;
@@ -19,9 +20,13 @@ public class MainTab extends TabActivity {
     	    	
         super.onCreate(savedInstanceState);
 
-        //Platform.setInstance(new AndroidPlatform(getApplicationContext()));        
+        if(Platform.getInstance() == null)
+        	Platform.setInstance(new AndroidPlatform(getApplicationContext()));        
         //queryManager = new QueryManager();
         queryManager = HomeActivity.getQueryManager();
+        if(queryManager == null)
+        	queryManager = new QueryManager();
+        
         imageManager = new ImageManager();
         setUser(new User());
         

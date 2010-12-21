@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.ProgramItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
@@ -32,6 +33,7 @@ public class FilmDetail extends Activity {
 	private TextView title,description;
 	private ImageView image;
 	private static int chosenId;
+	private QueryManager queryManager;
 	public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
         setContentView(R.layout.filmdetail);
@@ -43,7 +45,12 @@ public class FilmDetail extends Activity {
         Bundle bundle = this.getIntent().getExtras();
 		chosenId = bundle.getInt("id");
 		Log.e("Cinequest","chosenId"+chosenId);
-	MainTab.getQueryManager().getProgramItem(chosenId, new Callback()
+		if( HomeActivity.getQueryManager() != null)
+			queryManager = HomeActivity.getQueryManager();
+		else
+			queryManager = MainTab.getQueryManager();
+		
+	queryManager.getProgramItem(chosenId, new Callback()
 	{
 		
 		@Override

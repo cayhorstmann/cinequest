@@ -19,16 +19,19 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
@@ -48,23 +51,36 @@ public class HomeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_layout);
         
-        Platform.setInstance(new AndroidPlatform(getApplicationContext()));
+        if(Platform.getInstance() == null)
+        	Platform.setInstance(new AndroidPlatform(getApplicationContext()));
         
         //get the list and imageview objects from layout
         list = (ListView)this.findViewById(R.id.home_newslist);
         title_image = (ImageView) this.findViewById(R.id.homescreen_title_image);
         festivalButton = (Button) findViewById(R.id.goto_festival_button);
-        dvdButton = (Button) findViewById(R.id.goto_dvd_button);        
-               
+        dvdButton = (Button) findViewById(R.id.goto_dvd_button);
+
+        
         //Upon clicking the item in list
         list.setOnItemClickListener( new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, 
 									int position, long id) {
-				//TODO
-				String title = (String)list.getItemAtPosition(position);
-				Toast.makeText(HomeActivity.this, "You Clicked: "+title, 
+				//TODO delete the toast part
+				MobileItem item = (MobileItem) list.getItemAtPosition(position);
+				String linkType = item.getLinkType();
+				int link_id = item.getLinkId();
+				
+				Intent intent = new Intent();
+				intent.setClass(HomeActivity.this, FilmDetail.class);
+				Bundle bundle = new Bundle();
+				bundle.putInt("id", link_id);
+				intent.putExtras(bundle);
+				HomeActivity.this.startActivity(intent);
+				
+				String title = item.getTitle();
+				Toast.makeText(HomeActivity.this, "Title: "+title +", Type: "+linkType + ", ID: "+ link_id, 
 						Toast.LENGTH_LONG).show();
 			}
         });
@@ -118,15 +134,15 @@ public class HomeActivity extends Activity {
     	m_ProgressDialog = ProgressDialog.show(HomeActivity.this, "", "Updating...", true);
 
     	//get the data
-        queryManager.getSpecialScreen("home", new Callback(){
+        queryManager.getSpecialScreen("ihome", new Callback(){
 
 			@Override
 			public void invoke(Object result) {
 				Log.d("HomeActivity","Home screen query result returned");
 				mNewsSections = (Vector<Section>) result;
 				//TODO remove this call to image refresh after xml is fixed
-				refreshHeaderImage("http://mobile.cinequest.org/imgs/mobile/creative.gif");
-				refreshScreen();
+				//refreshHeaderImage("http://mobile.cinequest.org/imgs/mobile/creative.gif");
+				populateNewsEventsList();
 				
 				m_ProgressDialog.dismiss();
 			}
@@ -165,14 +181,14 @@ public class HomeActivity extends Activity {
     		 if( image == null)
     	 			image = getResources().getDrawable( R.drawable.creative );    	 
     	 }
-    	 title_image.setImageDrawable( image );    	 
+    	 title_image.setImageDrawable( image );
      }     
     
     /**
      * Display the header image and schedule to the user with 
      * section-title being separator-header.
      */
-     private void refreshScreen()
+     private void populateNewsEventsList()
      {
      	Log.v("HomeActivity","Showing the News/Event List on Screen. Total Section items = "
      			+ mNewsSections.size());
@@ -193,7 +209,7 @@ public class HomeActivity extends Activity {
      		String header = s.getTitle();
      		Vector items = s.getItems();
      		
-     		ArrayList<String> eventTitles = new ArrayList<String>();
+     		ArrayList<MobileItem> newsEvents = new ArrayList<MobileItem>();
      		
      		//Add event titles to this arraylist
      		for(int j = 0; j < items.size(); j++){
@@ -201,16 +217,16 @@ public class HomeActivity extends Activity {
      				
      				//If item is a header item, set the image and continue
      				if( header.equalsIgnoreCase("Header") ){
-     					
+     					Log.d("HomeActivity","Title image URL: " +((MobileItem)items.get(j)).getImageURL());
      					refreshHeaderImage( ((MobileItem)items.get(j)).getImageURL() );
      					continue OuterLoop;
      				}
-     				//it the item is anything but header, add their titles to arraylist
-     				eventTitles.add( ((MobileItem)items.get(j)).getTitle() );     	 			
+     				//if the item is anything but header, add their them to arraylist
+     				newsEvents.add( (MobileItem)items.get(j) );
      			}
      		}
-     		//add section to listseparator
-     		separatedListAdapter.addSection(header, new ArrayAdapter<String>(this, R.layout.home_event_row, eventTitles));     				
+     		//add section to listseparator     				
+     		separatedListAdapter.addSection(header, new MobileItemAdapter(this, R.layout.home_event_row, newsEvents));
      	}
      	
  		HomeActivity.this.list.setAdapter(separatedListAdapter);    	
@@ -274,12 +290,50 @@ public class HomeActivity extends Activity {
         // Handle item selection
         switch (item.getItemId()) {
         	case R.id.menu_option_about:
-	            //TODO show about screen
+	            DialogPrompt.showAppAboutDialog(this);
 	            return true;	        	            
 	        
 	        default:
 	            return super.onOptionsItemSelected(item);
         }
         
+    }
+    
+    /**
+     * Custom List-Adapter to show the MobileItems in news event list 
+     */
+    private class MobileItemAdapter extends ArrayAdapter<MobileItem>{
+    	
+    	private ArrayList<MobileItem> itemsList;
+    	private int view_resource_id;	//id of the list's row's layout xml
+    	
+    	public MobileItemAdapter(Context context, int textViewResourceId, ArrayList<MobileItem> list) {
+            super(context, textViewResourceId, list);
+            this.itemsList = list;
+            this.view_resource_id = textViewResourceId;
+    	}
+    	
+    	@Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+                View v = convertView;
+                
+                if (v == null) {
+                    LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    v = vi.inflate(view_resource_id, null);
+                }
+                //Log.d("MobileItemAdapter", "getView() called with Position=" + position);                                
+                MobileItem result = itemsList.get(position);
+                
+                if (result != null) {
+                		//get text from list, and fill it into the row		
+                        TextView title = (TextView) v.findViewById(R.id.news_event_title);                        
+                        
+                        //Set title text
+                        if (title != null)
+                              title.setText(result.getTitle());     
+                }
+                
+                return v;
+        }
     }
 }
