@@ -4,40 +4,7 @@
 	android:orientation="vertical" 
 	android:layout_width="fill_parent" 
 	android:layout_height="fill_parent">
-	<RelativeLayout
-    android:orientation="horizontal"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:background="#A9A9A9"
-    >
-    <!-- -->
-    
-    <Button
-		android:id="@+id/backDVD_button"
-    	android:text="DVDs"
-    	
-    	
-    	android:layout_width="60dip"
-    	android:layout_height="40dip"
-    	android:layout_alignParentLeft="true"
-    	android:layout_marginLeft="3dip"
-    	android:layout_marginTop="5dip"
-	/>
-	
-	<TextView  
-		android:id="@+id/DVDheader"
-	    android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content" 
-	    android:text=""
-    	android:textStyle="bold"
-    	android:textColor="#FFF"
-    	android:textSize="16dip"
-    	android:gravity="center"
-    	android:layout_marginTop="10dip"
-    	android:layout_toRightOf = "@+id/backDVD_button"
-    />
-    
-    </RelativeLayout>
+
     
 <ScrollView  android:id="@+id/scView" 
 android:layout_height="fill_parent" 
