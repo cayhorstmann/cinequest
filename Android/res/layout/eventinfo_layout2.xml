@@ -64,6 +64,10 @@ android:layout_marginTop="0px"
 		android:layout_below = "@+id/tSpot9"
     	android:layout_marginTop="5px"
 	/>
+	
+	<ListView android:layout_width="wrap_content" android:layout_height="200dip" android:id="@+id/ScheduleList" android:layout_below = "@+id/call_button">
+</ListView>
+
 </RelativeLayout>
 </ScrollView>  
   </LinearLayout>

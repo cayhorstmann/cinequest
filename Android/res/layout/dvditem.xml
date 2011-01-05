@@ -4,7 +4,7 @@
   android:layout_height="wrap_content" android:layout_width="fill_parent" android:orientation="horizontal"
   android:onClick="checkEntireRow">
 <LinearLayout android:id="@+id/LinearLayout01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginLeft="20px">
-<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/ScheduleTitle" android:layout_marginTop="5px" android:ellipsize="end" android:singleLine="true"></TextView>s
+<TextView android:text="@+id/TextView01" android:textSize = "17dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/ScheduleTitle" android:layout_marginTop="5px" android:ellipsize="end" android:singleLine="true"></TextView>s
 </LinearLayout>
 
 

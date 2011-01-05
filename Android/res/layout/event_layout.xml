@@ -4,51 +4,6 @@
   android:orientation="vertical" android:layout_height="fill_parent" android:layout_width="fill_parent">
   <LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:background="@android:color/transparent">
 </LinearLayout>
-<RelativeLayout
-    android:orientation="horizontal"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:background="#A9A9A9"
-    >
-    <!-- -->
-    
-    <Button
-		android:id="@+id/refine_button"
-    	android:text="Refine"
-    	
-    	
-    	android:layout_width="70dip"
-    	android:layout_height="40dip"
-    	android:layout_alignParentLeft="true"
-    	android:layout_marginLeft="3dip"
-    	android:layout_marginTop="5dip"
-	/>
-	
-	<TextView  
-	    android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content" 
-	    android:text="Forums"
-    	android:textStyle="bold"
-    	android:textColor="#FFF"
-    	android:textSize="16dip"
-    	android:id = "@+id/Header"
-    	android:layout_toRightOf = "@+id/CQ_button"
-    	android:layout_toLeftOf = "@+id/nRelease_button"
-    	android:gravity="center"
-    	android:layout_marginTop="10dip"
-    />
-    <Button
-		android:id="@+id/add_button"
-    	android:text="Add"
-    	
-    	
-    	android:layout_width="70dip"
-    	android:layout_height="40dip"
-    	android:layout_alignParentRight="true"
-    	android:layout_marginRight="3dip"
-    	android:layout_marginTop="5dip"
-	/>    
-    </RelativeLayout>
     
 <ListView android:id="@+id/ListView01"
  android:layout_width="fill_parent"

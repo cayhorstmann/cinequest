@@ -134,7 +134,7 @@ public class ForumsActivity extends Activity {
     }
     public void setUpRefine()
     {
-    	refineButton = (Button)findViewById(R.id.refine_button);	
+    	/*refineButton = (Button)findViewById(R.id.refine_button);	
         refineButton.setOnClickListener(new OnClickListener(){
     		public void onClick(View v){
     			if(refineButton.getText().equals("Refine"))
@@ -174,7 +174,7 @@ public class ForumsActivity extends Activity {
     			}
     			//update();
     		}
-    	});
+    	});*/
         
         
     }
@@ -194,7 +194,7 @@ public class ForumsActivity extends Activity {
     
     public void setUpAdd()
     {
-    	addButton = (Button)findViewById(R.id.add_button);	
+    	/*addButton = (Button)findViewById(R.id.add_button);	
     	addButton.setOnClickListener(new OnClickListener(){
     		public void onClick(View v){
     			if(refineButton.getText().equals("Refine"))
@@ -234,7 +234,7 @@ public class ForumsActivity extends Activity {
     			}
     			//update();
     		}
-    	});
+    	});*/
         
     }
     
@@ -245,7 +245,7 @@ public class ForumsActivity extends Activity {
     {
     	if(numChecked > 0)
     	{
-    		ImageButton btnChild = (ImageButton)findViewById(R.id.ImageButton01);
+    		//ImageButton btnChild = (ImageButton)findViewById(R.id.ImageButton01);
     		//btnChild.
     		//return;
     	}
@@ -1011,8 +1011,8 @@ public class ForumsActivity extends Activity {
     					public void setView(int position) 
     					{ 
                     // TODO Auto-generated method stub 
-    						ImageButton txt = (ImageButton)findViewById(R.id.ImageButton01);
-    						txt.setImageResource(R.drawable.checked);
+    						//ImageButton txt = (ImageButton)findViewById(R.id.ImageButton01);
+    						//txt.setImageResource(R.drawable.checked);
                     //just change textview properties :) 
     						//txt.setTextColor( Color.BLACK ); 
                     //txt.setTextSize( 12 ); 

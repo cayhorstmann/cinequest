@@ -32,6 +32,10 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Adapter;
@@ -57,6 +61,7 @@ public class DVDActivity extends Activity {
 	private static final int FILMBYDATE = 0;
 	private static final int FILMBYTITLE = 1;
 	private int filterStatus;
+	public boolean allowBack = false;
 	private String[] scheduleTitle;
 	private String[] scheduleDes;
 	
@@ -106,44 +111,44 @@ public class DVDActivity extends Activity {
     	
         filterStatus = FILMBYDATE;
         this.updatefilter(filterStatus);
-        setUpCQ();
-        setUpNR();
               
          
     }
-    public void setUpCQ()
-    {
-    	cqButton = (Button)findViewById(R.id.CQ_button);	
-        cqButton.setOnClickListener(new OnClickListener(){
-    		public void onClick(View v){
-    			click(true);
-    						}
-    			
-    		
-    	});
-    }
-    public void setUpNR()
-    {
-    	nrButton = (Button)findViewById(R.id.nRelease_button);	
-        nrButton.setOnClickListener(new OnClickListener(){
-    		public void onClick(View v){
-    			click(false);
-    						}
-    			
-    		
-    	});
-    }
+
     String url = "http://mobile.cinequest.org/mobileCQ.php?type=dvd&id=";
     SpannableString str = new SpannableString("");
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.dvdactivity_menu, menu);
+        
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+        	case R.id.menu_option_cqpick:
+        		click(true);
+	            //goHome();
+	            return true;
+	        case R.id.menu_option_newrelease:
+	        	click(false);
+	            return true;
+	      
+	        default:
+	            return super.onOptionsItemSelected(item);
+        }
+        
+    }
     public void checkEntireRow(View v)
     {
     	Log.i("Cinequest", "click row");
+    	allowBack = true;
     	LinearLayout vwParentRow = (LinearLayout)v;	
     	//Log.i("Cinequest", "choose"+ vwParentRow.getChildAt(1).toString());
     			LinearLayout vwChildRow = (LinearLayout)vwParentRow.getChildAt(0);	
     			TextView txtView = (TextView)vwChildRow.getChildAt(0);
     			Log.i("Cinequest", "choose"+ txtView.getText().toString());
-    			
     			for(int i = 0; i < scheduleTitle.length ; i++)
     				   if(scheduleTitle[i].equalsIgnoreCase(txtView.getText().toString()))
     				   {
@@ -199,8 +204,8 @@ public class DVDActivity extends Activity {
      					   DVDTitle.setText(t);
      					  //sView.addView(DVDTitle);
      					   DVDTitle.setGravity(Gravity.CENTER_HORIZONTAL); 
-     					   DVDTitle = (TextView)findViewById(R.id.DVDheader);
-     					   DVDTitle.setText(t);
+     					   //DVDTitle = (TextView)findViewById(R.id.DVDheader);
+     					  // DVDTitle.setText(t);
      					  //sView.addView(DVDTitle);
      					   DVDTitle = (TextView)findViewById(R.id.SummaryTitle);
      					   StringBuffer s = new StringBuffer(str);
@@ -317,6 +322,7 @@ public class DVDActivity extends Activity {
     	{
     			nurl = "http://mobile.cinequest.org/mobileCQ.php?type=dvd&release";
     	}
+    	allowBack = true;
         	Log.i("Cinequest", "click row");
         	//LinearLayout vwParentRow = (LinearLayout)v;	
         	//Log.i("Cinequest", "choose"+ vwParentRow.getChildAt(1).toString());
@@ -824,17 +830,37 @@ public class DVDActivity extends Activity {
     }
     private Button back;
     
+    @Override
+	public boolean onKeyDown(int keyCode, KeyEvent event)
+	{
+		if(keyCode == KeyEvent.KEYCODE_BACK)
+		{
+			if(!allowBack)
+			{
+				
+			}
+			else
+			{
+			Log.i("BACK", "Take a picture lol");
+			setContentView(R.layout.dvd_layout);
+			update();
+			return true;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
+	}
     public void setButtons()
     {
-    	back = (Button)findViewById(R.id.backDVD_button);
-    	back.setOnClickListener(new OnClickListener(){
+    	
+    	//back = (Button)findViewById(R.id.backDVD_button);
+    	/*back.setOnClickListener(new OnClickListener(){
     		public void onClick(View v){
     			setContentView(R.layout.dvd_layout);
     			setUpCQ();
     			setUpNR();
     			update();
     		}
-    	});
+    	});*/
     }
     private void updatefilter(int filterStatus)
     {
