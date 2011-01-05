@@ -11,6 +11,7 @@
     	android:paddingRight="5dip"
     	android:visibility="gone"
     	android:id="@+id/myschedule_checkbox"
+    	android:focusable="false"
     />
     
     <LinearLayout
@@ -41,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textStyle="normal"
+            android:textStyle="italic"
             android:textSize="10dip"
             android:textColor="#ffffff"
             android:layout_alignParentLeft="true"

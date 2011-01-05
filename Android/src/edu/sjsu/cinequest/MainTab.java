@@ -8,6 +8,7 @@ import edu.sjsu.cinequest.comm.cinequestitem.User;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TabHost;
 
 public class MainTab extends TabActivity {
@@ -16,19 +17,32 @@ public class MainTab extends TabActivity {
 	private static User user;
 	public static TabHost tabHost;
 	
+	public void onStart(){
+		super.onStart();
+		//If the app crashed and later started on this activity, platform will be null 
+		//finish this activity
+		if(Platform.getInstance() == null){
+			Log.d("MainTab","App likely resuming after crash on MainTab. " +
+					"Going backt to Home Activity");
+			MainTab.this.finish();
+		}
+	}
+	
     public void onCreate(Bundle savedInstanceState) {
     	    	
         super.onCreate(savedInstanceState);
-
+        
+        //TODO next if statement is not needed after onStart method??
         if(Platform.getInstance() == null)
         	Platform.setInstance(new AndroidPlatform(getApplicationContext()));        
         //queryManager = new QueryManager();
+        
         queryManager = HomeActivity.getQueryManager();
         if(queryManager == null)
         	queryManager = new QueryManager();
         
         imageManager = new ImageManager();
-        setUser(new User());
+        setUser( HomeActivity.getUser() );
         
         // TODO: Persistent application user
         // user = new User();

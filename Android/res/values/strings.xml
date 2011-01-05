@@ -32,4 +32,6 @@
 								Lou Bash\n
 								Matt Opsal\n
 	</string>	
+	<string name="schedule_filmID"></string>
+	<string name="schedule_filmTitle"></string>
 </resources>

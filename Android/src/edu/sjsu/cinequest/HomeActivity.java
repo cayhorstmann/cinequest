@@ -10,6 +10,7 @@ import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.MobileItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Section;
+import edu.sjsu.cinequest.comm.cinequestitem.User;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -43,7 +44,8 @@ public class HomeActivity extends Activity {
     private Vector<Section> mNewsSections = new Vector<Section>();
     private Button festivalButton, dvdButton;
     public static int OPEN_TAB = 0;
-    private static QueryManager queryManager = new QueryManager();    
+    private static QueryManager queryManager = new QueryManager();
+    private static User user;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -53,6 +55,8 @@ public class HomeActivity extends Activity {
         
         if(Platform.getInstance() == null)
         	Platform.setInstance(new AndroidPlatform(getApplicationContext()));
+        
+        user = new User();
         
         //get the list and imageview objects from layout
         list = (ListView)this.findViewById(R.id.home_newslist);
@@ -256,7 +260,17 @@ public class HomeActivity extends Activity {
      * @return queryManager
      */
     public static QueryManager getQueryManager() {
+    	if( queryManager == null ) 
+    		return new QueryManager();
 		return queryManager;
+	}
+    
+    /**
+     * Get the User
+     * @return user
+     */
+    public static User getUser() {
+		return user;
 	}
     
     /**

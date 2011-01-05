@@ -7,12 +7,12 @@
    />
    
    <item 
-   	android:id="@+id/menu_option_edit"
+   	android:id="@+id/menu_option_batchdelete"
     android:title="Batch Delete" 
    />
    
    <item 
-   	android:id="@+id/menu_option_done_editing"
+   	android:id="@+id/menu_option_delete_selected"
     android:title="Delete Selected" 
    />
    
