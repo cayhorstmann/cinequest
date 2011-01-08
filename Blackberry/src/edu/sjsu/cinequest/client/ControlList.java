@@ -550,17 +550,20 @@ public class ControlList extends CinequestScreen
         Font defaultFont = Font.getDefault();
         int defaultSize = defaultFont.getHeight();
         int largeSize = defaultSize * 6 / 5;
-        fonts = new Font[8];
-        foregroundColors = new int[8];
-        backgroundColors = new int[8];
+        fonts = new Font[16];
+        foregroundColors = new int[16];
+        backgroundColors = new int[16];
         for (int i = 0; i < 8; i++)
         {
             fonts[i] = defaultFont.derive(((i & HParser.BOLD) != 0 ? Font.BOLD
                     : 0)
                     + ((i & HParser.ITALIC) != 0 ? Font.ITALIC : 0),
                     (i & HParser.LARGE) != 0 ? largeSize : defaultSize);
+            fonts[8 + i] = fonts[i];
             foregroundColors[i] = 0;
+            foregroundColors[8 + i] = 0xff0000;
             backgroundColors[i] = 0xffffff;
+            backgroundColors[8 + i] = 0xffffff;
         }
     }
 }

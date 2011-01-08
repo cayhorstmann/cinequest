@@ -24,11 +24,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Gravity;
@@ -50,6 +52,8 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.CharUtils;
+import edu.sjsu.cinequest.comm.HParser;
+import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
@@ -140,6 +144,124 @@ public class DVDActivity extends Activity {
         }
         
     }
+    
+    private static int[] spots = { 
+    	R.id.tSpot1, R.id.tSpot2, R.id.tSpot3, R.id.tSpot4, R.id.tSpot5, 
+    	R.id.tSpot6, R.id.tSpot7, R.id.tSpot8, R.id.tSpot9, R.id.tSpot10
+    };
+	
+    private int spotCount = 0;
+    
+    private void addEntry(String tag, String s) {
+    	if (s == null || s.equals("")) return;
+    	if (spotCount >= spots.length) return;
+    	TextView tv = (TextView) findViewById(spots[spotCount]);
+    	tv.setText(tag + ": " + s);
+		spotCount++;
+    }
+	
+    private void loadDVD(int id)  // CSH
+    {
+    	MainTab.getQueryManager().getDVD(id, new Callback() { // TODO: better callback
+			public void invoke(Object result) {
+				Film in = (Film) result;
+				setContentView(R.layout.dvdinfo_layout);
+				TextView tv = (TextView) findViewById(R.id.DVDTitle);				
+				tv.setText(in.getTitle());
+				tv.setGravity(Gravity.CENTER_HORIZONTAL); 
+				
+				tv = (TextView) findViewById(R.id.SummaryTitle);
+				HParser parser = new HParser();
+				parser.parse(in.getDescription());
+				SpannableString spstr = new SpannableString(parser.getResultString());
+				byte[] attributes = parser.getAttributes();
+				int[] offsets = parser.getOffsets();
+				for (int i = 0; i < offsets.length - 1; i++) {
+					int start = offsets[i];
+					int end = offsets[i + 1];
+					byte attr = attributes[i];
+					int flags = 0;
+					if ((attr & HParser.BOLD) != 0)
+						spstr.setSpan(new StyleSpan(Typeface.BOLD), start, end, flags);
+					if ((attr & HParser.ITALIC) != 0)
+						spstr.setSpan(new StyleSpan(Typeface.ITALIC), start, end, flags);
+					if ((attr & HParser.LARGE) != 0)
+						spstr.setSpan(new RelativeSizeSpan(1.2F), start, end, flags);					
+					if ((attr & HParser.RED) != 0)
+						spstr.setSpan(new ForegroundColorSpan(Color.RED), start, end, flags);
+				}
+				
+				tv.setText(spstr);
+				
+				// TODO: Cache doesn't seem to work
+				
+				MainTab.getImageManager().getImage(in.getImageURL(), new Callback() {
+					@Override
+					public void invoke(Object result) {
+						Bitmap bmp = (Bitmap) result;
+				  		ImageView iv = (ImageView)findViewById(R.id.ImageTitle);
+				  		iv.setImageBitmap(bmp);											  		
+					}
+					@Override
+					public void progress(Object value) {
+				
+					}
+
+					@Override
+					public void failure(Throwable t) {
+					
+					}   
+				}, null, true);					
+								
+				// TODO: Get all images 
+				Vector urls = parser.getImageURLs();
+				if (urls.size() > 0) 
+				{
+					MainTab.getImageManager().getImages(urls, new Callback() {
+						@Override
+						public void progress(Object result) {
+							Bitmap bmp = (Bitmap) result;
+					  		//ImageView iv = (ImageView)findViewById(R.id.ImageTitle);
+					  		//iv.setImageBitmap(bmp);							
+					  		//setContentView(R.layout.dvdinfo_layout);
+						}
+						@Override
+						public void invoke(Object value) {
+					
+						}
+
+						@Override
+						public void failure(Throwable t) {
+						
+						}   
+					});					
+				}
+									
+				spotCount = 0;
+		        addEntry("Director", in.getDirector());
+		        addEntry("Producer", in.getProducer());
+		        addEntry("Editor", in.getEditor());
+		        addEntry("Writer", in.getWriter());
+		        addEntry("Cinematographer", in.getCinematographer());
+		        addEntry("Cast", in.getCast());
+		        addEntry("Country", in.getCountry());
+		        addEntry("Language", in.getLanguage());
+		        addEntry("Genre", in.getGenre());
+		        addEntry("Film Info", in.getFilmInfo());					
+			}
+
+			@Override
+			public void progress(Object value) {
+		
+			}
+
+			@Override
+			public void failure(Throwable t) {
+			
+			}        	
+    	});
+    }
+    
     public void checkEntireRow(View v)
     {
     	Log.i("Cinequest", "click row");
@@ -152,8 +274,15 @@ public class DVDActivity extends Activity {
     			for(int i = 0; i < scheduleTitle.length ; i++)
     				   if(scheduleTitle[i].equalsIgnoreCase(txtView.getText().toString()))
     				   {
+    					   // CSH start here
+       				    
+    					   loadDVD(id[i]);
+    					   
+    					   
+    					   /*
+    					    
     					   setContentView(R.layout.dvdinfo_layout);
-    				       DVDTitle = (TextView)findViewById(R.id.DVDTitle);
+    					   DVDTitle = (TextView)findViewById(R.id.DVDTitle);
     				   	Log.i("Cinequest", "choose"+ txtView.getText().toString());
     				       URL u = null;
     						String result = ""; 
@@ -307,7 +436,7 @@ public class DVDActivity extends Activity {
      					 
      					setButtons();
     					   Log.i("TEST", "" + id[i]);
-    					   
+    					   */
     				   }
     			
     }
@@ -329,7 +458,8 @@ public class DVDActivity extends Activity {
         			//LinearLayout vwChildRow = (LinearLayout)vwParentRow.getChildAt(0);	
         			//TextView txtView = (TextView)vwChildRow.getChildAt(0);
         			//Log.i("Cinequest", "choose"+ txtView.getText().toString());
-        			
+
+        	// CSH and here
         					   setContentView(R.layout.dvdinfo_layout);
         				       DVDTitle = (TextView)findViewById(R.id.DVDTitle);
         			
