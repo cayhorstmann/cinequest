@@ -126,6 +126,7 @@ public class ImageManager
      * Fetches multiple images in one thread. Called from UI thread. 
      * @param imageUrls the image URLs
      * @param callback the callback for reporting progress. Each progress call delivers one image.
+     * Final callback delivers vector of all images
      */
     public void getImages(final Vector imageUrls, final Callback callback)
     {
@@ -133,12 +134,14 @@ public class ImageManager
         {
             public void run()
             {
+            	Vector images = new Vector();
                 for (int i = 0; i < imageUrls.size(); i++)
                 {
                     String imageUrl = (String) imageUrls.elementAt(i);
                     try
                     {
                         Object result = fetchImage(imageUrl, true);
+                        images.addElement(result);
                         Platform.getInstance().progress(callback, result);
                     }
                     catch (Throwable e)
@@ -146,7 +149,7 @@ public class ImageManager
                         Platform.getInstance().failure(callback, e);
                     }                
                 }
-                
+                Platform.getInstance().invoke(callback, images);                
             }
         });
         t.start();        
