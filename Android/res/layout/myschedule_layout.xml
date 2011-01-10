@@ -7,7 +7,7 @@
     >
     
     <!-- Change the android:visibility="gone" to "visible" to show the action bar -->
-     
+    <!--  
     <RelativeLayout
     android:id="@+id/schedule_action_bar"
     android:orientation="horizontal"
@@ -50,16 +50,13 @@
     	android:layout_marginTop="5dip"
 	/>    
     </RelativeLayout>
-    
-    
-    
+    -->
     
     <LinearLayout
 	  android:id="@+id/list_area"
 	  android:layout_width="fill_parent"
 	  android:layout_height="fill_parent"
-	  android:layout_weight="1"  
-	  android:paddingBottom="0dip"
+	  android:layout_weight="1"
 	  >
 	  <ListView
 		  android:id="@+id/myschedulelist"

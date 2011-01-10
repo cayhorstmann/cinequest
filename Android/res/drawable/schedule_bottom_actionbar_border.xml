@@ -7,16 +7,17 @@
     
     <!-- angle=90 means bottom to up, 0 means left to right -->
     
-    <!-- these colors give a grayish gradient 
+    <!-- these colors give a grayish gradient --> 
     <gradient
         android:startColor="#4A4344"
         android:endColor="#6E6A6B"
         android:angle="90"
     />
-    -->
-    <solid
+    
+    <!-- <solid
     	android:color="#AA000000"
-    />
+    />-->
+    
     <padding android:left="1dp" android:top="1dp" 
             android:right="1dp" android:bottom="1dp" /> 
     <corners android:radius="4dp" /> 

@@ -1,17 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical" android:layout_height="fill_parent" android:layout_width="fill_parent">
-  <LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:background="@android:color/transparent">
-  <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="By Date" android:background="@android:color/transparent" android:textColor="#ffffff" android:id="@+id/bydate_bt"></Button>
-<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="By Title" android:background="@android:color/transparent" android:textColor="#ffffff" android:id="@+id/bytitle_bt" android:layout_marginLeft="30px"></Button>
-<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Refine" android:background="@android:color/transparent" android:textColor="#ffffff" android:id="@+id/refine_bt" android:layout_marginLeft="30px"></Button>
-<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Add" android:background="@android:color/transparent" android:textColor="#ffffff" android:id="@+id/add_bt" android:layout_marginLeft="30px"></Button>
-</LinearLayout>
-<ListView android:id="@+id/ListView01"
- android:layout_width="fill_parent"
- android:layout_height="wrap_content" ></ListView>
-  
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical" 
+  android:layout_height="fill_parent" 
+  android:layout_width="fill_parent"
+>
 
+<!--
+  <LinearLayout 
+  	android:id="@+id/LinearLayout01" 
+  	android:layout_height="wrap_content" 
+  	android:layout_width="fill_parent" 
+  	android:background="@android:color/transparent"
+  	>
+  	
+  	 android:background="@android:color/transparent" 
+  <Button 
+  	android:layout_width="wrap_content" 
+  	android:layout_height="wrap_content" 
+  	android:text="By Date"   	 
+  	android:textColor="#ffffff" 
+  	android:id="@+id/bydate_bt"
+  ></Button>
+  
+  <Button 
+	android:layout_width="wrap_content" 
+	android:layout_height="wrap_content" 
+	android:text="By Title" 
+	android:textColor="#ffffff" 
+	android:id="@+id/bytitle_bt" 
+	android:layout_marginLeft="10px"
+  ></Button>
+
+  <Button 
+	android:layout_width="wrap_content" 
+	android:layout_height="wrap_content"
+	android:text="Refine"  
+	android:textColor="#ffffff" 
+	android:id="@+id/refine_bt" 
+	android:layout_marginLeft="10px"
+  ></Button>
+
+  <Button 
+	android:layout_width="wrap_content" 
+	android:layout_height="wrap_content" 
+	android:text="Add"  
+	android:textColor="#ffffff" 
+	android:id="@+id/add_bt" 
+	android:layout_marginLeft="10px"
+  ></Button>
+</LinearLayout>
+-->
+
+
+<LinearLayout
+	  android:layout_width="fill_parent"
+	  android:layout_height="fill_parent"
+	  android:layout_weight="1"
+	  >
+
+	<ListView 
+		android:id="@+id/ListView01"
+	 	android:layout_width="fill_parent"
+	 	android:layout_height="wrap_content"
+	 	android:background="@android:color/transparent"
+	 	android:layout_weight="1" 
+	 />
+	 
+</LinearLayout>
+
+<!-- The following layout is the bottom action bar with buttons -->
+<LinearLayout
+    android:id="@+id/add_films_action_bar"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/schedule_bottom_actionbar_border"
+    android:layout_marginBottom="2dip"
+    android:layout_gravity="bottom"
+    android:visibility="gone"
+    >
+    
+    <Button
+		android:id="@+id/add_selectedfilms_button"
+    	android:text="Add"
+    	android:layout_width="wrap_content"
+    	android:layout_height="40dip"
+    	android:layout_alignParentLeft="true"
+    	android:layout_marginLeft="3dip"
+    	android:layout_marginTop="3dip"
+	/>
+	
+	<Button
+		android:id="@+id/refine_selectedfilms_button"
+    	android:text="Refine"
+    	android:layout_width="wrap_content"
+    	android:layout_height="40dip"
+    	android:layout_toRightOf="@id/add_selectedfilms_button"
+    	android:layout_marginRight="3dip"
+    	android:layout_marginTop="3dip"
+	/>
+	
+	<Button
+		android:id="@+id/cancel_add_button"
+    	android:text="Cancel"
+    	android:layout_width="wrap_content"
+    	android:layout_height="40dip"
+    	android:layout_alignParentRight="true"
+    	android:layout_marginRight="3dip"
+    	android:layout_marginTop="3dip"
+	/>    
+    </LinearLayout>
 
 </LinearLayout>

@@ -3,38 +3,45 @@
   
   <item 
    	android:id="@+id/menu_option_sync"
+   	android:icon="@drawable/sync"
     android:title="Sync" 
    />
    
    <item 
-   	android:id="@+id/menu_option_batchdelete"
-    android:title="Batch Delete" 
-   />
-   
-   <item 
-   	android:id="@+id/menu_option_delete_selected"
-    android:title="Delete Selected" 
-   />
-   
-   <item 
    	android:id="@+id/menu_option_home"
+   	android:icon="@drawable/home"
     android:title="Home" 
    />
    
   <item 
    	android:id="@+id/menu_option_logout"
+   	android:icon="@drawable/logout"
     android:title="Logout" 
    />
    
+   
+   <item 
+   	android:id="@+id/menu_option_about"
+   	android:icon="@drawable/about"
+    android:title="About" 
+   />
+   <!-- 
    <item 
    	android:id="@+id/menu_option_login"
     android:title="Login" 
    />
    
    <item 
-   	android:id="@+id/menu_option_about"
-    android:title="About" 
+   	android:id="@+id/menu_option_batchdelete"
+   	android:icon="@drawable/delete"
+    android:title="Batch Delete" 
    />
    
+   <item 
+   	android:id="@+id/menu_option_delete_selected"
+   	android:icon="@drawable/delete"
+    android:title="Delete Selected" 
+   />  
+   -->
    
 </menu>

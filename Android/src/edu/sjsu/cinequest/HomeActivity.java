@@ -83,9 +83,9 @@ public class HomeActivity extends Activity {
 				intent.putExtras(bundle);
 				HomeActivity.this.startActivity(intent);
 				
-				String title = item.getTitle();
-				Toast.makeText(HomeActivity.this, "Title: "+title +", Type: "+linkType + ", ID: "+ link_id, 
-						Toast.LENGTH_LONG).show();
+//				String title = item.getTitle();
+//				Toast.makeText(HomeActivity.this, "Title: "+title +", Type: "+linkType + ", ID: "+ link_id, 
+//						Toast.LENGTH_LONG).show();
 			}
         });
         

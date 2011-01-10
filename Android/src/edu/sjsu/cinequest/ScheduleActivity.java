@@ -55,12 +55,15 @@ public class ScheduleActivity extends Activity {
 	
 	private static ProgressDialog m_ProgressDialog = null; 
     private static User user;
+    private static String LOGCAT_TAG = "ScheduleActivity";
+      //needed to check if the size was changed after user changed tab
+    private static int mUserScheduleSize = -1;	
     private ListView list;
     private TextView emptyScheduleMessage;
-    private Button syncButton, editButton;
+//    private Button syncButton, editButton;
     private Button deleteSelectedButton, cancelDeleteButton;    
     private View mBottomActionBar;		//the bar to show delete selected items from list
-    private boolean BATCH_DELETE_MODE = false;
+    //private boolean BATCH_DELETE_MODE = false;
     private boolean IGNORE_NEXT_OnCheckChanged = false;
     private LayoutInflater mInflater;
     private static ArrayList<String> movieIDList;
@@ -84,32 +87,33 @@ public class ScheduleActivity extends Activity {
         //Retrieve the list and buttons from the layout file
         list = (ListView)this.findViewById(R.id.myschedulelist);
         listArea = (LinearLayout) findViewById(R.id.list_area);
-        syncButton = (Button) this.findViewById(R.id.sync_button);
-        editButton = (Button) this.findViewById(R.id.edit_button);
+//        syncButton = (Button) this.findViewById(R.id.sync_button);
+//        editButton = (Button) this.findViewById(R.id.edit_button);
         emptyScheduleMessage = (TextView)this.findViewById(R.id.msg_for_empty_schedyle);
         mBottomActionBar = (View) findViewById(R.id.delete_schedule_action_bar);
         deleteSelectedButton = (Button) findViewById(R.id.delete_selecteditems_button);
         cancelDeleteButton = (Button) findViewById(R.id.cancel_delete_button);
         
         user = MainTab.getUser();
+        //register this list so that conext menu may be created for list items
         registerForContextMenu( list );
         
                 
-        //OnClickListener for syncbutton
-        syncButton.setOnClickListener(new View.OnClickListener(){
-			@Override
-			public void onClick(View v) {				
-				performSync();
-			}        	
-        });
-        
-        //OnClickListener for editbutton
-        editButton.setOnClickListener(new View.OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				performEdit( v.getId() );
-			}        	
-        });
+//        //OnClickListener for syncbutton
+//        syncButton.setOnClickListener(new View.OnClickListener(){
+//			@Override
+//			public void onClick(View v) {				
+//				performSync();
+//			}        	
+//        });
+//        
+//        //OnClickListener for editbutton
+//        editButton.setOnClickListener(new View.OnClickListener(){
+//			@Override
+//			public void onClick(View v) {
+//				performEdit( v.getId() );
+//			}        	
+//        });
         
         //Upon clicking the item in list
         list.setOnItemClickListener( new OnItemClickListener() {
@@ -118,11 +122,8 @@ public class ScheduleActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view, 
 									int position, long id) {
 				Schedule schedule = (Schedule) list.getItemAtPosition( position );
-				
-				if(BATCH_DELETE_MODE){
-					((CheckBox)view.findViewById(R.id.myschedule_checkbox)).toggle();
-				} else
-					launchFilmDetail(schedule.getItemId());
+				//((CheckBox)view.findViewById(R.id.myschedule_checkbox)).toggle();
+				launchFilmDetail(schedule.getItemId());
 			}
 		});
         
@@ -152,9 +153,45 @@ public class ScheduleActivity extends Activity {
 			}
 		});
         
-        //after setting all the clicklisteners, finally show the list on screen
-        refreshMovieIDList();
-        showDateSeparatedSchedule();
+        //list will get refreshed in onResume method call
+//        //after setting all the clicklisteners, finally show the list on screen
+//        refreshMovieIDList();
+//        showDateSeparatedSchedule();
+    }
+    
+
+    /**
+     * Gets called when user returns to this tab. Also gets called once after the 
+     * onCreate() method too.
+     */
+    @Override
+    public void onResume(){
+    	super.onResume();
+    	int size = user.getSchedule().getScheduleItems().length;
+    	
+    	//if the size of schedule has changed since the last time this tab was visited
+    	//or if this is the first time this tab is being visited, the following
+    	//block will execute
+    	if(mUserScheduleSize != size){
+    		//refresh the listview on screen and update the movieidlist
+    		refreshMovieIDList();
+    		showDateSeparatedSchedule();
+    		
+    		//now reset the mUserSchedule
+    		mUserScheduleSize = size;
+    	}    	
+    }
+    
+    /**
+     * Gets called when user switches to some other tab or activity
+     */
+    @Override
+    public void onPause(){
+    	super.onPause();
+    	//store the current size of user schedule here. If this size changes later
+    	//we will know it in onResume() method, and refresh the list
+    	mUserScheduleSize = user.getSchedule().getScheduleItems().length;
+    	Log.i(LOGCAT_TAG,"ScheduleActivity onPause got called.");
     }
     
 
@@ -223,7 +260,7 @@ public class ScheduleActivity extends Activity {
 
 				@Override
 				public void invoke(Object result) {
-					Log.d("ScheduleActivity","Result returned...");
+					Log.d(LOGCAT_TAG,"Result returned...");
 					showDateSeparatedSchedule();
 					refreshMovieIDList();
 					m_ProgressDialog.dismiss();
@@ -242,7 +279,7 @@ public class ScheduleActivity extends Activity {
 				@Override
 				public void failure(Throwable t) {
 					m_ProgressDialog.dismiss();
-					Log.e("ScheduleActivity",t.getMessage());
+					Log.e(LOGCAT_TAG,t.getMessage());
 					DialogPrompt.showDialog(ScheduleActivity.this, 
 							user.isLoggedIn() 
 							? "Unable to Sync schedule.\nTry Syncing again."
@@ -259,7 +296,7 @@ public class ScheduleActivity extends Activity {
       {
       	
       	Schedule[] scheduleItems = user.getSchedule().getScheduleItems();
-      	Log.v("ScheduleActivity","Showing the Schedule List on Screen. Total Schedule items = "
+      	Log.v(LOGCAT_TAG,"Showing the Schedule List on Screen. Total Schedule items = "
       			+ scheduleItems.length);
       	
       	if (scheduleItems.length == 0){
@@ -275,26 +312,25 @@ public class ScheduleActivity extends Activity {
   		emptyScheduleMessage.setVisibility(View.GONE);
   		
   		//If we are in batch delete mode, reinitialize the list of checked boxes
-  		if(BATCH_DELETE_MODE)
-  			mCheckedCheckboxesList = new ScheduleCollection(); 
+  		mCheckedCheckboxesList = new ScheduleCollection(); 
 //  			= new HashMap<Integer, CheckBox>();
       	
       	// create our list and custom adapter  
       	SeparatedListAdapter separatedListAdapter = new SeparatedListAdapter(this);
       	
-      	Hashtable<String, ArrayList<Schedule>> movieScheduleTable = new Hashtable<String, ArrayList<Schedule>>();
+//      	Hashtable<String, ArrayList<Schedule>> movieScheduleTable = new Hashtable<String, ArrayList<Schedule>>();
       	TreeMap<String, ArrayList<Schedule>> movieScheduleMap = new TreeMap<String, ArrayList<Schedule>>();
   		
   		for(int k = 0; k < scheduleItems.length; k++){
   			Schedule tempSchedule = scheduleItems[k];
   			String day = scheduleItems[k].getStartTime().substring(0, 10);
   			
-  			if(movieScheduleTable.containsKey(day))
-  				movieScheduleTable.get(day).add(tempSchedule);
-  			else{
-  				movieScheduleTable.put(day, new ArrayList<Schedule>());
-  				movieScheduleTable.get(day).add(tempSchedule);
-  			}
+//  			if(movieScheduleTable.containsKey(day))
+//  				movieScheduleTable.get(day).add(tempSchedule);
+//  			else{
+//  				movieScheduleTable.put(day, new ArrayList<Schedule>());
+//  				movieScheduleTable.get(day).add(tempSchedule);
+//  			}
   			
   			if(movieScheduleMap.containsKey(day))
   				movieScheduleMap.get(day).add(tempSchedule);
@@ -317,13 +353,13 @@ public class ScheduleActivity extends Activity {
   			DateUtils du = new DateUtils();
   			//DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);
   			String header = du.format(day, DateUtils.DATE_DEFAULT);
-  			separatedListAdapter.addSection(header,	new ScheduleAdapter(this, 
+  			separatedListAdapter.addSection(header,	new ScheduleSectionAdapter(this, 
   											R.layout.myschedule_row,tempList)	);
   			
   			alldays += day + ", ";
   		}
   		
-  		Log.i("ScheduleActivity", "Days=" + alldays);
+  		Log.i(LOGCAT_TAG, "Days=" + alldays);
   		ScheduleActivity.this.list.setAdapter(separatedListAdapter);
   	}
       
@@ -331,7 +367,7 @@ public class ScheduleActivity extends Activity {
      * This refreshes the movieIDList and adds the id's of all movies in persistent schedule
      */
      private static void refreshMovieIDList(){
-    	 Log.v("ScheduleActivity","Refreshing movie-id-list");
+    	 Log.v(LOGCAT_TAG,"Refreshing movie-id-list");
     	 Schedule[] scheduleItems = user.getSchedule().getScheduleItems();
     	 movieIDList = new ArrayList<String>();
     	 
@@ -344,11 +380,11 @@ public class ScheduleActivity extends Activity {
     /**
      * Custom List-Adapter to show the schedule items in list 
      */
-    private class ScheduleAdapter extends ArrayAdapter<Schedule>{
+    private class ScheduleSectionAdapter extends ArrayAdapter<Schedule>{
     	
     	private ArrayList<Schedule> scheduleList;
     	
-    	public ScheduleAdapter(Context context, int textViewResourceId, ArrayList<Schedule> list) {
+    	public ScheduleSectionAdapter(Context context, int textViewResourceId, ArrayList<Schedule> list) {
     	    super(context, textViewResourceId, list);
             this.scheduleList = list;
             if(mInflater == null)
@@ -377,7 +413,7 @@ public class ScheduleActivity extends Activity {
                 		IGNORE_NEXT_OnCheckChanged = true;
                 		holder.checkbox.setChecked(false);
                 	}
-//                	Log.i("ScheduleActivity","Reusing HOLDER. Checkstatus="+holder.checkbox.isChecked());
+//                	Log.i(LOGCAT_TAG,"Reusing HOLDER. Checkstatus="+holder.checkbox.isChecked());
                 }
                                 
                 final Schedule result = scheduleList.get(position);
@@ -385,10 +421,10 @@ public class ScheduleActivity extends Activity {
                 if (result != null) {
                 		
                 		//get text from list, and fill it into the row
-                		if(BATCH_DELETE_MODE)
+//                		if(BATCH_DELETE_MODE)
                 			holder.checkbox.setVisibility(View.VISIBLE);                			
-                		else
-                			holder.checkbox.setVisibility(View.GONE);
+//                		else
+//                			holder.checkbox.setVisibility(View.GONE);
                 		
                 		//give this checkbox a tag to identify it specifically
                 		holder.checkbox.setTag( result );
@@ -445,20 +481,20 @@ public class ScheduleActivity extends Activity {
                         if(holder.venue != null){
                             holder.venue.setText("Venue: " + result.getVenue());
                       }
-//                      Log.d("ScheduleActivity","getView() called [v=null:"+(convertView==null) +"]for:" + result.getTitle());
+//                      Log.d(LOGCAT_TAG,"getView() called [v=null:"+(convertView==null) +"]for:" + result.getTitle());
                       
                         //When list is being redrawn, recheck the checkboxes which were already checked
                 		if( !movieIDList.contains( ""+result.getId() ) ){
-                			Log.e("ScheduleActivity","Manually Setting checkbox: "+result.getTitle());
+                			Log.e(LOGCAT_TAG,"Manually Setting checkbox: "+result.getTitle());
                 			IGNORE_NEXT_OnCheckChanged = true;
                 			holder.checkbox.setChecked(true);
                 		}	//and uncheck the checkboxes if they were not checked  
                 		else if( movieIDList.contains( ""+result.getId() ) 
                 				&& holder.checkbox.isChecked()	){
-                			Log.e("ScheduleActivity","Manually UNsetting checkbox: "+result.getTitle());
+                			Log.e(LOGCAT_TAG,"Manually UNsetting checkbox: "+result.getTitle());
                 			IGNORE_NEXT_OnCheckChanged = true;
                 			holder.checkbox.setChecked(false);        			
-                		} 
+                		}
                 }
                 
                 return v;
@@ -470,7 +506,7 @@ public class ScheduleActivity extends Activity {
      */
     public void showBottomBar(){
     	if(mBottomActionBar.getVisibility() == View.VISIBLE){
-//    		Log.d("ScheduleActivity","Bar already visible. Returning");
+//    		Log.d(LOGCAT_TAG,"Bar already visible. Returning");
     		return;
     	}
     	Animation anim = AnimationUtils.loadAnimation(this, R.anim.bottom_up_slidein);
@@ -487,7 +523,7 @@ public class ScheduleActivity extends Activity {
     public void hideBottomBar(){
     	
     	if(mBottomActionBar.getVisibility() == View.GONE){
-    		Log.d("ScheduleActivity","Bar already Invisible. Returning");
+    		Log.d(LOGCAT_TAG,"Bar already Invisible. Returning");
     		return;
     	}
     	
@@ -516,7 +552,7 @@ public class ScheduleActivity extends Activity {
     	for(CheckBox c : mCheckedCheckboxesList.values()){
 			s += ((Schedule)c.getTag()).getTitle() + ", ";
 		}
-		Log.e("ScheduleActivity","Checked. Current Checked= "+s);
+		Log.e(LOGCAT_TAG,"Checked. Current Checked= "+s);
     }
     
   //TODO delete this code after custom collection class??
@@ -529,7 +565,7 @@ public class ScheduleActivity extends Activity {
 				if(sch.getId() == id){
 					c.setTag(sch);
 					mCheckedCheckboxesList.put(id, c);
-					Log.e("ScheduleActivity","INCONSISTENCY FIXED FOR: ID="+id+
+					Log.e(LOGCAT_TAG,"INCONSISTENCY FIXED FOR: ID="+id+
 							", CBOX="+ conflictingTitle);
 					break;
 				}
@@ -600,7 +636,7 @@ public class ScheduleActivity extends Activity {
     				)
     			return true;
     		else{
-    			Log.e("ScheduleActivity","SizeConsistency Failed. IDList="+idList.size()
+    			Log.e(LOGCAT_TAG,"SizeConsistency Failed. IDList="+idList.size()
     					+", CBList="+cboxList.size() 
     					//+", ScheduleList="+schdList.size()
     					);
@@ -630,7 +666,7 @@ public class ScheduleActivity extends Activity {
     		for(int i=0; i < idList.size(); i++){
     			tlist.add( idList.get(i));
     		}
-    		Log.d("ScheduleActivity","Checkbox list keySet requested. Size="+tlist.size());
+    		Log.d(LOGCAT_TAG,"Checkbox list keySet requested. Size="+tlist.size());
     		return tlist;
     	}
     	
@@ -643,7 +679,7 @@ public class ScheduleActivity extends Activity {
     		for(int i=0; i < cboxList.size(); i++){
     			tlist.add( cboxList.get(i));
     		}
-    		Log.d("ScheduleActivity","Checkbox list values requested. Size="+tlist.size());
+    		Log.d(LOGCAT_TAG,"Checkbox list values requested. Size="+tlist.size());
     		return tlist;
     	}
     	
@@ -703,7 +739,7 @@ public class ScheduleActivity extends Activity {
 				//only stick to keep pulling first item (i=0) of the list
 				CheckBox c = cboxList.get(0);
 								
-				Log.w("ScheduleActivity","Going to uncheck: "+((Schedule)c.getTag()).getTitle());
+				Log.w(LOGCAT_TAG,"Going to uncheck: "+((Schedule)c.getTag()).getTitle());
 				
 				//Somehow calling setfalse on "c" is not working. No Idea WHY??
 				//But calling the oncheckedchanged listener manuall on "c" does the trick
@@ -713,11 +749,11 @@ public class ScheduleActivity extends Activity {
 			
 			//if size is still consistent, and it has come down to zero, return true
 			if(checkSizeConsistency() && idList.size() == 0){
-				Log.w("ScheduleActivity","UncheckALL operation successful");
+				Log.w(LOGCAT_TAG,"UncheckALL operation successful");
 				return true;
 			}
 			
-			Log.w("ScheduleActivity","UncheckALL operation FAILED. SizeConsistency="+checkSizeConsistency());
+			Log.w(LOGCAT_TAG,"UncheckALL operation FAILED. SizeConsistency="+checkSizeConsistency());
 			return false;
     	}
     }
@@ -739,7 +775,7 @@ public class ScheduleActivity extends Activity {
 			//if the checkchanged was to be ignored, return 
 			if(IGNORE_NEXT_OnCheckChanged){
 				IGNORE_NEXT_OnCheckChanged = false;
-				Log.d("ScheduleActivity","IGNORED checkchange for: " + filmTitle);
+				Log.d(LOGCAT_TAG,"IGNORED checkchange for: " + filmTitle);
 				return;
 			}			
 			
@@ -756,7 +792,7 @@ public class ScheduleActivity extends Activity {
 				//add this checkbox to the list of checked boxes
 				mCheckedCheckboxesList.put( Integer.parseInt( filmID ), (CheckBox)buttonView );
 					
-				Log.d("ScheduleActivity","Checkbox ENABLED on:"+ filmTitle
+				Log.d(LOGCAT_TAG,"Checkbox ENABLED on:"+ filmTitle
 						+"[ID="+filmID+"]. "+ 
 						"#Scheduled (decreased): "+ movieIDList.size()
 						+". #Checked (increased): "+ mCheckedCheckboxesList.size());				 				
@@ -774,14 +810,14 @@ public class ScheduleActivity extends Activity {
 					
 					movieIDList.add(filmID);
 					
-					Log.d("ScheduleActivity","Checkbox DISABLED on:"+ filmTitle 
+					Log.d(LOGCAT_TAG,"Checkbox DISABLED on:"+ filmTitle 
 							+"[ID="+filmID+"]. "+
 							"#Scheduled (increased):"+ movieIDList.size()
 							+". #Checked (decreased): "+ mCheckedCheckboxesList.size());
 				}
 				else{
 					//else just log the call
-					Log.w("ScheduleActivity","Unchecked: called for: "+ filmTitle 
+					Log.w(LOGCAT_TAG,"Unchecked: called for: "+ filmTitle 
 							+"[ID="+filmID+"]. "+
 							".#Checked (decreased):  "+ mCheckedCheckboxesList.size());
 				}
@@ -827,7 +863,7 @@ public class ScheduleActivity extends Activity {
     	    			m_ProgressDialog = null;
     				}
     				
-    				Log.d("ScheduleActivity","Prompting user for login credentials");
+    				Log.d(LOGCAT_TAG,"Prompting user for login credentials");
 		    		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		    		builder.setMessage("This feature needs you to be logged in." +
 		    							"\nWould you like to sign in now?")
@@ -861,7 +897,7 @@ public class ScheduleActivity extends Activity {
     	    			m_ProgressDialog = null;
     		}
     				
-    		Log.d("ScheduleActivity","Prompting user for login credentials");
+    		Log.d(LOGCAT_TAG,"Prompting user for login credentials");
 		    AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		    builder.setMessage("This feature needs you to be logged in." +
 		    					"\nWould you like to sign in now?")
@@ -892,7 +928,7 @@ public class ScheduleActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         
         if (resultCode == Activity.RESULT_CANCELED) {
-            Log.i("ScheduleActivity", "LoginActivity was cancelled or encountered an error.");            
+            Log.i(LOGCAT_TAG, "LoginActivity was cancelled or encountered an error.");            
         }
         else if (resultCode == Activity.RESULT_OK){
         	showDateSeparatedSchedule();
@@ -901,17 +937,17 @@ public class ScheduleActivity extends Activity {
             switch (requestCode) {
               //only this case is used in latest iternation of code, as others are now redundant
               case SUB_ACTIVITY_SYNC_SCHEDULE:
-	          	  Log.d("ScheduleActivity","User Logged In. Schedule Synced with server.");
+	          	  Log.d(LOGCAT_TAG,"User Logged In. Schedule Synced with server.");
 	          	  Toast.makeText(this, getString(R.string.myschedule_loggedin_synced_msg), 
 	          			  Toast.LENGTH_LONG).show();
           	  	  break;
               case SUB_ACTIVITY_READ_SCHEDULE:
-            	  Log.d("ScheduleActivity","User Logged In. Schedule Loaded from server again.");
+            	  Log.d(LOGCAT_TAG,"User Logged In. Schedule Loaded from server again.");
             	  Toast.makeText(this, getString(R.string.myschedule_loggedin_loaded_msg), 
             			  Toast.LENGTH_LONG).show();
             	  break;
               case SUB_ACTIVITY_WRITE_SCHEDULE:
-            	  Log.d("ScheduleActivity","User Logged In. Schedule Written to server.");
+            	  Log.d(LOGCAT_TAG,"User Logged In. Schedule Written to server.");
             	  Toast.makeText(this, getString(R.string.myschedule_loggedin_saved_msg), 
             			  Toast.LENGTH_LONG).show();
             	  break;            
@@ -928,21 +964,23 @@ public class ScheduleActivity extends Activity {
     //TODO choose some other name for function
     private void performEdit( int viewID ){
     	
-    	if(editButton.getText().toString().equalsIgnoreCase("Edit") 
-    			|| viewID == R.id.menu_option_batchdelete){
+//    	if(editButton.getText().toString().equalsIgnoreCase("Edit") 
+//    			|| viewID == R.id.menu_option_batchdelete){
+//    		
+////    		BATCH_DELETE_MODE = true;
+//			editButton.setText("Done");
+//			syncButton.setVisibility(View.GONE);
+//			showDateSeparatedSchedule();			
+//		}
+//    	else 
+    		if(viewID == R.id.delete_selecteditems_button    				
+//				|| viewID == R.id.menu_option_delete_selected
+//				||editButton.getText().toString().equalsIgnoreCase("Done") 
+				){
     		
-    		BATCH_DELETE_MODE = true;
-			editButton.setText("Done");
-			syncButton.setVisibility(View.GONE);
-			showDateSeparatedSchedule();			
-		}
-    	else if(editButton.getText().toString().equalsIgnoreCase("Done")
-				|| viewID == R.id.menu_option_delete_selected
-				|| viewID == R.id.delete_selecteditems_button){
-    		
-			BATCH_DELETE_MODE = false;
-			editButton.setText("Edit");
-			syncButton.setVisibility(View.VISIBLE);
+//			BATCH_DELETE_MODE = false;
+//			editButton.setText("Edit");
+//			syncButton.setVisibility(View.VISIBLE);
 			
 			//remove the items that user checked on edit screen from user.getSchedule()
 			Schedule[] scheduleItems = user.getSchedule().getScheduleItems();					
@@ -950,7 +988,7 @@ public class ScheduleActivity extends Activity {
 				Schedule s = scheduleItems[i];
 				if(!movieIDList.contains(""+s.getId())){							
 					user.getSchedule().remove(s);
-					Log.d("ScheduleActivity","Removing from schedule movie: "+s.getTitle()+"[ID="+s.getId()+"]");
+					Log.d(LOGCAT_TAG,"Removing from schedule movie: "+s.getTitle()+"[ID="+s.getId()+"]");
 				}
 			}
 			
@@ -963,7 +1001,7 @@ public class ScheduleActivity extends Activity {
 				else 
 					allMovies += s.getTitle() + ", ";
 			}
-			Log.d("ScheduleActivity","Current Movies: "+allMovies);
+			Log.d(LOGCAT_TAG,"Current Movies: "+allMovies);
 			
 			//show the schedule on screen
 			showDateSeparatedSchedule();
@@ -992,18 +1030,18 @@ public class ScheduleActivity extends Activity {
 	        case R.id.menu_option_logout:
 	            logOut();
 	            return true;
-	        case R.id.menu_option_login:
-	            logIn(ScheduleActivity.this);
-	            return true;
+//	        case R.id.menu_option_login:
+//	            logIn(ScheduleActivity.this);
+//	            return true;
 	        case R.id.menu_option_sync:
 	            performSync();
 	            return true;
-	        case R.id.menu_option_batchdelete:
-	            performEdit( item.getItemId() );
-	            return true;
-	        case R.id.menu_option_delete_selected:
-	            performEdit( item.getItemId() );
-	            return true;
+//	        case R.id.menu_option_batchdelete:
+//	            performEdit( item.getItemId() );
+//	            return true;
+//	        case R.id.menu_option_delete_selected:
+//	            performEdit( item.getItemId() );
+//	            return true;
 	        case R.id.menu_option_about:
 	            DialogPrompt.showAppAboutDialog(this);
 	            return true;	            
@@ -1018,18 +1056,18 @@ public class ScheduleActivity extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
     	
-    	if(BATCH_DELETE_MODE == true){
-    		menu.findItem(R.id.menu_option_delete_selected).setVisible(true);
-    		menu.findItem(R.id.menu_option_sync).setVisible(false);
-    		menu.findItem(R.id.menu_option_batchdelete).setVisible(false);
-    		menu.findItem(R.id.menu_option_login).setVisible(false);
-    		menu.findItem(R.id.menu_option_logout).setVisible(false);
-    		menu.findItem(R.id.menu_option_home).setVisible(false);
-    		menu.findItem(R.id.menu_option_about).setVisible(false);
+//    	if(BATCH_DELETE_MODE == true){
+//    		menu.findItem(R.id.menu_option_delete_selected).setVisible(true);
+//    		menu.findItem(R.id.menu_option_sync).setVisible(false);
+//    		menu.findItem(R.id.menu_option_batchdelete).setVisible(false);
+//    		menu.findItem(R.id.menu_option_login).setVisible(false);
+//    		menu.findItem(R.id.menu_option_logout).setVisible(false);
+//    		menu.findItem(R.id.menu_option_home).setVisible(false);
+//    		menu.findItem(R.id.menu_option_about).setVisible(false);
+//    		
+//    	} else {
     		
-    	} else {
-    		
-    		menu.findItem(R.id.menu_option_delete_selected).setVisible(false);
+//    		menu.findItem(R.id.menu_option_delete_selected).setVisible(false);
     		menu.findItem(R.id.menu_option_sync).setVisible(true);
     		menu.findItem(R.id.menu_option_home).setVisible(true);
     		menu.findItem(R.id.menu_option_about).setVisible(true);
@@ -1038,14 +1076,14 @@ public class ScheduleActivity extends Activity {
     		show Login instead. And vice-versa */
 	        if( user.isLoggedIn() ){
 	        	menu.findItem(R.id.menu_option_logout).setVisible(true);
-	        	menu.findItem(R.id.menu_option_login).setVisible(false);
-	        	menu.findItem(R.id.menu_option_batchdelete).setVisible(true);
+//	        	menu.findItem(R.id.menu_option_login).setVisible(false);
+//	        	menu.findItem(R.id.menu_option_batchdelete).setVisible(true);
 	        }else{
 	        	menu.findItem(R.id.menu_option_logout).setVisible(false);
-	        	menu.findItem(R.id.menu_option_login).setVisible(false);
-	        	menu.findItem(R.id.menu_option_batchdelete).setVisible(false);
+//	        	menu.findItem(R.id.menu_option_login).setVisible(false);
+//	        	menu.findItem(R.id.menu_option_batchdelete).setVisible(false);
 	        }
-    	}
+//    	}
 
     	return super.onPrepareOptionsMenu(menu);
     }
@@ -1108,7 +1146,7 @@ public class ScheduleActivity extends Activity {
      * log the user out from cinequest scheduler account
      */
     private void logOut(){
-    	Log.d("ScheduleActivity", "Logging out...........");
+    	Log.d(LOGCAT_TAG, "Logging out...........");
     	user.logout();
     	showDateSeparatedSchedule();
     	refreshMovieIDList();
@@ -1133,7 +1171,7 @@ public class ScheduleActivity extends Activity {
      * Take user to loginActivity to login
      */
     private static void logIn(Context context){    	
-    	Log.d("ScheduleActivity","Launching LoginActivity");
+    	Log.d(LOGCAT_TAG,"Launching LoginActivity");
     	
 	   	Intent i = new Intent(context, LoginActivity.class);		    		                
         //Instead of startActivity(i), use startActivityForResult, so we could return back to this activity after login finishes
@@ -1159,7 +1197,7 @@ public class ScheduleActivity extends Activity {
     	//Remove items from local schedule which were removed at server already
     	for(int i = 0; i < currScheduleItems.length; i++){
     		if( !conflictScheduleItemIds.contains( currScheduleItems[i].getId() )){
-    			Log.i("ScheduleActivity", "Mergeing: REMOVING -- " + currScheduleItems[i].getTitle());
+    			Log.i(LOGCAT_TAG, "Mergeing: REMOVING -- " + currScheduleItems[i].getTitle());
     			user.getSchedule().remove( currScheduleItems[i]);
     		}
     	}
@@ -1178,7 +1216,7 @@ public class ScheduleActivity extends Activity {
     			
     			//user.getSchedule().add( item, user.getSchedule().getType(item) );
     			user.getSchedule().add( item );
-    			Log.i("ScheduleActivity", "Mergeing: ADDING -- " + item.getTitle()+
+    			Log.i(LOGCAT_TAG, "Mergeing: ADDING -- " + item.getTitle()+
     					"[TYPE="+ user.getSchedule().getType(item)+"]. " +
     					"New length of schedule="+user.getSchedule().getScheduleItems().length);    			    			
     		}
@@ -1192,15 +1230,15 @@ public class ScheduleActivity extends Activity {
     	m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
 				"Please wait...", "Saving data ...", true);
     	
-    	Log.d("ScheduleActivity", "Writing schedule to server");
-    	Log.d("ScheduleActivity", "Schedule isSaved="+user.getSchedule().isSaved());
+    	Log.d(LOGCAT_TAG, "Writing schedule to server");
+    	Log.d(LOGCAT_TAG, "Schedule isSaved="+user.getSchedule().isSaved());
     	
     	user.writeSchedule(LoginPrompt.show(this), 
     			new Callback(){
 
 					@Override
 					public void invoke(Object result) {
-						Log.d("ScheduleActivity","Schedule Saved to server. lastChanged="+ user.getSchedule().getLastChanged() 
+						Log.d(LOGCAT_TAG,"Schedule Saved to server. lastChanged="+ user.getSchedule().getLastChanged() 
 								+"Length="+user.getSchedule().getScheduleItems().length);
 						showDateSeparatedSchedule();
 						refreshMovieIDList();
@@ -1224,7 +1262,7 @@ public class ScheduleActivity extends Activity {
 						if(t instanceof User.ConflictingScheduleException){
 							final UserSchedule userSchOnServer =  ((User.ConflictingScheduleException) t).getConflictingSchedule();
 							
-							Log.e("ScheduleActivity","Schedule Conflict. Server lastChanged="+userSchOnServer.getLastChanged()+
+							Log.e(LOGCAT_TAG,"Schedule Conflict. Server lastChanged="+userSchOnServer.getLastChanged()+
 									" -- Local lastChanged="+user.getSchedule().getLastChanged());
 							
 							
@@ -1236,8 +1274,8 @@ public class ScheduleActivity extends Activity {
 										    SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
 										    Calendar cal = Calendar.getInstance();
 										    String nowTime = sdf.format(cal.getTime());
-										    Log.v("ScheduleActivity","Now Time is=:" + nowTime);
-										    Log.d("ScheduleActivity","Overwritting Schedule.");
+										    Log.v(LOGCAT_TAG,"Now Time is=:" + nowTime);
+										    Log.d(LOGCAT_TAG,"Overwritting Schedule.");
 										    
 										    user.getSchedule().setLastChanged(nowTime);							    
 										    
@@ -1249,7 +1287,7 @@ public class ScheduleActivity extends Activity {
 										public void onClick(DialogInterface dialog,	int which) {
 											
 											//TODO Use either readSchedule() or user.setSchedule()
-											Log.d("ScheduleActivity","Keeping server schedule");
+											Log.d(LOGCAT_TAG,"Keeping server schedule");
 											//readSchedule();
 											user.setSchedule(userSchOnServer);
 											showDateSeparatedSchedule();
@@ -1262,7 +1300,7 @@ public class ScheduleActivity extends Activity {
 										
 										@Override
 										public void onClick(DialogInterface dialog, int which) {
-											Log.d("ScheduleActivity","Merging Schedule.");
+											Log.d(LOGCAT_TAG,"Merging Schedule.");
 											mergeSchedules(userSchOnServer);
 											
 											//Now update the time stamp on local schedule before sync with server
@@ -1282,7 +1320,7 @@ public class ScheduleActivity extends Activity {
 									}
 								);
 						} else{		//if t is some other kind of exception
-							Log.e("ScheduleActivity",t.getMessage());
+							Log.e(LOGCAT_TAG,t.getMessage());
 							DialogPrompt.showDialog(ScheduleActivity.this, user.isLoggedIn() ? "Unable to Save schedule.\nTry Syncing again."
 									: "Login failed.");
 						}
@@ -1298,13 +1336,13 @@ public class ScheduleActivity extends Activity {
     	m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
 				"Please wait...", "Retrieving data ...", true);
     	
-    	Log.d("ScheduleActivity", "Reading schedule from server");
+    	Log.d(LOGCAT_TAG, "Reading schedule from server");
     	
     	user.readSchedule(LoginPrompt.show(this),
 				new Callback() {
 					public void invoke(Object result) {
 						user.getSchedule().setDirty(false);
-						Log.d("ScheduleActivity","Result returned. Length="+user.getSchedule().getScheduleItems().length);
+						Log.d(LOGCAT_TAG,"Result returned. Length="+user.getSchedule().getScheduleItems().length);
 						
 						showDateSeparatedSchedule();
 						refreshMovieIDList();
@@ -1317,7 +1355,7 @@ public class ScheduleActivity extends Activity {
 
 					public void failure(Throwable t) {
 						m_ProgressDialog.dismiss();
-						Log.e("ScheduleActivity",t.getMessage());
+						Log.e(LOGCAT_TAG,t.getMessage());
 						DialogPrompt.showDialog(ScheduleActivity.this, user.isLoggedIn() ? "Unable to Load schedule.\nTry Syncing again."
 								: "Login failed.");
 					}

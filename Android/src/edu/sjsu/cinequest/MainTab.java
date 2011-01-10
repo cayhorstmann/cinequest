@@ -117,4 +117,5 @@ public class MainTab extends TabActivity {
 	public static User getUser() {
 		return user;
 	}
+
 }
