@@ -83,8 +83,9 @@ public class RIMPlatform extends Platform {
 				byteImageData.length).getBitmap();
 	}
 
-	public Object getLocalImage(String imageName) {
-		Bitmap bitmap = Bitmap.getBitmapResource(imageName);
+	// imageId must be a string
+	public Object getLocalImage(Object imageId) {
+		Bitmap bitmap = Bitmap.getBitmapResource((String) imageId);
 		if (bitmap.getWidth() <= MAX_IMAGE_WIDTH
 				&& bitmap.getHeight() <= MAX_IMAGE_HEIGHT)
 			return bitmap;

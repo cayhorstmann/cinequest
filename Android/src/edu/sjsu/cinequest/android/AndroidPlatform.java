@@ -1,6 +1,4 @@
 package edu.sjsu.cinequest.android;
-import android.util.Log;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,11 +21,10 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import android.os.Handler;
 import android.content.Context;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-
+import android.os.Handler;
+import android.util.Log;
 import edu.sjsu.cinequest.comm.Cache;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.MessageDigest;
@@ -67,10 +64,10 @@ public class AndroidPlatform extends Platform {
 	}
 
 	@Override
+	// imageId must be an Integer containing an Android image ID, such as R.drawable.hourglass
 	// Returns an android.graphics.BitMap
-	public Object getLocalImage(String imageName) {
-		// TODO Uncomment below and switch to higher version of API
-		return new BitmapDrawable(/*context.getResources(), */ imageName).getBitmap();
+	public Object getLocalImage(Object imageId) {
+		return BitmapFactory.decodeResource(context.getResources(), ((Integer) imageId).intValue());
 	}
 
 	@Override

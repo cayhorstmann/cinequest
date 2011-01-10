@@ -19,20 +19,13 @@ import java.util.Vector;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.ImageSpan;
-import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Gravity;
@@ -41,25 +34,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.CharUtils;
-import edu.sjsu.cinequest.comm.HParser;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
-import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
-public class DVDActivity extends Activity {
+public class DVDActivity extends DetailDisplayActivity {
 	private ListView filmsList;
 	private Vector<Filmlet> films = new Vector<Filmlet>();
 	private Vector<Filmlet> schedules = new Vector<Filmlet>();
@@ -147,110 +135,12 @@ public class DVDActivity extends Activity {
         
     }
     
-    private static void addEntry(SpannableStringBuilder ssb, String tag, String s) {
-    	if (s == null || s.equals("")) return;
-    	ssb.append(tag);
-    	ssb.append(": ");
-    	int end = ssb.length();
-    	int start = end - tag.length() - 2;
-    	ssb.setSpan(new StyleSpan(Typeface.BOLD), start, end, 0);
-    	ssb.append(s);
-    	ssb.append("\n");
-    }
-	
     private void loadDVD(int id)  // CSH
     {
     	MainTab.getQueryManager().getDVD(id, new Callback() { // TODO: better callback
 			public void invoke(Object result) {
-				Film in = (Film) result;
 				setContentView(R.layout.dvdinfo_layout);
-				SpannableString title = new SpannableString(in.getTitle());
-				title.setSpan(new RelativeSizeSpan(1.2F), 0, title.length(), 0);
-				((TextView) findViewById(R.id.Title)).setText(title);
-				
-				TextView tv = (TextView) findViewById(R.id.Description);
-				HParser parser = new HParser();
-				parser.parse(in.getDescription());
-				SpannableString spstr = new SpannableString(parser.getResultString());
-				byte[] attributes = parser.getAttributes();
-				int[] offsets = parser.getOffsets();
-				for (int i = 0; i < offsets.length - 1; i++) {
-					int start = offsets[i];
-					int end = offsets[i + 1];
-					byte attr = attributes[i];
-					int flags = 0;
-					if ((attr & HParser.BOLD) != 0)
-						spstr.setSpan(new StyleSpan(Typeface.BOLD), start, end, flags);
-					if ((attr & HParser.ITALIC) != 0)
-						spstr.setSpan(new StyleSpan(Typeface.ITALIC), start, end, flags);
-					if ((attr & HParser.LARGE) != 0)
-						spstr.setSpan(new RelativeSizeSpan(1.2F), start, end, flags);					
-					if ((attr & HParser.RED) != 0)
-						spstr.setSpan(new ForegroundColorSpan(Color.RED), start, end, flags);
-				}
-				
-				tv.setText(spstr);
-				
-				// TODO: Cache doesn't seem to work
-				
-				MainTab.getImageManager().getImage(in.getImageURL(), new Callback() {
-					@Override
-					public void invoke(Object result) {
-						Bitmap bmp = (Bitmap) result;
-				  		ImageView iv = (ImageView)findViewById(R.id.Image);
-				  		iv.setImageBitmap(bmp);											  		
-					}
-					@Override
-					public void progress(Object value) {
-				
-					}
-
-					@Override
-					public void failure(Throwable t) {
-					
-					}   
-				}, null, true);					
-								
-				// TODO: Test this--can you really add multiple images?
-				Vector urls = parser.getImageURLs();
-				if (urls.size() > 0) 
-				{
-					MainTab.getImageManager().getImages(urls, new Callback() {
-						@Override
-						public void invoke(Object value) {
-							SpannableString ss = new SpannableString(" "); 
-							Vector images = (Vector) value;
-							for (int i = 0; i < images.size(); i++) 
-							{
-								Bitmap bmp = (Bitmap) images.elementAt(i);
-								ss.setSpan(new ImageSpan(bmp), 0, 1, 0);
-							}
-							((TextView) findViewById(R.id.SmallImages)).setText(ss);
-						}
-						@Override
-						public void progress(Object result) {
-						}
-						@Override
-						public void failure(Throwable t) {		
-						}   
-					});					
-				}
-				 				
-				
-				SpannableStringBuilder ssb = new SpannableStringBuilder();
-				
-		        addEntry(ssb, "Director", in.getDirector());
-		        addEntry(ssb, "Producer", in.getProducer());
-		        addEntry(ssb, "Editor", in.getEditor());
-		        addEntry(ssb, "Writer", in.getWriter());
-		        addEntry(ssb, "Cinematographer", in.getCinematographer());
-		        addEntry(ssb, "Cast", in.getCast());
-		        addEntry(ssb, "Country", in.getCountry());
-		        addEntry(ssb, "Language", in.getLanguage());
-		        addEntry(ssb, "Genre", in.getGenre());
-		        addEntry(ssb, "Film Info", in.getFilmInfo());
-		        
-		        ((TextView) findViewById(R.id.Properties)).setText(ssb);
+				showFilm((Film) result);
 			}
 
 			@Override
