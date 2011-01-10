@@ -62,7 +62,7 @@ import edu.sjsu.cinequest.comm.cinequestitem.ProgramItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
 
-public class EventsActivity extends Activity {
+public class EventsActivity extends DetailDisplayActivity {
 	private ListView filmsList;
 	private Vector<Filmlet> films = new Vector<Filmlet>();
 	private Vector<Schedule> schedules = new Vector<Schedule>();
@@ -278,7 +278,7 @@ public class EventsActivity extends Activity {
         
         
     }
-    public void setUpCall()
+    private void setUpCall()
     {
     	callButton = (Button)findViewById(R.id.call_button);	
         callButton.setOnClickListener(new OnClickListener(){
@@ -505,6 +505,30 @@ public class EventsActivity extends Activity {
     	//if(checkedSchedules.contains(object))*/
     	
     }
+    
+    
+    private void loadEvent(int id)  // CSH
+    {
+    	// TODO: Program item or special item?
+    	MainTab.getQueryManager().getProgramItem(id, new Callback() { // TODO: better callback
+			public void invoke(Object result) {
+				setContentView(R.layout.eventinfo_layout2);
+				setUpCall();
+				showProgramItem((ProgramItem) result);
+			}
+
+			@Override
+			public void progress(Object value) {
+		
+			}
+
+			@Override
+			public void failure(Throwable t) {
+			
+			}        	
+    	});
+    }    
+    
     public void checkHandler2(View v)
     {
     	
@@ -607,12 +631,11 @@ public class EventsActivity extends Activity {
     				   if(scheduleTitle[i].equalsIgnoreCase(txtView.getText().toString()))
     				   {
     					   
-    					   setContentView(R.layout.eventinfo_layout2);
+    					   
     					   
     					   
     					   allowBack = true;
     					   Log.i("Running","Looped");
-    					   setUpCall();
     					   v = new View(this);
     					   v.setOnKeyListener(new OnKeyListener() { 
     				            
@@ -634,6 +657,8 @@ public class EventsActivity extends Activity {
     				            } 
     				        });
 
+    					   loadEvent(id[i]);
+    					   /*
     				       DVDTitle = (TextView)findViewById(R.id.DVDTitle);
     				   	Log.i("Cinequest", "choose"+ txtView.getText().toString());
     				       URL u = null;
@@ -712,7 +737,7 @@ public class EventsActivity extends Activity {
      			     					 
        						//setButtons();
     					   //Log.i("TEST", "" + id[i]);
-    					   
+    					  */ 
     				   }
     			}
     			

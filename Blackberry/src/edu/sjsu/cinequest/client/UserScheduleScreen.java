@@ -20,8 +20,6 @@ package edu.sjsu.cinequest.client;
 
 import java.util.Vector;
 
-import net.rim.blackberry.api.browser.Browser;
-import net.rim.blackberry.api.browser.BrowserSession;
 import net.rim.device.api.i18n.DateFormat;
 import net.rim.device.api.ui.DrawStyle;
 import net.rim.device.api.ui.Field;
@@ -29,8 +27,6 @@ import net.rim.device.api.ui.MenuItem;
 import net.rim.device.api.ui.component.Dialog;
 import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.container.HorizontalFieldManager;
-import edu.sjsu.cinequest.comm.Callback;
-import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
 import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;

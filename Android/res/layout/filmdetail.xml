@@ -6,26 +6,8 @@
 	<LinearLayout android:orientation="vertical"
 		android:layout_height="fill_parent" android:layout_width="fill_parent">
 
-		<TextView android:layout_height="wrap_content"
-			android:layout_width="fill_parent" android:paddingTop="5dip"
-			android:paddingLeft="5dip" android:paddingBottom="2dip" 
-			android:id="@+id/Title"></TextView>
-		<ImageView android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal" android:layout_width="fill_parent"
-			android:id="@+id/Image" android:paddingTop="5dip"></ImageView>
-		<TextView android:layout_height="wrap_content"
-			android:layout_width="fill_parent" 
-			android:id="@+id/Description"
-			android:paddingTop="5dip"></TextView>
-		<TextView android:layout_height="wrap_content"
-			android:layout_width="fill_parent" 
-			android:id="@+id/SmallImages"
-			android:paddingTop="5dip"></TextView>
-		<TextView android:layout_height="wrap_content"
-			android:layout_width="fill_parent" 
-			android:id="@+id/Properties"
-			android:paddingTop="5dip"></TextView>
-			
+		<include layout="@layout/detail_layout" />
+
 		<LinearLayout android:id="@+id/LinearLayout01"
 			android:layout_width="fill_parent" android:layout_height="200dip">
 			<ListView android:layout_width="wrap_content"

@@ -63,8 +63,6 @@ public class DVDActivity extends DetailDisplayActivity {
 	private TextView DVDTitle;
 	public View v;
 	private SeparatedListAdapter sAdapter;
-	private Button cqButton;
-	private Button nrButton;
 	
     public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
@@ -73,7 +71,6 @@ public class DVDActivity extends DetailDisplayActivity {
         //byDate_bt = (Button)findViewById(R.id.bydate_bt);
         //byTitle_bt = (Button)findViewById(R.id.bytitle_bt);
         DVDTitle = (TextView)findViewById(R.id.Title);
-        TextView textView = new TextView(this);
         sAdapter = new SeparatedListAdapter(this);
        // textView.setText("header"); 
         //filmsList.addHeaderView(textView);
@@ -137,7 +134,8 @@ public class DVDActivity extends DetailDisplayActivity {
     
     private void loadDVD(int id)  // CSH
     {
-    	MainTab.getQueryManager().getDVD(id, new Callback() { // TODO: better callback
+    	MainTab.getQueryManager().getDVD(id, new Callback() { 
+    		// TODO: better callback
 			public void invoke(Object result) {
 				setContentView(R.layout.dvdinfo_layout);
 				showFilm((Film) result);
@@ -172,7 +170,7 @@ public class DVDActivity extends DetailDisplayActivity {
     				   }
     			
     }
-    public void click(boolean CQ)
+    private void click(boolean CQ)
     {
     	String nurl;
     	if(CQ)
@@ -191,7 +189,7 @@ public class DVDActivity extends DetailDisplayActivity {
         			//TextView txtView = (TextView)vwChildRow.getChildAt(0);
         			//Log.i("Cinequest", "choose"+ txtView.getText().toString());
 
-        	// CSH and here
+        	// TODO: Fix or remove
         					   setContentView(R.layout.dvdinfo_layout);
         				       DVDTitle = (TextView)findViewById(R.id.DVDTitle);
         			

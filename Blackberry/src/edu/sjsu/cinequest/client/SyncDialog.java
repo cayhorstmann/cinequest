@@ -18,15 +18,12 @@
  */
 package edu.sjsu.cinequest.client;
 
+import net.rim.device.api.ui.Ui;
+import net.rim.device.api.ui.component.LabelField;
+import net.rim.device.api.ui.container.VerticalFieldManager;
 import edu.sjsu.cinequest.comm.Action;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
-import net.rim.device.api.ui.Ui;
-import net.rim.device.api.ui.component.EmailAddressEditField;
-import net.rim.device.api.ui.component.LabelField;
-import net.rim.device.api.ui.component.PasswordEditField;
-import net.rim.device.api.ui.container.HorizontalFieldManager;
-import net.rim.device.api.ui.container.VerticalFieldManager;
 
 /**
  * This class describes the sync dialog.
