@@ -252,7 +252,7 @@ public class HParserTest extends TestCase
         	byte[] attributes = testParser.getAttributes();
         	byte[] correctAttributes = {
         			(byte)0,
-        			(byte)2,
+        			(byte)HParser.ITALIC,
         			(byte)0
         	};
         	for(int i = 0; i < attributes.length; i++) {
@@ -379,7 +379,7 @@ public class HParserTest extends TestCase
         assertEquals(expectedResult.length(), offsets[offsets.length - 1]);
         byte[] attrs = parser.getAttributes();
         assertEquals(offsets.length - 1, attrs.length);
-        assertEquals(BOLD, attrs[0]);
+        assertEquals(ITALIC, attrs[0]);
     }
     
     public void testBR()

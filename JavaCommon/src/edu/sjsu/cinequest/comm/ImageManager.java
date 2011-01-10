@@ -81,16 +81,19 @@ public class ImageManager
      * Fetches the images and puts it into the cache. This method is called from the UI thread.
      * @param imageUrl the image URL
      * @param callback the callback for delivering the final image
-     * @param fallback the name of the fallback resource
+     * @param fallback the name of the fallback resource, or null if no fallback is desired
      * @param usePersistentCache true if this image should be persistently cached, false if it should only be cached for the program run
      * @return the cached or fallback image
      */
     public Object getImage(final String imageUrl, final Callback callback,
-            String fallback, final boolean usePersistentCache)
+            Object fallback, final boolean usePersistentCache)
     {
         Object img = bitmapCache.get(imageUrl); 
-        if (img != null)
-            return img;
+        if (img != null) {
+        	if (fallback == null) callback.invoke(img);
+        	return img;
+        }
+            
         if (usePersistentCache)
         {
             byte[] bytes = (byte[]) rawBytesCache.get(imageUrl);
@@ -98,6 +101,7 @@ public class ImageManager
             {
                 img = Platform.getInstance().convert(bytes);
                 bitmapCache.put(imageUrl, img);
+                if (fallback == null) callback.invoke(img);
                 return img;
             }
         }
@@ -118,6 +122,7 @@ public class ImageManager
             }
         });
         t.start();
+        if (fallback == null) return null;
         return Platform.getInstance().getLocalImage(fallback);
     }
     
@@ -126,6 +131,7 @@ public class ImageManager
      * Fetches multiple images in one thread. Called from UI thread. 
      * @param imageUrls the image URLs
      * @param callback the callback for reporting progress. Each progress call delivers one image.
+     * Final callback delivers vector of all images
      */
     public void getImages(final Vector imageUrls, final Callback callback)
     {
@@ -133,12 +139,14 @@ public class ImageManager
         {
             public void run()
             {
+            	Vector images = new Vector();
                 for (int i = 0; i < imageUrls.size(); i++)
                 {
                     String imageUrl = (String) imageUrls.elementAt(i);
                     try
                     {
                         Object result = fetchImage(imageUrl, true);
+                        images.addElement(result);
                         Platform.getInstance().progress(callback, result);
                     }
                     catch (Throwable e)
@@ -146,7 +154,7 @@ public class ImageManager
                         Platform.getInstance().failure(callback, e);
                     }                
                 }
-                
+                Platform.getInstance().invoke(callback, images);                
             }
         });
         t.start();        

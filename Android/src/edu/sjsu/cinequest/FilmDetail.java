@@ -1,50 +1,36 @@
 package edu.sjsu.cinequest;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.ProgramItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
-public class FilmDetail extends Activity {
+public class FilmDetail extends DetailDisplayActivity {
 	private ProgramItem item;
 	private Film film;
 	private ListView scheduleList;
-	private TextView title,description;
-	private ImageView image;
 	private static int chosenId;
 	private QueryManager queryManager;
 	public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
         setContentView(R.layout.filmdetail);
         Log.e("Cinequest","FilmDetail");
-        title = (TextView)findViewById(R.id.film_title);
-        description = (TextView)findViewById(R.id.film_description);
-        image = (ImageView)findViewById(R.id.ImageURL);
         scheduleList = (ListView)findViewById(R.id.ScheduleList);
         Bundle bundle = this.getIntent().getExtras();
 		chosenId = bundle.getInt("id");
 		Log.e("Cinequest","chosenId"+chosenId);
+		// TODO: Find one spot
 		if( HomeActivity.getQueryManager() != null)
 			queryManager = HomeActivity.getQueryManager();
 		else
@@ -52,7 +38,7 @@ public class FilmDetail extends Activity {
 		
 	queryManager.getProgramItem(chosenId, new Callback()
 	{
-		
+		// TODO: Better query
 		@Override
 		public void invoke(Object result) {
 			Log.e("Cinequest","invoke");
@@ -71,7 +57,7 @@ public class FilmDetail extends Activity {
 	private void castResult(Object result)
 	{
 		item = (ProgramItem) result;
-		FilmDetail.this.showProgramItemDetail(item);
+		showProgramItem(item);
 		Vector films = new Vector();
 		films = item.getFilms();
 		if(films.size()==1)
@@ -112,65 +98,4 @@ public class FilmDetail extends Activity {
 			}
 		return list;
 	}
-	private void showProgramItemDetail(ProgramItem item)
-	{
-		Vector films = new Vector();
-		films = item.getFilms();
-		if(films.size()==1)
-		{
-			film = (Film)films.elementAt(0);
-			description.setText(film.getDescription());
-		} 
-		title.setText(item.getTitle());
-		Drawable drawable = LoadImageFromWebOperations(item.getImageURL());
-		if(drawable!=null)
-		{
-			image.setImageDrawable(drawable);
-		}
-	}
-	private Drawable LoadImageFromWebOperations(String url)
-	{
-		try
-		{
-			InputStream is = (InputStream) new URL(url).getContent();
-			Drawable d = Drawable.createFromStream(is, "thumbnail");
-			return d;
-		}catch(Exception e)
-		{
-			System.out.println("Exception:"+e);
-			return null;
-		}
-		
-	}
-	/*
-	public void onStart()
-	{
-		Log.e("","start");
-	}
-    
-	public void onRestart()
-    {
-    	Log.e("","restart");
-    }
-
-	public void onResume()
-    {
-    	Log.e("","resume");
-    }
-
-	public void onPause()
-    {
-    	Log.e("","pause");
-    }
-
-	public void onStop()
-    {
-    	Log.e("","stop");
-    }
-
-	public void onDestroy()
-    {
-    	Log.e("","destryo");
-    }
-	*/
 }

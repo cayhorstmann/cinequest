@@ -68,7 +68,7 @@ public abstract class Platform
      */
     public abstract Object convert(byte[] bytes);
         
-    public abstract Object getLocalImage(String imageName);
+    public abstract Object getLocalImage(Object imageId);
     
     /**
      * Parses XML data

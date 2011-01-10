@@ -88,6 +88,7 @@ public class MainTab extends TabActivity {
 
     }
     
+    // TODO: Move to HomeActivity? 
     protected void onStop(){
         super.onStop();
         // TODO: Persist user schedule

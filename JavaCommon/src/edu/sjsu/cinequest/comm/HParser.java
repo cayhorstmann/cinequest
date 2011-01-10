@@ -21,8 +21,14 @@ package edu.sjsu.cinequest.comm;
 import java.util.Vector;
 
 /**
- * HParser converts plain strings into RichText
+ * HParser converts plain strings into RichText. This follows the BlackBerry API but is also usable 
+ * in general. The parser computes a list of offsets and a list of attributes. 
+ * The offsets define the boundaries of the regions that have a particular font. 
+ * The first offset position in the list is the beginning of the field's text (always 0), and the last offset position marks 
+ * the end of the field's text (always equal to the field's text length). 
+ * Each region has an attribute, a bit set of flags LARGE, BOLD, ITALIC, RED.
  * @author Travis Griffiths
+ * @author Cay Horstmann
  */
 public class HParser
 {
@@ -30,7 +36,7 @@ public class HParser
     private String resultString;
     // This is the byte array of the attributes for the RichTextField
     // constructor
-    private int[] attributes = null;
+    private byte[] attributes = null;
     // This is the RichTextField constructor argument of Font offsets
     private int[] offsets = null;
     // Tracks the font by the reference byte
@@ -39,18 +45,15 @@ public class HParser
     // the found tags start and stop
     private TagIndex tagIndex;
     private Vector images = new Vector();
+    public static final int RED = 8;
     public static final int LARGE = 4;
     public static final int BOLD = 2;
     public static final int ITALIC = 1;
-    private static final String[] tagStrings =
-        { "B", "/B", "I", "/I", "EM", "/EM", "H1", "/H1", "H2", "/H2", "H3",
-                "/H3", "H4", "/H4" };
 
     /**
-     * parse takes a String, and returns the equivalant RichTextField, only some
-     * tags will be supported, unsupported tags will simply cause no change in
-     * the formatting of the String
-     * @param input the string to be formatted to RichText
+     * Parses a string. Call the getter methods afterwards to get the parse
+     * result.
+     * @param input the string to be formatted to rich text
      */
     public void parse(String input)
     {
@@ -66,64 +69,40 @@ public class HParser
                         tagIndex.getEndTag(i));
                 checkForImage(images, tagString);
             }
-            byte[] markups = new byte[tagIndex.getNumberOfTags()];
             // Get the value of the valid tags
-            for (int i = 0; i < tagIndex.getNumberOfTags(); i++)
+            attributes = new byte[tagIndex.getNumberOfTags() + 1];
+            attributes[0] = 0;
+            for (int i = 1; i < attributes.length; i++)
             {
-                markups[i] = this.resolveTag(input.substring(tagIndex
-                        .getStartTag(i) + 1, tagIndex.getEndTag(i)));
+                resolveTag(input.substring(tagIndex
+                        .getStartTag(i - 1) + 1, tagIndex.getEndTag(i - 1)));
+                attributes[i] = font;
             }
-            // Get the indicies of the proper Fonts.
-            for (int i = 0; i < markups.length; i++)
-            {
-                markups[i] = this.getFontFromTag(markups[i]);
-            }
-            // Set the index array for testing
-            this.setAttributes(markups);
             // Get the offsets for RichTextFeild
-            offsets = this.buildOffsets(input);
-            this.verifyOffsets();
+            buildOffsets(input);
+            verifyOffsets();
         }
         else
         {
             resultString = input;
-            attributes = new int[1];
+            attributes = new byte[1];
             attributes[0] = 0;
-            offsets = this.buildOffsets(input);
-            this.verifyOffsets();
+            buildOffsets(input);
+            verifyOffsets();
         }
     }
 
     /**
-     * major point of this is that attributes = markups BUT has a the font byte
-     * in the 0 (we start unformatted) index so a tad of buiding is required
-     */
-    private void setAttributes(byte[] markups)
-    {
-        attributes = new int[markups.length + 1];
-        attributes[0] = 0;
-        for (int i = 0; i < markups.length; i++)
-        {
-            attributes[i + 1] = markups[i];
-        }
-    }
-
-    /**
-     * Just returns the byte array created with setAttributes
-     * @return byte array for the RichTextField constructor
+     * Returns the attributes array. 
+     * @return the attributes array
      */
     public byte[] getAttributes()
-    {
-        byte[] byteAtt = new byte[attributes.length];
-        for (int i = 0; i < attributes.length; i++)
-        {
-            byteAtt[i] = (byte) attributes[i];
-        }
-        return byteAtt;
+    {        
+        return attributes;
     }
 
     /**
-     * returns the offsets required to build RichTextField
+     * Returns the offsets array.
      * @return the offset array
      */
     public int[] getOffsets()
@@ -149,6 +128,15 @@ public class HParser
         return images;
     }
 
+    
+    private static final String[] tagStrings =
+    { 
+    	"B", "/B", "I", "/I", "EM", "/EM",
+		"FONT COLOR=\"RED\"", "/FONT",
+		"H1", "/H1", "H2", "/H2", "H3",
+        "/H3", "H4", "/H4" 
+    };
+   
     /**
      * This takes a string taken from between a greater and less than character
      * this method finds if it is one of the legal tags and returns its number
@@ -156,69 +144,47 @@ public class HParser
      * @param s the contents of a single tag
      * @return the index of the tag found, or -1 if illegal
      */
-    public byte resolveTag(String s)
+    private void resolveTag(String s)
     {
-        if (s.length() > 3)
-        { // no legal tags of this length
-            return (byte) -1;
-        }
         s = s.toUpperCase(); // <b> == <B>
         for (int i = 0; i < tagStrings.length; i++)
         {
             if (s.compareTo(tagStrings[i]) == 0)
             {
-                return (byte) i;
+                setFontFromTag(i);
             }
         }
-        return (byte) -1;
     }
 
-    /**
-     * turns a byte representing the tag present and returns a byte representing
-     * the index of the Font array containing the correct font for this point in
-     * the string.
-     * @param in byte representing a tag by index in tag array
-     * @return byte representing index in Font array
-     */
-    public byte getFontFromTag(byte in)
+    private void setFontFromTag(int in)
     {
-        byte out = (byte) 0;
-        if (in > 5 && in % 2 == 0)
+        switch (in)
         {
-            out = this.setLarge();
+        case 0:
+            setFont(BOLD, true);
+            break;
+        case 1:
+            setFont(BOLD, false);
+            break;
+        case 2:
+        case 4:
+        	setFont(ITALIC, true);
+            break;
+        case 3:
+        case 5:
+        	setFont(ITALIC, false);
+            break;
+        case 6:
+        	setFont(RED, true);
+            break;
+        case 7:
+        	setFont(RED, false);
+            break;
+        default:
+            if (in > 7)
+                setFont(LARGE, in % 2 == 0);
+            break;
         }
-        else if (in > 5 && in % 2 == 1)
-        {
-            out = this.unSetLarge();
-        }
-        else
-        {
-            switch (in)
-            {
-            case -1:
-                out = this.font;
-                break; // no change
-            case 0:
-                out = this.setBold();
-                break;
-            case 1:
-                out = this.unSetBold();
-                break;
-            case 2:
-                out = this.setItalic();
-                break;
-            case 3:
-                out = this.unSetItalic();
-                break;
-            case 4:
-                out = this.setBold();
-                break;
-            case 5:
-                out = this.unSetBold();
-                break;
-            }
-        }
-        return out;
     }
 
     /**
@@ -227,35 +193,33 @@ public class HParser
      * of the characters starting or ending tags themselves are not included it
      * is important to note that this DOES NOT put the last offset (the last
      * char in the String being parsed) as it does not have the String itself.
-     * @param t the array of all start/end points of tags
-     * @return the array of the offsets on a stripped array
      */
     private int[] buildOffsets(String s)
     {
         if (tagIndex.getNumberOfTags() > 0)
         {
-            int[] offSets = new int[tagIndex.getNumberOfTags() + 2]; // one for
+            offsets = new int[tagIndex.getNumberOfTags() + 2]; // one for
                                                                      // start
                                                                      // one for
                                                                      // end
-            offSets[0] = 0;
+            offsets[0] = 0;
             int taglength = 0;
             for (int i = 0; i < tagIndex.numberOfTags; i++)
             {
-                offSets[i + 1] = (tagIndex.getStartTag(i) - taglength);
+                offsets[i + 1] = (tagIndex.getStartTag(i) - taglength);
                 taglength = tagIndex.getTagLength(i);
             }
             // offSets[offSets.length - 2] -= 1;
             resultString = this.stripTags(s);
-            offSets[offSets.length - 1] = resultString.length();
-            return offSets;
+            offsets[offsets.length - 1] = resultString.length();
+            return offsets;
         }
         else
         {
-            int[] offSets = new int[2];
-            offSets[0] = 0;
-            offSets[1] = s.length();
-            return offSets;
+            offsets = new int[2];
+            offsets[0] = 0;
+            offsets[1] = s.length();
+            return offsets;
         }
     }
 
@@ -265,10 +229,10 @@ public class HParser
      * than the one that preceeds it, and last to make sure that the offsets cap
      * the beginning and end of the string in question correctly.
      */
-    private void verifyOffsets()
+    private void verifyOffsets() 
     {
         int tempOff[] = new int[offsets.length];
-        int tempAtt[] = new int[attributes.length];
+        byte tempAtt[] = new byte[attributes.length];
         int i = 1;
         int count = 1;
         int hits = 1; // Always 1 attribute in any set
@@ -308,18 +272,18 @@ public class HParser
         if (tempOff != offsets || tempAtt != attributes)
         {
             int[] resultOff;
-            int[] resultAtt;
+            byte[] resultAtt;
             // Fix double ending
             if (tempOff[hits - 1] == offsets[offsets.length - 1])
             {
                 resultOff = new int[hits];
-                resultAtt = new int[hits - 1];
+                resultAtt = new byte[hits - 1];
                 hits--; // don't need the last set.
             }
             else
             {
                 resultOff = new int[hits + 1];
-                resultAtt = new int[hits];
+                resultAtt = new byte[hits];
             }
             for (int j = 0; j < hits; j++)
             {
@@ -364,7 +328,7 @@ public class HParser
      * @param s our original String
      * @return a string with all tags stripped out
      */
-    public String stripTags(String s)
+    private String stripTags(String s)
     {
         if (tagIndex.getNumberOfTags() < 1)
         {
@@ -397,120 +361,16 @@ public class HParser
      * @param test the string of the tag in question
      * @return true if a break tag is located
      */
-    public boolean isBreak(String test)
+    private static boolean isBreak(String test)
     {
         test = test.toUpperCase();
-        if (test.compareTo("<BR") == 0 || test.compareTo("<BR/") == 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return test.equals("<BR") || test.equals("<BR/");
     }
 
-    /**
-     * This sets the 1 bit to indicate Italic font if it is not already set
-     * @return byte representing the new font
-     */
-    public byte setItalic()
-    {
-        if (font % 2 == 0)
-        {
-            font += 1;
-            return font;
-        }
-        else
-        {
-            return font;
-        }
-    }
-
-    /**
-     * This sets the 1 bit to 0 to indicate a non-italic, if it is not already
-     * set
-     * @return byte representing the new font
-     */
-    public byte unSetItalic()
-    {
-        if (font % 2 == 0)
-        {
-            return font;
-        }
-        else
-        {
-            font -= 1;
-            return font;
-        }
-    }
-
-    /**
-     * The bold bit is the 2 bit, instead of doing some rather obscure bitwise
-     * operation, setBold just adds 2 to the 3 numbers not using the 2 bit
-     * @return byte representing the new font
-     */
-    public byte setBold()
-    {
-        if (font == (byte) 0 || font == (byte) 1 || font == (byte) 4)
-        {
-            font += 2;
-            return font;
-        }
-        else
-        {
-            return font;
-        }
-    }
-
-    /**
-     * Checks the 2 bit and makes it 0 if it is used
-     * @return byte representing the new font
-     */
-    public byte unSetBold()
-    {
-        if (font == (byte) 0 || font == (byte) 1 || font == (byte) 4)
-        {
-            return font;
-        }
-        else
-        {
-            font -= 2;
-            return font;
-        }
-    }
-
-    /**
-     * Sets the font byte to an equivalant large font
-     * @return the byte representing the new font
-     */
-    public byte setLarge()
-    {
-        if (font < 4)
-        {
-            font += 4;
-            return font;
-        }
-        else
-        {
-            return font;
-        }
-    }
-
-    /**
-     * Sets the current font to an equivalant small font
-     * @return byte representing the new font
-     */
-    public byte unSetLarge()
-    {
-        if (font < 4)
-        {
-            return font;
-        }
-        else
-        {
-            font -= 4;
-            return font;
-        }
+    private void setFont(int fontElement, boolean on) {
+    	if (on)
+    		font = (byte) (font | fontElement);
+    	else
+    		font = (byte) (font & ~fontElement);
     }
 }

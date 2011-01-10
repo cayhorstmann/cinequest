@@ -63,9 +63,9 @@ public class JavaSEPlatform extends Platform
         return new ImageIcon(imageBytes).getImage();
     }
 
-    public Object getLocalImage(String imageName)
+    public Object getLocalImage(Object imageName)
     {
-        return new ImageIcon(imageName).getImage();
+        return new ImageIcon((String) imageName).getImage();
     }
 
     public void parse(String url, DefaultHandler handler, Callback callback)

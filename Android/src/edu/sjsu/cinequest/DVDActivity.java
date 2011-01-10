@@ -19,12 +19,9 @@ import java.util.Vector;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -37,23 +34,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.CharUtils;
+import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
-import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
-public class DVDActivity extends Activity {
+public class DVDActivity extends DetailDisplayActivity {
 	private ListView filmsList;
 	private Vector<Filmlet> films = new Vector<Filmlet>();
 	private Vector<Filmlet> schedules = new Vector<Filmlet>();
@@ -69,8 +63,6 @@ public class DVDActivity extends Activity {
 	private TextView DVDTitle;
 	public View v;
 	private SeparatedListAdapter sAdapter;
-	private Button cqButton;
-	private Button nrButton;
 	
     public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
@@ -78,8 +70,7 @@ public class DVDActivity extends Activity {
         filmsList=(ListView)findViewById(R.id.ListView01);
         //byDate_bt = (Button)findViewById(R.id.bydate_bt);
         //byTitle_bt = (Button)findViewById(R.id.bytitle_bt);
-        DVDTitle = (TextView)findViewById(R.id.DVDTitle);
-        TextView textView = new TextView(this);
+        DVDTitle = (TextView)findViewById(R.id.Title);
         sAdapter = new SeparatedListAdapter(this);
        // textView.setText("header"); 
         //filmsList.addHeaderView(textView);
@@ -140,6 +131,19 @@ public class DVDActivity extends Activity {
         }
         
     }
+    
+    private void loadDVD(int id)  // CSH
+    {
+    	MainTab.getQueryManager().getDVD(id, new ProgressMonitorCallback(this,
+    			"Loading Data") { 
+			public void invoke(Object result) {
+				super.invoke(result);
+				setContentView(R.layout.dvdinfo_layout);
+				showFilm((Film) result);
+			}
+    	});
+    }
+    
     public void checkEntireRow(View v)
     {
     	Log.i("Cinequest", "click row");
@@ -149,169 +153,15 @@ public class DVDActivity extends Activity {
     			LinearLayout vwChildRow = (LinearLayout)vwParentRow.getChildAt(0);	
     			TextView txtView = (TextView)vwChildRow.getChildAt(0);
     			Log.i("Cinequest", "choose"+ txtView.getText().toString());
+    			// TODO: Can we store the ID with the button?
     			for(int i = 0; i < scheduleTitle.length ; i++)
     				   if(scheduleTitle[i].equalsIgnoreCase(txtView.getText().toString()))
     				   {
-    					   setContentView(R.layout.dvdinfo_layout);
-    				       DVDTitle = (TextView)findViewById(R.id.DVDTitle);
-    				   	Log.i("Cinequest", "choose"+ txtView.getText().toString());
-    				       URL u = null;
-    						String result = ""; 
-    						try { 
-    							//searchID = searchID.replaceAll(" ", "%20");
-    							String up = url+id[i];
-    						   u = new URL(up); 
-    							Log.i("Cinequest", "choose"+ txtView.getText().toString());
-    					
-    						} catch (MalformedURLException e) { 
-    					
-    						} 
-
-    						   try { 
-    						      HttpURLConnection urlConn = 
-    						         (HttpURLConnection) u.openConnection();
-    						      result =  url + id[i];
-    						      BufferedReader in = 
-    						         new BufferedReader( 
-    						            new InputStreamReader( 
-    						               urlConn.getInputStream(),"ISO-8859-1")); 
-    						      //result +="e";
-    						      String inputLine;
-    						      //result +="b";
-    						      inputLine = in.readLine();
-    						      int x = 0;
-    						      while(inputLine != null) 
-    						      { 
-    						    	 
-    						    		 result +=  "" + inputLine; //+ "\n \n \n";
-    						    		 Log.e("WOW",inputLine);
-    						         inputLine = in.readLine();
-    						         x++;
-    						      } 
-    						      //result +="c";
-    						   }
-    						   catch (IOException e) { 
-    							   //result +="d"; 
-    						   }
-    						   
-    						   String q = splitter(result);
-    						   //list.setAdapter(a);
-    						   //return t + result; 
-    						 
-
-    						   Log.i("T", "RUN!!!!");  
-     					   String t =txtView.getText().toString();
-     					   DVDTitle.setText(t);
-     					  //sView.addView(DVDTitle);
-     					   DVDTitle.setGravity(Gravity.CENTER_HORIZONTAL); 
-     					   //DVDTitle = (TextView)findViewById(R.id.DVDheader);
-     					  // DVDTitle.setText(t);
-     					  //sView.addView(DVDTitle);
-     					   DVDTitle = (TextView)findViewById(R.id.SummaryTitle);
-     					   StringBuffer s = new StringBuffer(str);
-     					  CharUtils.fixWin1252(s);
-     					   DVDTitle.setText(str);
-     					  //DVDTitle.setText(scheduleDes[i]); 
-     					  //DVDTitle.setText(descrip);
-     					  //sView.addView(DVDTitle);
-     					  try
-     					  {
-     						  	URL url = new URL(imageURL); 
-     					  		InputStream stream = url.openStream(); 
-     					  		Bitmap bmp = BitmapFactory.decodeStream(stream);
-     					  		ImageView iv = (ImageView)findViewById(R.id.ImageTitle);
-     					  		iv.setImageBitmap(bmp);
-     					  		stream.close();
-     					  } catch (Exception e) { 
-         					
-     					  }
-    				   
-     					  
-     					  int[] spots = {R.id.tSpot1, R.id.tSpot2, R.id.tSpot3, R.id.tSpot4, R.id.tSpot5, R.id.tSpot6, R.id.tSpot7,
-     							 R.id.tSpot8, R.id.tSpot9, R.id.tSpot10};
-     					 int holder = 0;
-     					  if(!genre.equals(""))
-     					  {
-     						  
-     						  DVDTitle = (TextView)findViewById(spots[holder]);
-     						  DVDTitle.setText(genre);
-     						  holder++;
-     					  }
-    					  //sView.addView(DVDTitle);
-     					if(!director.equals(""))
-    					{
-     						 DVDTitle = (TextView)findViewById(spots[holder]);
-     						 DVDTitle.setText(director);
-     						  holder++;
-    					}
-  					
-     					 //sView.addView(DVDTitle);
-     					if(!writer.equals(""))
-     					{
-       						DVDTitle = (TextView)findViewById(spots[holder]);
-       						DVDTitle.setText(writer);
-       						holder++;
-     					}
-  					
-       					if(!langauge.equals(""))
-         				{
-       						DVDTitle = (TextView)findViewById(spots[holder]);
-       						DVDTitle.setText(langauge);
-       					  holder++;
-   					  }
-  					
-       					if(!cast.equals(""))
-         				{
-       						DVDTitle = (TextView)findViewById(spots[holder]);
-       						DVDTitle.setText(cast);
-       						holder++;
-   					  	}
-  					
-       					if(!producer.equals(""))
-         				{
-       						DVDTitle = (TextView)findViewById(spots[holder]);
-       						DVDTitle.setText(producer);
-       						holder++;
-   					  	}
-  					
-       					if(!country.equals(""))
-         				{
-       						DVDTitle = (TextView)findViewById(spots[holder]);
-       						DVDTitle.setText(country);
-       						holder++;
-   					  	}
-  					
-       					if(!film_info.equals(""))
-         				{
-       						DVDTitle = (TextView)findViewById(spots[holder]);
-       						DVDTitle.setText(film_info);
-       						holder++;
-   					  	}
-  					
-       					if(!cinematographer.equals(""))
-         				{
-       						DVDTitle = (TextView)findViewById(spots[holder]);
-       						DVDTitle.setText(cinematographer);
-       						holder++;
-   					  	}
-  					
-       					if(!editor.equals(""))
-         				{
-       						DVDTitle = (TextView)findViewById(spots[holder]);
-       						DVDTitle.setText(editor);
-       						holder++;
-   					  	}
-  					
-
-    					  //sView.addView(DVDTitle);
-     					 
-     					setButtons();
-    					   Log.i("TEST", "" + id[i]);
-    					   
+    					   loadDVD(id[i]);
     				   }
     			
     }
-    public void click(boolean CQ)
+    private void click(boolean CQ)
     {
     	String nurl;
     	if(CQ)
@@ -329,7 +179,8 @@ public class DVDActivity extends Activity {
         			//LinearLayout vwChildRow = (LinearLayout)vwParentRow.getChildAt(0);	
         			//TextView txtView = (TextView)vwChildRow.getChildAt(0);
         			//Log.i("Cinequest", "choose"+ txtView.getText().toString());
-        			
+
+        	// TODO: Fix or remove
         					   setContentView(R.layout.dvdinfo_layout);
         				       DVDTitle = (TextView)findViewById(R.id.DVDTitle);
         			
@@ -404,8 +255,8 @@ public class DVDActivity extends Activity {
          					  }
         				   
          					  
-         					  int[] spots = {R.id.tSpot1, R.id.tSpot2, R.id.tSpot3, R.id.tSpot4, R.id.tSpot5, R.id.tSpot6, R.id.tSpot7,
-         							 R.id.tSpot8, R.id.tSpot9, R.id.tSpot10};
+         					  int[] spots = { /*R.id.tSpot1, R.id.tSpot2, R.id.tSpot3, R.id.tSpot4, R.id.tSpot5, R.id.tSpot6, R.id.tSpot7,
+         							 R.id.tSpot8, R.id.tSpot9, R.id.tSpot10 */};
          					 int holder = 0;
          					  if(!genre.equals(""))
          					  {
