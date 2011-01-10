@@ -134,22 +134,13 @@ public class DVDActivity extends DetailDisplayActivity {
     
     private void loadDVD(int id)  // CSH
     {
-    	MainTab.getQueryManager().getDVD(id, new Callback() { 
-    		// TODO: better callback
+    	MainTab.getQueryManager().getDVD(id, new ProgressMonitorCallback(this,
+    			"Loading Data") { 
 			public void invoke(Object result) {
+				super.invoke(result);
 				setContentView(R.layout.dvdinfo_layout);
 				showFilm((Film) result);
 			}
-
-			@Override
-			public void progress(Object value) {
-		
-			}
-
-			@Override
-			public void failure(Throwable t) {
-			
-			}        	
     	});
     }
     

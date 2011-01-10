@@ -6,12 +6,9 @@ import edu.sjsu.cinequest.comm.Callback;
 
 public class ProgressMonitorCallback implements Callback {
    private ProgressDialog dialog;
-   private String failureMessage;
 
-   public ProgressMonitorCallback(Context context, String progressMessage,
-		   String failureMessage) {
+   public ProgressMonitorCallback(Context context, String progressMessage) {
 	   dialog = ProgressDialog.show(context, "Cinequest", progressMessage);
-	   this.failureMessage = failureMessage;
    }
 	
 	@Override
