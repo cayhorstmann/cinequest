@@ -1,16 +1,13 @@
 package edu.sjsu.cinequest;
 
-import java.util.ArrayList;
 import java.util.List;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
@@ -56,10 +53,12 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
         	mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
     public View getView(int position, View convertView, ViewGroup parent) {
             View v = convertView;
             final ListViewHolder holder;
+            
             if (v == null) {
             	v = mInflater.inflate(layout_resourceId, null);
                 holder = new ListViewHolder();                
@@ -79,10 +78,6 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
             }
             else{
             	holder = (ListViewHolder) v.getTag();
-//            	if(sectionType == SectionItems.TYPE_SCHEDULE)
-//            		holder.checkbox = (CheckBox) v.findViewById(R.id.myschedule_checkbox);
-//            	Schedule result = (Schedule) list.get(position);
-//            	Log.i(LOGCAT_TAG,"Reusing HOLDER for="+result.getTitle()+" from "+ ((Schedule)holder.checkbox.getTag()).getTitle() +". Checkstatus="+holder.checkbox.isChecked());
             }
             
             
@@ -91,11 +86,7 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
 	            Schedule result = (Schedule) list.get(position);            
 	            if (result != null) {
 	            	
-	            	formatTitle(holder.title);
-	            	formatRowBackground(v);
-	            	formatTimeVenue(holder.time, holder.venue);	            	
-	            	
-	                //Set title and time text
+	            	//Set title and time text
 	                if (holder.title != null) {
 	                     holder.title.setText(result.getTitle());
 	                          
@@ -103,6 +94,8 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
 	                       	holder.title.setTypeface(null, Typeface.ITALIC);
 	                      if(user.getSchedule().isScheduled(result))
 	                       	holder.title.setTypeface(null, Typeface.BOLD);
+	                      
+	                      formatTitle(holder.title, (T) result);
 	                }
 	                if(holder.time != null){
 	                   		
@@ -128,7 +121,9 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
 	                   		  endTime += "AM";
 	                   	  }
 	                   	  
-	                         holder.time.setText("Time: " + startTime + " - " + endTime);
+	                      holder.time.setText("Time: " + startTime + " - " + endTime);
+	                      
+	                      formatTimeVenue(holder.time, holder.venue);
 	                   }
 	                   
 	                   //Set venue text
@@ -137,7 +132,10 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
 	                 }
 	//                 Log.d(LOGCAT_TAG,"getView() called [v=null:"+(convertView==null) +"]for:" + result.getTitle());
 	                   
-	                   formatCheckBox(holder.checkbox, result);
+	                   formatRowBackground(v, (T) result);
+	                   
+	                   if(holder.checkbox != null)
+	                	   formatCheckBox(holder.checkbox, (T)result);
 	            }            
 	            
 	            
@@ -146,11 +144,11 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
            	Filmlet resultFilmlet = (Filmlet) list.get(position);
             if (resultFilmlet != null){
                
-            	formatTitle(holder.title);
-               
             	//Set title
-                if (holder.title != null)
-                       holder.title.setText(resultFilmlet.getTitle());                              
+                if (holder.title != null){
+                       holder.title.setText(resultFilmlet.getTitle());
+                       formatTitle(holder.title, (T) resultFilmlet);
+                }
                 
             }
          }
@@ -171,19 +169,29 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
     	CheckBox checkbox;
     }
     
-//    /**
-//     * Abstract method that any subclass class must implement
-//     * It contains the logic of checking or unchecking the state of checkbox
-//     * when the list is getting redrawn
-//     */
-//    protected abstract void setCheckBoxState();
+    /**
+     * Abstract method that any subclass class must implement
+     * This contains the logic of checking or unchecking the state of checkbox
+     * when the list is getting redrawn
+     */
+    protected abstract void formatCheckBox(CheckBox checkbox, T result);
     
-    protected abstract void formatTitle(TextView tv);
     
+    /**
+	 * This contains the logic of formating the look of title
+     */
+    protected abstract void formatTitle(TextView title, T result);
+    
+    /**
+	 * This contains the logic of formating the look of time and venue
+     */
     protected abstract void formatTimeVenue(TextView time, TextView venue);
     
-    protected abstract void formatRowBackground(View row);
+    /**
+	 * This contains the logic of formating the background of the row
+     */
+    protected abstract void formatRowBackground(View row, T result);
     
-    protected abstract void formatCheckBox(CheckBox checkbox, Schedule s);
+    
 
 }

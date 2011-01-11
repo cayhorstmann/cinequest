@@ -16,44 +16,43 @@ public class MainTab extends TabActivity {
 	private static ImageManager imageManager;
 	private static User user;
 	public static TabHost tabHost;
+	private static final String LOGCAT_TAG = "Cinequest";
 	
-	public void onStart(){
-		super.onStart();
-		//If the app crashed and later started on this activity, platform will be null 
-		//finish this activity
-		if(Platform.getInstance() == null){
-			Log.d("MainTab","App likely resuming after crash on MainTab. " +
-					"Going backt to Home Activity");
-			MainTab.this.finish();
-		}
-	}
 	
     public void onCreate(Bundle savedInstanceState) {
     	    	
         super.onCreate(savedInstanceState);
         
-        //TODO next if statement is not needed after onStart method??
-        if(Platform.getInstance() == null)
-        	Platform.setInstance(new AndroidPlatform(getApplicationContext()));        
-        //queryManager = new QueryManager();
-        
+        setUser( HomeActivity.getUser() );
         queryManager = HomeActivity.getQueryManager();
-        if(queryManager == null)
-        	queryManager = new QueryManager();
+        
+        //If the app crashed and later started on this activity, platform will be null 
+		//finish this activity
+        if(Platform.getInstance() == null || user == null || queryManager == null){
+			Log.d(LOGCAT_TAG,"App likely resuming after crash on TabPage. " +
+							"Going backt to Home Screen");
+			MainTab.this.finish();
+        }
+        
+        if(Platform.getInstance() == null)
+        	Platform.setInstance(new AndroidPlatform(getApplicationContext()));       
+
         
         imageManager = new ImageManager();
-        setUser( HomeActivity.getUser() );
+        
         
         // TODO: Persistent application user
         // user = new User();
+        
         // Remove this to turn on test mode
         // DateUtils.setMode(DateUtils.FESTIVAL_TEST_MODE);
        
         try {
-        setContentView(R.layout.main);
+        	setContentView(R.layout.main);
         } catch (Throwable t) {
         	t.printStackTrace();
         }
+        
         // Get host object from super class
         tabHost = getTabHost();
         TabHost.TabSpec spec;
