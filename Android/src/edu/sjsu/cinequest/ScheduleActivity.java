@@ -29,6 +29,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -50,7 +51,7 @@ public class ScheduleActivity extends CinequestTabActivity{
     /**
      * Checkbox click listener for list checkboxes
      */
-    CompoundButton.OnCheckedChangeListener mCheckboxClickListener = new CompoundButton.OnCheckedChangeListener(){
+    OnCheckedChangeListener mCheckboxClickListener = new OnCheckedChangeListener(){
 
 		@Override
 		public void onCheckedChanged(CompoundButton buttonView,

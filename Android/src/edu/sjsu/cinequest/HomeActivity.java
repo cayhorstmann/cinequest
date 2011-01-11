@@ -74,12 +74,18 @@ public class HomeActivity extends Activity {
 				//TODO delete the toast part
 				MobileItem item = (MobileItem) list.getItemAtPosition(position);
 				String linkType = item.getLinkType();
+				String type = "";
 				int link_id = item.getLinkId();
+				
+				if(linkType.equalsIgnoreCase("item"))
+					type = FilmDetail.ItemType.PROGRAM_ITEM.toString();
+				
 				
 				Intent intent = new Intent();
 				intent.setClass(HomeActivity.this, FilmDetail.class);
 				Bundle bundle = new Bundle();
 				bundle.putInt("id", link_id);
+				bundle.putString("type", type);
 				intent.putExtras(bundle);
 				HomeActivity.this.startActivity(intent);
 				

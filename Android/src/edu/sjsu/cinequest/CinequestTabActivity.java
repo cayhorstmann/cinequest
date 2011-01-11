@@ -141,7 +141,7 @@ public abstract class CinequestTabActivity extends Activity{
 				launchFilmDetail(result);				
 			}
 		});
-        Log.d(LOGCAT_TAG,"Oncreate called");
+
         init();
         fetchServerData();
         
@@ -305,11 +305,11 @@ public abstract class CinequestTabActivity extends Activity{
 		if(result instanceof Schedule){
 			Schedule schedule = (Schedule)result;
 			id = schedule.getItemId();
-			type="schedule";
+			type=FilmDetail.ItemType.PROGRAM_ITEM.toString();
 		} else if(result instanceof Filmlet){
 			Filmlet filmlet = (Filmlet)result;
 			id = filmlet.getId();
-			type="film";
+			type=FilmDetail.ItemType.FILM.toString();
 		}
 		
 		Bundle bundle=new Bundle();		
