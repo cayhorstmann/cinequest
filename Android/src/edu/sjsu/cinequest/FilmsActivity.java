@@ -9,6 +9,8 @@ import java.util.Vector;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -39,6 +41,25 @@ public class FilmsActivity extends CinequestTabActivity{
 	private static final int REFINE_MENUOPTION_ID = Menu.FIRST + 1;
 	private static final int SORT_MENUOPTION_ID = Menu.FIRST + 2;
 	private static final int ADD_CONTEXTMENU_ID = Menu.FIRST + 3;
+	
+	/**
+     * Gets called when user returns to this tab. Also gets called once after the 
+     * onCreate() method too.
+     */
+    @Override
+    public void onResume(){
+    	super.onResume();
+    	
+    	//refresh the listview
+    	if(mSchedule_byDate != null && mListSortType == SortType.BYDATE){
+    		refreshListContents(mSchedule_byDate);
+    		  		
+    	} else if(mFilms_byTitle != null && mListSortType == SortType.BYTITLE){
+    		refreshListContents(mFilms_byTitle);  
+    	}
+    	
+    		
+    }
 	
 	@Override
 	protected void init() {
@@ -278,7 +299,15 @@ public class FilmsActivity extends CinequestTabActivity{
 
 		@Override
 		protected void formatTitle(TextView title, T result) {
-			// TODO Auto-generated method stub
+			Schedule s = null;
+			if(result instanceof Schedule)
+				s = (Schedule) result;
+			
+			if(s != null && MainTab.getUser().getSchedule().contains(s)){
+				title.setTextColor(Color.GREEN);
+			} else {
+				title.setTextColor(Color.WHITE);
+			}
 		}
 
 		@Override

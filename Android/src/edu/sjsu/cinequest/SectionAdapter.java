@@ -89,13 +89,8 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
 	            	//Set title and time text
 	                if (holder.title != null) {
 	                     holder.title.setText(result.getTitle());
-	                          
-	                      if (result.isSpecialItem())
-	                       	holder.title.setTypeface(null, Typeface.ITALIC);
-	                      if(user.getSchedule().isScheduled(result))
-	                       	holder.title.setTypeface(null, Typeface.BOLD);
-	                      
-	                      formatTitle(holder.title, (T) result);
+	                     
+	                     formatTitle(holder.title, (T) result);
 	                }
 	                if(holder.time != null){
 	                   		

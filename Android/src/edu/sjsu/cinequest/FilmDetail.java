@@ -13,6 +13,8 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
@@ -212,6 +214,17 @@ private void getProgramItem(int proramitemId){
 //    			new int[]{R.id.ScheduleTitle ,R.id.ScheduleTime ,R.id.ScheduleVenue}));
 		adapter.addSection("Schedules",
 				new FilmDetailSectionAdapter<Schedule>(this, R.layout.myschedule_row, schedules));
+		
+		//toggle the checkbox upon list-item click
+		scheduleList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long id) {
+				((CheckBox)view.findViewById(R.id.myschedule_checkbox)).toggle();
+				
+			}
+		});
 		scheduleList.setAdapter(adapter);
 	}
 	

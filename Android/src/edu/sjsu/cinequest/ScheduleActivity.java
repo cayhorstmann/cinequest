@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -286,13 +287,20 @@ public class ScheduleActivity extends CinequestTabActivity{
 		@Override
 		protected void formatTitle(TextView title, T result) {
 			Schedule schd = (Schedule)result;
-			//if this schedule item conflicts with another, use ConflictScheduleColor for title
-			if (user.getSchedule().conflictsWith(schd) && user.getSchedule().isScheduled(schd)){
+			
+			if (schd != null && schd.isSpecialItem())
+               	title.setTypeface(null, Typeface.ITALIC);
+            if(schd != null && user.getSchedule().isScheduled(schd))
+               	title.setTypeface(null, Typeface.BOLD);
+			
+			//if this schedule item conflicts with another, 
+            //use ConflictScheduleColor for title
+			if (user.getSchedule().conflictsWith(schd) 
+					&& user.getSchedule().isScheduled(schd)){
             	title.setTextColor( mConflictScheduleColor );
-            } else{
+            } else {
             	title.setTextColor( mNormalScheduleTextColor );
             }
-			
 		}
 
 		@Override
