@@ -213,7 +213,7 @@ private void getProgramItem(int proramitemId){
 //		adapter.addSection("Schedules", new SimpleAdapter(this,FilmDetail.this.getData(schedules),R.layout.filmbydateitem, new String[]{"date","time","venue"}, 
 //    			new int[]{R.id.ScheduleTitle ,R.id.ScheduleTime ,R.id.ScheduleVenue}));
 		adapter.addSection("Schedules",
-				new FilmDetailSectionAdapter<Schedule>(this, R.layout.myschedule_row, schedules));
+				new FilmDetailSectionAdapter<Schedule>(this, R.layout.listitem_titletimevenue, schedules));
 		
 		//toggle the checkbox upon list-item click
 		scheduleList.setOnItemClickListener(new OnItemClickListener() {
@@ -243,6 +243,7 @@ private void getProgramItem(int proramitemId){
 			
 			checkbox.setVisibility(View.VISIBLE);
 			checkbox.setTag( schd );
+			Log.e("FilmActivity","Processing Schedule Checkbox. Title="+schd.getTitle()+", ID="+schd.getItemId());
 			checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
 
 				@Override
@@ -253,6 +254,8 @@ private void getProgramItem(int proramitemId){
 					
 					if(isChecked){
 						MainTab.getUser().getSchedule().add(s);
+						DialogPrompt.showToast(FilmDetail.this, 
+								"Schedule Item Added. Title="+s.getTitle()+", ID="+s.getItemId());
 					}else{
 						MainTab.getUser().getSchedule().remove(s);
 					}

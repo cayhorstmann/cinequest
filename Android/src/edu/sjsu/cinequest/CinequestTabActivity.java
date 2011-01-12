@@ -34,6 +34,7 @@ import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public abstract class CinequestTabActivity extends Activity{
 	private ListView listview;
@@ -309,10 +310,17 @@ public abstract class CinequestTabActivity extends Activity{
 			Schedule schedule = (Schedule)result;
 			id = schedule.getItemId();
 			type=FilmDetail.ItemType.PROGRAM_ITEM.toString();
+			
+			DialogPrompt.showToast(this, 
+					"Schedule Item click received. Title="+schedule.getTitle()+", ID="+id);
+			
 		} else if(result instanceof Filmlet){
 			Filmlet filmlet = (Filmlet)result;
 			id = filmlet.getId();
 			type=FilmDetail.ItemType.FILM.toString();
+			
+			DialogPrompt.showToast(this, 
+					"Film Item click received. Title="+filmlet.getTitle()+", ID="+id);
 		}
 		
 		Bundle bundle=new Bundle();		
@@ -322,6 +330,25 @@ public abstract class CinequestTabActivity extends Activity{
 		intent.putExtras(bundle);
 		CinequestTabActivity.this.startActivity(intent);
 		
+	}
+	
+	/**
+	 * Set the checkbox state based on a schedule present in the mCheckBoxMap 
+	 * @param checkbox
+	 * @param s
+	 */
+	protected void setCheckBoxState(CheckBox checkbox, Schedule s){
+		if( mCheckBoxMap.containsKey( s.getId() ) ){
+			Log.e(LOGCAT_TAG,"Manually Setting checkbox: "+s.getTitle());
+			IGNORE_NEXT_OnCheckChanged = true;
+			checkbox.setChecked(true);
+		}	//and uncheck the checkboxes if they were not checked  
+		else if( !mCheckBoxMap.containsKey( s.getId() ) 
+				&& checkbox.isChecked()	){
+			Log.e(LOGCAT_TAG,"Manually UNsetting checkbox: "+s.getTitle());
+			IGNORE_NEXT_OnCheckChanged = true;
+			checkbox.setChecked(false);        			
+		}
 	}
 	
 	/**

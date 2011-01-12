@@ -18,19 +18,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -38,7 +33,6 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 public class ScheduleActivity extends CinequestTabActivity{
 	private final static String LOGCAT_TAG = "ScheduleActivity";
 	
-    private static ArrayList<String> movieIDList;
     private static final int SUB_ACTIVITY_SYNC_SCHEDULE = 0;
     private final int mConflictScheduleColor = Color.parseColor("#E42217");//Firebrick2
     private final int mMovedScheduleColor = Color.parseColor("#E41B17");//Red2
@@ -48,77 +42,7 @@ public class ScheduleActivity extends CinequestTabActivity{
 	private static final int LOGOUT_MENUOPTION_ID = Menu.FIRST;
 	private static final int SYNC_MENUOPTION_ID = Menu.FIRST + 1;
 	private static final int DELETE_CONTEXTMENU_ID = Menu.FIRST + 3;
-	
-    /**
-     * Checkbox click listener for list checkboxes
-     */
-    OnCheckedChangeListener mCheckboxClickListener = new OnCheckedChangeListener(){
 
-		@Override
-		public void onCheckedChanged(CompoundButton buttonView,
-				boolean isChecked) {
-			    			
-			//CheckBox c_box = (CheckBox)buttonView;
-			Schedule schedule = (Schedule) ((CheckBox)buttonView).getTag();
-			String filmID = "" + schedule.getId();
-			String filmTitle = schedule.getTitle();
-			
-			//if the checkchanged was to be ignored, return 
-			if(IGNORE_NEXT_OnCheckChanged){
-				IGNORE_NEXT_OnCheckChanged = false;
-				Log.d(LOGCAT_TAG,"IGNORED checkchange for: " + filmTitle);
-				return;
-			}			
-			
-			//if the checkbox is checked
-			if(isChecked==true){
-				
-				//if the key is already contained in list of checked-checkboxes, return
-				if(mCheckBoxMap.containsKey(Integer.parseInt( filmID )))
-						return;
-				
-				//remove the filmID from the list of currently displayed movies
-				movieIDList.remove(filmID);
-					
-				//add this checkbox to the list of checked boxes
-				mCheckBoxMap.put( Integer.parseInt( filmID ), (CheckBox)buttonView );
-					
-				Log.d(LOGCAT_TAG,"Checkbox ENABLED on:"+ filmTitle
-						+"[ID="+filmID+"]. "+ 
-						"#Scheduled (decreased): "+ movieIDList.size()
-						+". #Checked (increased): "+ mCheckBoxMap.size());				 				
-				
-				//Show the BottomActionBar
-				showBottomBar();
-				
-			} else {		//if checkbox was later unchecked
-				
-				//remove current checkbox from the list of checked-checkboxes
-				mCheckBoxMap.remove( Integer.parseInt( filmID) );
-				
-				//if the movie is not in list of currently displayed films, add it
-				if(!movieIDList.contains(filmID)){
-					
-					movieIDList.add(filmID);
-					
-					Log.d(LOGCAT_TAG,"Checkbox DISABLED on:"+ filmTitle 
-							+"[ID="+filmID+"]. "+
-							"#Scheduled (increased):"+ movieIDList.size()
-							+". #Checked (decreased): "+ mCheckBoxMap.size());
-				}
-				else{
-					//else just log the call
-					Log.w(LOGCAT_TAG,"Unchecked: called for: "+ filmTitle 
-							+"[ID="+filmID+"]. "+
-							".#Checked (decreased):  "+ mCheckBoxMap.size());
-				}
-				
-				//if all the checkboxes have been unchecked, hide the bottom bar
-				if(mCheckBoxMap.size() == 0)
-					hideBottomBar();
-			}
-		}
-    };
     
     /**
      * Gets called when user returns to this tab. Also gets called once after the 
@@ -129,9 +53,7 @@ public class ScheduleActivity extends CinequestTabActivity{
     	super.onResume();
     	
     	//refresh the listview on screen and update the movieidlist
-    	refreshMovieIDList();
     	refreshListContents(null);
-    		
     }
     
     /**
@@ -142,7 +64,6 @@ public class ScheduleActivity extends CinequestTabActivity{
 	protected void init() {
 		enableListContextMenu();
 		setEmptyListviewMessage(R.string.myschedule_msg_for_emptyschd);
-		setCheckBoxOnCheckedChangeListener(mCheckboxClickListener);
 		
 		setBottomBarEnabled(true);
 		
@@ -151,7 +72,7 @@ public class ScheduleActivity extends CinequestTabActivity{
 
 			@Override
 			public void onClick(View v) {
-				performEdit( v.getId() );
+				deleteSelected();
 				hideBottomBar();
 			}
         });
@@ -174,8 +95,8 @@ public class ScheduleActivity extends CinequestTabActivity{
 
 	@Override
 	protected void fetchServerData() {
-		// Since in this activity's case, the data is not fetched from server till user clicks "Sync", we dont need to
-		//implement this method here
+		//Since in this activity's case, the data is not fetched from server 
+		//till user clicks "Sync", we dont need to implement this method here
 		
 	}
 
@@ -196,7 +117,8 @@ public class ScheduleActivity extends CinequestTabActivity{
       	// create our list and custom adapter  
       	mSeparatedListAdapter = new SeparatedListIndexedAdapter(this);
       	
-      	TreeMap<String, ArrayList<Schedule>> movieScheduleMap = new TreeMap<String, ArrayList<Schedule>>();
+      	TreeMap<String, ArrayList<Schedule>> movieScheduleMap 
+      						= new TreeMap<String, ArrayList<Schedule>>();
   		
   		for(int k = 0; k < scheduleItems.length; k++){
   			Schedule tempSchedule = scheduleItems[k];
@@ -210,7 +132,6 @@ public class ScheduleActivity extends CinequestTabActivity{
   			}
   		}
   			
-  		//Enumeration<String> days = movieScheduleTable.keys();
   		Set<String> days = movieScheduleMap.keySet();
   		Iterator<String> iter = days.iterator();
   		
@@ -231,26 +152,13 @@ public class ScheduleActivity extends CinequestTabActivity{
 			key = key.substring(4);  			
   			
 			((SeparatedListIndexedAdapter)mSeparatedListAdapter).addSection(header,	
-  					new SchedulesSectionAdapter<Schedule>(this,R.layout.myschedule_row,tempList),	
+  					new SchedulesSectionAdapter<Schedule>(this,
+  										R.layout.listitem_titletimevenue,tempList),	
   					key);
   		}
   		
   		setListViewAdapter(mSeparatedListAdapter);		
 	}
-	
-    /**
-     * This refreshes the movieIDList and adds the id's of all movies in persistent schedule
-     */
-     private static void refreshMovieIDList(){
-    	 Log.v(LOGCAT_TAG,"Refreshing movie-id-list");
-    	 Schedule[] scheduleItems = user.getSchedule().getScheduleItems();
-    	 movieIDList = new ArrayList<String>();
-    	 
-    	 for(int i = 0; i < scheduleItems.length; i++){
-    		 movieIDList.add("" + scheduleItems[i].getId());
-    	 }   	 
-    	 
-     }
      
      /**
       * Custom List-Adapter to show the schedule items in list 
@@ -267,21 +175,11 @@ public class ScheduleActivity extends CinequestTabActivity{
 			Schedule s = (Schedule)result;
 			
 			checkbox.setVisibility(View.VISIBLE);
-			checkbox.setOnCheckedChangeListener(mCheckboxClickListener);
+			checkbox.setOnCheckedChangeListener(getCheckBoxOnCheckedChangeListener());
 			checkbox.setTag( s );
 			
-			if( !movieIDList.contains( ""+s.getId() ) ){
-    			Log.e(LOGCAT_TAG,"Manually Setting checkbox: "+s.getTitle());
-    			IGNORE_NEXT_OnCheckChanged = true;
-    			checkbox.setChecked(true);
-    		}	//and uncheck the checkboxes if they were not checked  
-    		else if( movieIDList.contains( ""+s.getId() ) 
-    				&& checkbox.isChecked()	){
-    			Log.e(LOGCAT_TAG,"Manually UNsetting checkbox: "+s.getTitle());
-    			IGNORE_NEXT_OnCheckChanged = true;
-    			checkbox.setChecked(false);        			
-    		}
-			
+			//manually check or uncheck the checkbox
+			setCheckBoxState(checkbox, s);
 		}
 
 		@Override
@@ -323,33 +221,20 @@ public class ScheduleActivity extends CinequestTabActivity{
     	 
      }
 	
-	/** When user clicks either Edit/Done or chooses Batch-Delete or finishes Batch-Delete*/
-    //TODO choose some other name for function
-    private void performEdit( int viewID ){
+	/** 
+	 * When user clicks Delete, delete all selected movies
+	 **/
+    private void deleteSelected(){
     	
 		//remove the items that user checked on edit screen from user.getSchedule()
-		Schedule[] scheduleItems = user.getSchedule().getScheduleItems();					
-		for(int i = 0; i < scheduleItems.length; i++){
-			Schedule s = scheduleItems[i];
-			if(!movieIDList.contains(""+s.getId())){							
-				user.getSchedule().remove(s);
-				Log.d(LOGCAT_TAG,"Removing from schedule movie: "+s.getTitle()+"[ID="+s.getId()+"]");
-			}
-		}
+    	ArrayList<Schedule> allcheckedfilms = mCheckBoxMap.allTags();
+    	for(Schedule s : allcheckedfilms){
+    		user.getSchedule().remove(s);
+    	}
 		
-		//for debug purposes, Log all the movies currently in schedule
-		Schedule[] items = user.getSchedule().getScheduleItems();
-		String allMovies = "";
-		for(Schedule s : items){
-			if(s.getTitle().length() > 9)
-				allMovies += s.getTitle().substring(0,9) + ".. , ";
-			else 
-				allMovies += s.getTitle() + ", ";
-		}
-		Log.d(LOGCAT_TAG,"Current Movies: "+allMovies);
-		
+		mCheckBoxMap.clear();
 		//show the schedule on screen
-		refreshListContents(null);
+		refreshListContents(null);		
     }
     
     /**
@@ -364,7 +249,6 @@ public class ScheduleActivity extends CinequestTabActivity{
         }
         else if (resultCode == Activity.RESULT_OK){
         	refreshListContents(null);
-        	refreshMovieIDList();
         	
             switch (requestCode) {
               //only this case is used in latest iternation of code, as others are now redundant
@@ -413,33 +297,32 @@ public class ScheduleActivity extends CinequestTabActivity{
 						m_ProgressDialog = null;
 					}
 					DialogPrompt.showOptionDialog(ScheduleActivity.this, 
-							getResources().getString(R.string.schedule_conflict_dialogmsg), 
-							"Keep Server", new DialogInterface.OnClickListener(){
-								public void onClick(DialogInterface dialog,	int which) {
-									m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
-											"Please wait...", "Syncing data ...", true);
-									cb.invoke(new Integer(User.SYNC_REVERT));									
-								}
+						getResources().getString(R.string.schedule_conflict_dialogmsg), 
+						"Keep Server", new DialogInterface.OnClickListener(){
+							public void onClick(DialogInterface dialog,	int which) {
+								m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
+										"Please wait...", "Syncing data ...", true);
+								cb.invoke(new Integer(User.SYNC_REVERT));									
 							}
-							,"Keep Device", new DialogInterface.OnClickListener(){
-								public void onClick(DialogInterface dialog,	int which) {									
-									cb.invoke(new Integer(User.SYNC_SAVE));
-									m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
-											"Please wait...", "Syncing data ...", true);
-								}
-							},
-							"Merge Both", new DialogInterface.OnClickListener() {
+						}
+						,"Keep Device", new DialogInterface.OnClickListener(){
+							public void onClick(DialogInterface dialog,	int which) {									
+								cb.invoke(new Integer(User.SYNC_SAVE));
+								m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
+										"Please wait...", "Syncing data ...", true);
+							}
+						},
+						"Merge Both", new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
+										"Please wait...", "Syncing data ...", true);
+								cb.invoke(new Integer(User.SYNC_MERGE));
 								
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
-											"Please wait...", "Syncing data ...", true);
-									cb.invoke(new Integer(User.SYNC_MERGE));
-									
-								}
 							}
-						);
-					
+						}
+					);					
 				}
     			
     		}, new Callback(){
@@ -448,7 +331,6 @@ public class ScheduleActivity extends CinequestTabActivity{
 				public void invoke(Object result) {
 					Log.d(LOGCAT_TAG,"Result returned...");
 					refreshListContents(null);
-					refreshMovieIDList();
 					m_ProgressDialog.dismiss();
 					//Display a confirmation notification
 					Toast.makeText(ScheduleActivity.this, 
@@ -479,11 +361,12 @@ public class ScheduleActivity extends CinequestTabActivity{
     /**
      * Take user to loginActivity to login
      */
-    private static void logIn(Context context){    	
+    private static void launchLoginScreen(Context context){    	
     	Log.d(LOGCAT_TAG,"Launching LoginActivity");
     	
 	   	Intent i = new Intent(context, LoginActivity.class);		    		                
-        //Instead of startActivity(i), use startActivityForResult, so we could return back to this activity after login finishes
+        //Instead of startActivity(i), use startActivityForResult, 
+	   	//so we could return back to this activity after login finishes
 		((Activity) context).startActivityForResult(i, SUB_ACTIVITY_SYNC_SCHEDULE);
     }
 	
@@ -494,7 +377,6 @@ public class ScheduleActivity extends CinequestTabActivity{
     	Log.d(LOGCAT_TAG, "Logging out...........");
     	user.logout();
     	refreshListContents(null);
-    	refreshMovieIDList();
     	Toast.makeText(this, "You have been logged out!", Toast.LENGTH_LONG).show();
     }
     
@@ -531,7 +413,10 @@ public class ScheduleActivity extends CinequestTabActivity{
         
     }
     
-    /** This method is called before showing the menu to user after user clicks menu button*/
+    /** 
+     * This method is called before showing the menu to user after 
+     * user clicks menu button
+     **/
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
     	
@@ -569,7 +454,6 @@ public class ScheduleActivity extends CinequestTabActivity{
 	    	Schedule s = (Schedule) getListview().getItemAtPosition(info.position);
 	    	
 	    	//delete this schedule from the list 
-	    	movieIDList.remove( ""+s.getId() );
 	    	user.getSchedule().remove(s);
 	    	
 	    	//refresh list: show the edited schedule on screen
@@ -604,7 +488,7 @@ public class ScheduleActivity extends CinequestTabActivity{
 		    	   .setCancelable(true)
 		           .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 		               public void onClick(DialogInterface dialog, int id) {
-		                    logIn(context);
+		                    launchLoginScreen(context);
 		            		
 		               }
 		           })
@@ -615,9 +499,6 @@ public class ScheduleActivity extends CinequestTabActivity{
 		           });
 		    AlertDialog alert = builder.create();
 		    alert.show();
-    	}   	
-    	
-    	
+    	}
     }
-
 }

@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class DialogPrompt {
 	
@@ -31,6 +32,15 @@ public class DialogPrompt {
 		       });
 		AlertDialog alert = builder.create();
 		alert.show();
+	}
+	
+	/**
+	 * Shows a toast notification with long duration
+	 * @param context the context which is requesting the prompt
+	 * @param msg the message to display
+	 */
+	public static void showToast(Context context, String msg){
+		Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
 	}
 	
 	/**

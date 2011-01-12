@@ -30,7 +30,7 @@ public class CheckBoxMap {
 	 * @param value the value associated with the key
 	 * @return true if successfully put in the collection, false otherwise
 	 */
-	public boolean put (Integer key, CheckBox value){
+	public boolean put (int key, CheckBox value){
 		Schedule s = (Schedule)value.getTag();
 		
 		/*the key had to match with the schedule contained within the checkbox
@@ -91,7 +91,7 @@ public class CheckBoxMap {
 	 * @param key the key which needs to be checked if present in this collection
 	 * @return true if found, false otherwise
 	 */
-	public boolean containsKey(Integer key){
+	public boolean containsKey(int key){
 		int index = idList.indexOf(key);
 		if(index >= 0)
 			return true;
@@ -154,7 +154,7 @@ public class CheckBoxMap {
 	 * @param key whose associated value and key itself are to be removed 
 	 * @return the value stored for that key, null if no value is found
 	 */
-	public CheckBox remove(Integer key){
+	public CheckBox remove(int key){
 		int index = idList.indexOf(key);
 		CheckBox c = null;
 		if(index >= 0){
@@ -172,7 +172,7 @@ public class CheckBoxMap {
 	 * @param key whose value is to be retrieved
 	 * @return the value
 	 */
-	public CheckBox get(Integer key){
+	public CheckBox get(int key){
 		int index = idList.indexOf(key);
 		if(index >= 0)
 			return cboxList.get(index);

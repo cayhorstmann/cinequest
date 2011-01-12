@@ -275,13 +275,12 @@ public class FilmsActivity extends CinequestTabActivity{
 				
 				((SeparatedListIndexedAdapter)mSeparatedListAdapter).addSection(
 	 					header,	
-	 					new FilmSectionAdapter<Schedule>(this,R.layout.myschedule_row,tempList),
+	 					new FilmSectionAdapter<Schedule>(this,R.layout.listitem_titletimevenue,tempList),
 	 					key);
 	 		}
 	   	 }
 
 	   	//now set this adapter as the list-adapter for the listview
-//	   	((SeparatedListIndexedAdapter)mSeparatedListAdapter).setAsAdapterFor( getListview() );
 	   	setListViewAdapter(mSeparatedListAdapter);
 	}
 	
@@ -336,19 +335,10 @@ public class FilmsActivity extends CinequestTabActivity{
 			
 			//set the listener and tag
 			checkbox.setOnCheckedChangeListener(getCheckBoxOnCheckedChangeListener());
-			checkbox.setTag( s );	
+			checkbox.setTag( s );
 			
-			//manually check or uncheck the checkbox			
-			if(mCheckBoxMap.containsKey( s.getId() )){
-				Log.e(LOGCAT_TAG,"Manually Setting checkbox: "+s.getTitle());
-				IGNORE_NEXT_OnCheckChanged = true;
-				checkbox.setChecked(true);
-			}
-			else if(!mCheckBoxMap.containsKey( s.getId() ) && checkbox.isChecked()){
-				Log.e(LOGCAT_TAG,"Manually UNsetting checkbox: "+s.getTitle());
-				IGNORE_NEXT_OnCheckChanged = true;
-				checkbox.setChecked(false);
-			}
+			//manually check or uncheck the checkbox
+			setCheckBoxState(checkbox, s);
 		}    	
     }
 
@@ -537,5 +527,4 @@ public class FilmsActivity extends CinequestTabActivity{
         return super.onContextItemSelected(item);
       }
     }
-
 }
