@@ -14,17 +14,17 @@
 
 	<include layout="@layout/detail_layout" />
 
-		<LinearLayout 
+		<!-- <LinearLayout 
 			android:id="@+id/LinearLayout01"
 			android:layout_width="fill_parent" 
 			android:layout_height="200dip"
-		>
+		>-->
 			<ListView 
 				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" 
+				android:layout_height="200dip" 
 				android:id="@+id/ScheduleList"
 			/>
-		</LinearLayout>
+		<!--</LinearLayout>-->
 		
 	</LinearLayout>
 </ScrollView>

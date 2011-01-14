@@ -34,8 +34,12 @@ import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
-import android.widget.Toast;
 
+/**  
+ * The super class for all the tabs
+ * @author Prabhjeet Ghuman
+ *
+ */
 public abstract class CinequestTabActivity extends Activity{
 	private ListView listview;
 	private TextView mEmptyListViewMessage;
@@ -50,8 +54,11 @@ public abstract class CinequestTabActivity extends Activity{
 	private boolean BOTTOM_BAR_ENABLED = false;
 	protected enum ButtonType {LELT, MIDDLE, RIGHT}
 	
+	
 	//menu options unique id
-	private static final int MOREINFO_CONTEXTMENU_ID = Menu.FIRST;
+	private static final int MOREINFO_CONTEXTMENU_ID = Menu.FIRST + 10;
+	private static final int HOME_MENUOPTION_ID = Menu.FIRST + 11;
+	private static final int ABOUT_MENUOPTION_ID = Menu.FIRST + 12;
     
 	/**
      * Checkbox click listener for list checkboxes
@@ -311,16 +318,16 @@ public abstract class CinequestTabActivity extends Activity{
 			id = schedule.getItemId();
 			type=FilmDetail.ItemType.PROGRAM_ITEM.toString();
 			
-			DialogPrompt.showToast(this, 
-					"Schedule Item click received. Title="+schedule.getTitle()+", ID="+id);
+//			DialogPrompt.showToast(this, 
+//					"Schedule Item click received. Title="+schedule.getTitle()+", ItemId="+id);
 			
 		} else if(result instanceof Filmlet){
 			Filmlet filmlet = (Filmlet)result;
 			id = filmlet.getId();
 			type=FilmDetail.ItemType.FILM.toString();
 			
-			DialogPrompt.showToast(this, 
-					"Film Item click received. Title="+filmlet.getTitle()+", ID="+id);
+//			DialogPrompt.showToast(this, 
+//					"Film Item click received. Title="+filmlet.getTitle()+", ID="+id);
 		}
 		
 		Bundle bundle=new Bundle();		
@@ -381,7 +388,7 @@ public abstract class CinequestTabActivity extends Activity{
 	/**
      * Slide in the bottom bar with animation
      */
-    public void showBottomBar(){
+    protected void showBottomBar(){
     	if(!BOTTOM_BAR_ENABLED)
     		return;
     	if(mBottomActionBar.getVisibility() == View.VISIBLE){
@@ -397,7 +404,7 @@ public abstract class CinequestTabActivity extends Activity{
     /**
      * Slide out the bottom bar with animation
      */
-    public void hideBottomBar(){    	
+    protected void hideBottomBar(){    	
     	if(!BOTTOM_BAR_ENABLED)
     		return;
     	
@@ -441,8 +448,9 @@ public abstract class CinequestTabActivity extends Activity{
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.cinequest_tabactivity_options_menu, menu);
+        
+        menu.add(0, HOME_MENUOPTION_ID, 0,"Home").setIcon(R.drawable.home);
+        menu.add(0, ABOUT_MENUOPTION_ID, 0,"About").setIcon(R.drawable.about);
         
         return true;
     }
@@ -453,10 +461,10 @@ public abstract class CinequestTabActivity extends Activity{
         // Handle item selection
         switch (item.getItemId()) {
         	
-	        case R.id.menu_option_home:
+	        case HOME_MENUOPTION_ID:
 	        	goHome();
 	            return true;
-	        case R.id.menu_option_about:
+	        case ABOUT_MENUOPTION_ID:
 	            DialogPrompt.showAppAboutDialog(this);
 	            return true;
 	        

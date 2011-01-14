@@ -30,6 +30,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
+/**
+ * The Schedule Tab of the app 
+ * 
+ * @author Prabhjeet Ghuman
+ *
+ */
 public class ScheduleActivity extends CinequestTabActivity{
 	private final static String LOGCAT_TAG = "ScheduleActivity";
 	
@@ -176,7 +182,6 @@ public class ScheduleActivity extends CinequestTabActivity{
 			
 			checkbox.setVisibility(View.VISIBLE);
 			checkbox.setOnCheckedChangeListener(getCheckBoxOnCheckedChangeListener());
-			checkbox.setTag( s );
 			
 			//manually check or uncheck the checkbox
 			setCheckBoxState(checkbox, s);

@@ -1,6 +1,5 @@
 package edu.sjsu.cinequest;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -11,9 +10,13 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * The class with static methods to show varios classes of dialogs  
+ * @author Prabhjeet Ghuman
+ *
+ */
 public class DialogPrompt {
 	
 	/**

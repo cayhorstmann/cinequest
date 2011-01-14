@@ -26,6 +26,11 @@ import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
+/**
+ * Films tab of the app
+ * @author Prabhjeet Ghuman
+ * @author Chao
+ */
 public class FilmsActivity extends CinequestTabActivity{
 	
 	private enum SortType {BYDATE, BYTITLE};	
@@ -335,7 +340,6 @@ public class FilmsActivity extends CinequestTabActivity{
 			
 			//set the listener and tag
 			checkbox.setOnCheckedChangeListener(getCheckBoxOnCheckedChangeListener());
-			checkbox.setTag( s );
 			
 			//manually check or uncheck the checkbox
 			setCheckBoxState(checkbox, s);
@@ -387,7 +391,7 @@ public class FilmsActivity extends CinequestTabActivity{
     		user.getSchedule().add(s);
     	}
     	
-    	DialogPrompt.showDialog(this, "Total "+allcheckedfilms.size() 
+    	DialogPrompt.showToast(this, "Total "+allcheckedfilms.size() 
     									+" films were added to your schedule.");
     	mCheckBoxMap.clear();
     	refreshListContents(mSchedule_byDate);

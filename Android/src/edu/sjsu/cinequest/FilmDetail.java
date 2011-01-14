@@ -179,16 +179,18 @@ private void getProgramItem(int proramitemId){
 	private void castResult(Object result)
 	{
 		item = (ProgramItem) result;
+		Log.e("ScheduleActivity","For "+item.getTitle()+"["+item.getId()+"], films="+item.getFilms().size());
+		
 		showProgramItem(item);
 		Vector films = new Vector();
 		films = item.getFilms();
-		if(films.size()==1)
+		if(films.size() > 0)
 		{
 			film = (Film)films.elementAt(0);
 			if(film!=null)
 			{
 				Vector<Schedule> schedules = new Vector<Schedule>();
-				schedules = film.getSchedules(); 
+				schedules = film.getSchedules();
 				FilmDetail.this.showSchedules(schedules);
 			}
 		}
@@ -202,6 +204,13 @@ private void getProgramItem(int proramitemId){
 		Log.e("ScheduleActivity","film got. title="+afilm.getTitle());
 		Vector<Schedule> schedules = new Vector<Schedule>();
 		schedules = afilm.getSchedules(); 
+		
+		//if the film is part of short program, change its schedules title
+		if(afilm.getDescription().startsWith("Part of Shorts Program")){
+			for(Schedule s: schedules){
+				s.setTitle(s.getTitle() + " [Short Program's Part]");
+			}
+		}
 		FilmDetail.this.showSchedules(schedules);			
 		
 	}
@@ -210,8 +219,6 @@ private void getProgramItem(int proramitemId){
 	private void showSchedules(Vector<Schedule> schedules)
 	{
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
-//		adapter.addSection("Schedules", new SimpleAdapter(this,FilmDetail.this.getData(schedules),R.layout.filmbydateitem, new String[]{"date","time","venue"}, 
-//    			new int[]{R.id.ScheduleTitle ,R.id.ScheduleTime ,R.id.ScheduleVenue}));
 		adapter.addSection("Schedules",
 				new FilmDetailSectionAdapter<Schedule>(this, R.layout.listitem_titletimevenue, schedules));
 		
@@ -221,8 +228,7 @@ private void getProgramItem(int proramitemId){
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
-				((CheckBox)view.findViewById(R.id.myschedule_checkbox)).toggle();
-				
+				((CheckBox)view.findViewById(R.id.myschedule_checkbox)).toggle();				
 			}
 		});
 		scheduleList.setAdapter(adapter);
@@ -242,7 +248,6 @@ private void getProgramItem(int proramitemId){
 					= (edu.sjsu.cinequest.comm.cinequestitem.Schedule) result;
 			
 			checkbox.setVisibility(View.VISIBLE);
-			checkbox.setTag( schd );
 			Log.e("FilmActivity","Processing Schedule Checkbox. Title="+schd.getTitle()+", ID="+schd.getItemId());
 			checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
 
@@ -254,8 +259,8 @@ private void getProgramItem(int proramitemId){
 					
 					if(isChecked){
 						MainTab.getUser().getSchedule().add(s);
-						DialogPrompt.showToast(FilmDetail.this, 
-								"Schedule Item Added. Title="+s.getTitle()+", ID="+s.getItemId());
+//						DialogPrompt.showToast(FilmDetail.this, 
+//								"Schedule Item Added. Title="+s.getTitle()+", ID="+s.getItemId());
 					}else{
 						MainTab.getUser().getSchedule().remove(s);
 					}

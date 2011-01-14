@@ -83,6 +83,9 @@ public class FilmParser extends BasicHandler
         else if (lastTagName().equals("schedule") && film != null)
         {
             Schedule schedule = new Schedule();
+            schedule.setItemId(Integer.parseInt(attributes.getValue("program_item_id")));  
+            schedule.setTitle(film.getTitle());
+            schedule.setId(Integer.parseInt(attributes.getValue("id")));
             schedule.setStartTime(attributes.getValue("start_time"));
             schedule.setEndTime(attributes.getValue("end_time"));
             schedule.setVenue(attributes.getValue("venue"));

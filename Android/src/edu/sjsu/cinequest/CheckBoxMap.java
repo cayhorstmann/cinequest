@@ -8,6 +8,15 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
+/**
+ * A custom map-kind class to store the schedule id's as key and checkbox as value.
+ * It gets the Schedule object from checkbox's tag.
+ * 
+ * Implemented using ArrayLists as underlying data structures
+ * 
+ * @author Prabhjeet Ghuman
+ *
+ */
 public class CheckBoxMap {
 	//ArrayLists for holding the data 
 	private ArrayList<Schedule> schdList = new ArrayList<Schedule>();

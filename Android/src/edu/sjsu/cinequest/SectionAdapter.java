@@ -21,7 +21,7 @@ import edu.sjsu.cinequest.comm.cinequestitem.User;
  * This class can be used in Film Activity and Schedule Activity, where listview items
  * contain a title, a time, a venue and a checkbox
  * 
- * @author Prabh
+ * @author Prabhjeet Ghuman
  * @param <T>
  *
  */
@@ -129,8 +129,10 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
 	                   
 	                   formatRowBackground(v, (T) result);
 	                   
-	                   if(holder.checkbox != null)
+	                   if(holder.checkbox != null){
+	                	   holder.checkbox.setTag( result );
 	                	   formatCheckBox(holder.checkbox, (T)result);
+	                   }
 	            }            
 	            
 	            

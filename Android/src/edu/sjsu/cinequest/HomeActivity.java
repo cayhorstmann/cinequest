@@ -36,6 +36,12 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
+/**
+ * The home screen of the app  
+ * 
+ * @author Prabhjeet Ghuman
+ *
+ */
 public class HomeActivity extends Activity {
 	
 	private static ProgressDialog m_ProgressDialog = null; 

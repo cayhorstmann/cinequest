@@ -36,7 +36,7 @@ import android.widget.SectionIndexer;
  * method of your listview after using this class as adapter.
  * 
  * 
- * @author Prabh
+ * @author Prabhjeet Ghuman
  *
  */
 public class SeparatedListIndexedAdapter extends SeparatedListAdapter 
