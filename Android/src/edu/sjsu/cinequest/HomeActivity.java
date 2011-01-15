@@ -36,6 +36,8 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
+// TODO: Add click for each item; show the section info
+
 public class HomeActivity extends Activity {
 	
 	private static ProgressDialog m_ProgressDialog = null; 
@@ -181,6 +183,7 @@ public class HomeActivity extends Activity {
     	 if (imageurl == null){
     		 image = getResources().getDrawable( R.drawable.creative );    		 
     	 }else{
+    		 // TODO: Use image manager to get the image
     		 image = LoadImageFromWebOperations( imageurl );
     		 if( image == null)
     	 			image = getResources().getDrawable( R.drawable.creative );    	 
