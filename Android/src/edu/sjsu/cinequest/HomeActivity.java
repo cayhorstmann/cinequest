@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -45,14 +46,11 @@ import android.widget.Toast;
  * @author Prabhjeet Ghuman
  *
  */
-public class HomeActivity extends Activity {
-	
-	private static ProgressDialog m_ProgressDialog = null; 
-    private ListView list;
-    private ImageView title_image;
-    private Vector<Section> mNewsSections = new Vector<Section>();
-    private Button festivalButton, dvdButton;
+public class HomeActivity extends Activity {	
+	private ListView list;
+	ImageView title_image; 
     public static int OPEN_TAB = 0;
+    
     private static QueryManager queryManager;
 	private static ImageManager imageManager;
     private static User user;
@@ -71,12 +69,12 @@ public class HomeActivity extends Activity {
         imageManager = new ImageManager();
         user = new User();
         
-        //get the list and imageview objects from layout
-        list = (ListView)this.findViewById(R.id.home_newslist);
         title_image = (ImageView) this.findViewById(R.id.homescreen_title_image);
-        festivalButton = (Button) findViewById(R.id.goto_festival_button);
-        dvdButton = (Button) findViewById(R.id.goto_dvd_button);
-        
+        title_image.setImageDrawable(getResources().getDrawable(R.drawable.creative));
+
+        list = (ListView)this.findViewById(R.id.home_newslist);
+ 		list.setAdapter(new SeparatedListAdapter(this));
+        // TODO: Needs work
         //Upon clicking the item in list
         list.setOnItemClickListener( new OnItemClickListener() {
 
@@ -107,7 +105,7 @@ public class HomeActivity extends Activity {
 			}
         });
         
-        //clicklistener for buttons
+        Button festivalButton = (Button) findViewById(R.id.goto_festival_button);
         festivalButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -118,6 +116,7 @@ public class HomeActivity extends Activity {
 			}
 		});
         
+        Button dvdButton = (Button) findViewById(R.id.goto_dvd_button);
         dvdButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -138,15 +137,21 @@ public class HomeActivity extends Activity {
     	super.onResume();
     	
     	//check network connection
-    	if( isNetworkAvailable() == false ){
-    		refreshHeaderImage(null);    		
+    	if (!isNetworkAvailable()) {
     		Toast.makeText(this, getResources().getString(R.string.no_network_msg), 
     				Toast.LENGTH_LONG).show();
     		return;
     	}
     	
     	//if network is available, get the event/news data
-  	    getEventData();
+        queryManager.getSpecialScreen("ihome", new Callback(){
+			@Override
+			public void invoke(Object result) {
+				populateNewsEventsList((Vector<Section>) result);
+			}
+			@Override public void progress(Object value) {}
+			@Override public void failure(Throwable t) {}        	
+        });
     }
     
     protected void onStop(){
@@ -155,76 +160,15 @@ public class HomeActivity extends Activity {
         Platform.getInstance().close();
         super.onStop();
     }
-    
-    /**Initiates the query to server and acts according to the result returned */
-    private void getEventData(){
-    	
-    	//start a progress dialog
-    	m_ProgressDialog = ProgressDialog.show(HomeActivity.this, "", "Updating...", true);
-
-    	//get the data
-        queryManager.getSpecialScreen("ihome", new Callback(){
-
-			@Override
-			public void invoke(Object result) {
-				Log.d("HomeActivity","Home screen query result returned");
-				mNewsSections = (Vector<Section>) result;
-				//TODO remove this call to image refresh after xml is fixed
-				//refreshHeaderImage("http://mobile.cinequest.org/imgs/mobile/creative.gif");
-				populateNewsEventsList();
-				
-				m_ProgressDialog.dismiss();
-			}
-
-			@Override
-			public void progress(Object value) {
-				// TODO Auto-generated method stub				
-			}
-
-			@Override
-			public void failure(Throwable t) {
-				m_ProgressDialog.dismiss();
-				
-				String error = "Error in receiving data. Class="
-												+t.getClass().toString();
-				if(t.getMessage() != null)
-					error += " Message=" + t.getMessage();
-				Log.e("HomeActivity",error);
-				refreshHeaderImage(null);
-				
-				DialogPrompt.showDialog(HomeActivity.this, "Error in receiving updates. Try again!!");
-			}        	
-        });
-    }
-    
-    /**
-     * Invalidate the header image 
-     */
-     private void refreshHeaderImage(String imageurl){
-    	 
-    	 Drawable image;
-    	 if (imageurl == null){
-    		 image = getResources().getDrawable( R.drawable.creative );    		 
-    	 }else{
-    		 // TODO: Use image manager to get the image
-    		 image = LoadImageFromWebOperations( imageurl );
-    		 if( image == null)
-    	 			image = getResources().getDrawable( R.drawable.creative );    	 
-    	 }
-    	 title_image.setImageDrawable( image );
-     }     
-    
+        
     /**
      * Display the header image and schedule to the user with 
      * section-title being separator-header.
      */
-     private void populateNewsEventsList()
+     private void populateNewsEventsList(Vector<Section> newsSections)
      {
-     	Log.v("HomeActivity","Showing the News/Event List on Screen. Total Section items = "
-     			+ mNewsSections.size());
-     	
 		//if there is no news to display, return
-     	if (mNewsSections.size() == 0){
+     	if (newsSections.size() == 0) {
      		//Clear the items of previous list being displayed (if any)
      		list.setAdapter(new SeparatedListAdapter(this));
      		return;
@@ -233,54 +177,36 @@ public class HomeActivity extends Activity {
      	// create our list and custom adapter  
      	SeparatedListAdapter separatedListAdapter = new SeparatedListAdapter(this);
      	
-     	OuterLoop:
-     	for(int i = 0; i < mNewsSections.size(); i++){
-     		Section s = mNewsSections.get(i);
-     		String header = s.getTitle();
+     	for(int i = 0; i < newsSections.size(); i++) {
+     		Section s = newsSections.get(i);
+     		String sectionTitle = s.getTitle();
      		Vector items = s.getItems();
      		
      		ArrayList<MobileItem> newsEvents = new ArrayList<MobileItem>();
      		
-     		//Add event titles to this arraylist
-     		for(int j = 0; j < items.size(); j++){
-     			if(items.get(j) instanceof MobileItem){
-     				
-     				//If item is a header item, set the image and continue
-     				if( header.equalsIgnoreCase("Header") ){
-     					Log.d("HomeActivity","Title image URL: " +((MobileItem)items.get(j)).getImageURL());
-     					refreshHeaderImage( ((MobileItem)items.get(j)).getImageURL() );
-     					continue OuterLoop;
-     				}
-     				//if the item is anything but header, add their them to arraylist
-     				newsEvents.add( (MobileItem)items.get(j) );
+     		if (i == 0) {
+     			if (items.size() > 0) {
+     				String imageURL = ((MobileItem) items.get(0)).getImageURL();
+ 			        getImageManager().getImage(imageURL, new Callback() {
+ 			        	@Override public void invoke(Object result) {
+ 					  		title_image.setImageBitmap((Bitmap) result);	        		
+ 			        	}
+ 			        	@Override public void progress(Object value) {}
+ 			        	@Override public void failure(Throwable t) {}
+ 			        }, null, false);		
      			}
      		}
-     		//add section to listseparator     				
-     		separatedListAdapter.addSection(header, new MobileItemAdapter(this, R.layout.home_event_row, newsEvents));
+     		else {     		
+	     		for(int j = 0; j < items.size(); j++) {
+					newsEvents.add((MobileItem) items.get(j));     			
+	     		}
+     			separatedListAdapter.addSection(sectionTitle, new MobileItemAdapter(this, R.layout.home_event_row, newsEvents));
+     		}
      	}
      	
  		HomeActivity.this.list.setAdapter(separatedListAdapter);    	
  	}
      
-     /**
-      * @param url url of the drawable to fetch
-      * @return Drawable
-      */
-    //from filmdetails
-    private Drawable LoadImageFromWebOperations(String url)
- 	{
- 		try
- 		{
- 			InputStream is = (InputStream) new URL(url).getContent();
- 			Drawable d = Drawable.createFromStream(is, "header-image");
- 			return d;
- 		}catch(Exception e)
- 		{
- 			System.out.println("Exception:" + e);
- 			return null;
- 		} 		
- 	}
-    
     /**
      * Get the QueryManager
      * @return queryManager
@@ -309,10 +235,7 @@ public class HomeActivity extends Activity {
 		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cMgr.getActiveNetworkInfo();
         
-        if( netInfo != null)
-        	return netInfo.isAvailable();
-        else
-        	return false;
+        return netInfo != null && netInfo.isAvailable();
     }
     
     /**
