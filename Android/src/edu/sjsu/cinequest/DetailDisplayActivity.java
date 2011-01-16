@@ -12,6 +12,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import edu.sjsu.cinequest.comm.Callback;
@@ -131,10 +132,31 @@ public class DetailDisplayActivity extends Activity {
     {
 		Vector films = new Vector();
 		films = item.getFilms();
+		
 		if (films.size() == 1)
 		{
 			showFilm((Film)films.elementAt(0));
 		} 
+		else if(films.size() > 1){
+			//if it is a program item with multiple films, then show the description of 
+			//program item, instead of description of the film item
+			Film film = (Film)films.elementAt(0);
+			
+			film.setTitle(item.getTitle());
+			film.setDescription(item.getDescription());
+			film.setDirector("");
+			film.setProducer("");
+			film.setEditor("");
+			film.setWriter("");
+			film.setCinematographer("");
+			film.setCast("");
+			film.setCountry("");
+			film.setLanguage("");
+			film.setGenre("");
+			film.setFilmInfo("");
+			
+			showFilm(film);
+		}
 		else 
 		{
 			// TODO: Need one button for each film 

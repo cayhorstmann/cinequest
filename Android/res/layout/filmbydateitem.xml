@@ -12,16 +12,47 @@
 		android:focusable="false"
 		android:onClick="checkHandler">
 </CheckBox>
-<LinearLayout android:id="@+id/LinearLayout01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginLeft="20px">
-<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/ScheduleTitle" android:layout_marginTop="5px" android:ellipsize="end" android:singleLine="true"></TextView>
-<LinearLayout android:id="@+id/LinearLayout02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5px" android:layout_marginBottom="5px">
-<TextView android:text="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/ScheduleTime"></TextView>
-<TextView android:text="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="10px" android:id="@+id/ScheduleVenue"></TextView>
+
+<LinearLayout 
+	android:id="@+id/LinearLayout01" 
+	android:layout_width="wrap_content" 
+	android:layout_height="wrap_content" 
+	android:orientation="vertical" 
+	android:layout_marginLeft="20px"
+	>
+	<TextView 
+		android:text="@+id/TextView01" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content" 
+		android:id="@+id/ScheduleTitle" 
+		android:layout_marginTop="5px" 
+		android:ellipsize="end" 
+		android:singleLine="true"
+	/>
+	
+	<LinearLayout 
+		android:id="@+id/LinearLayout02" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content" 
+		android:layout_marginTop="5px" 
+		android:layout_marginBottom="5px"
+		>
+		
+		<TextView 
+			android:text="@+id/TextView02" 
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content" 
+			android:id="@+id/ScheduleTime"
+		/>
+		
+		<TextView 
+			android:text="@+id/TextView03" 
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content" 
+			android:layout_marginRight="10px" 
+			android:id="@+id/ScheduleVenue"
+		/>
+	</LinearLayout>
+	
 </LinearLayout>
-
-</LinearLayout>
-
-
-
-
 </LinearLayout>

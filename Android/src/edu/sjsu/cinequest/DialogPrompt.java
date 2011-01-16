@@ -1,6 +1,5 @@
 package edu.sjsu.cinequest;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -11,8 +10,13 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
-import android.widget.TextView;
+import android.widget.Toast;
 
+/**
+ * The class with static methods to show varios classes of dialogs  
+ * @author Prabhjeet Ghuman
+ *
+ */
 public class DialogPrompt {
 	
 	/**
@@ -31,6 +35,15 @@ public class DialogPrompt {
 		       });
 		AlertDialog alert = builder.create();
 		alert.show();
+	}
+	
+	/**
+	 * Shows a toast notification with long duration
+	 * @param context the context which is requesting the prompt
+	 * @param msg the message to display
+	 */
+	public static void showToast(Context context, String msg){
+		Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
 	}
 	
 	/**

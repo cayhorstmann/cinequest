@@ -16,6 +16,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 
+/**
+ * The WebView for registration page  
+ * 
+ * @author Prabhjeet Ghuman
+ *
+ */
 public class RegistrationActivity extends Activity {
 	WebView webview;
 	

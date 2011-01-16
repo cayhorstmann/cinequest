@@ -14,7 +14,7 @@ import android.widget.ListView;
 import android.widget.SectionIndexer;
 
 /**
- * Custom SeparatedSeparatedList class with SectionIndexer.
+ * Custom SeparatedListAdapter class with SectionIndexer.
  * Example from: http://www.anddev.org/
  * tutalphabetic_fastscroll_listview_-_similar_to_contacts-t10123.html
  * 
@@ -36,7 +36,7 @@ import android.widget.SectionIndexer;
  * method of your listview after using this class as adapter.
  * 
  * 
- * @author Prabh
+ * @author Prabhjeet Ghuman
  *
  */
 public class SeparatedListIndexedAdapter extends SeparatedListAdapter 

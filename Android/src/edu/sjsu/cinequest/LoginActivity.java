@@ -16,7 +16,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 /**
- * @author Prabh
+ * The screen for getting login credentials from user
+ * @author Prabhjeet Ghuman
  *
  */
 public class LoginActivity extends Activity {
