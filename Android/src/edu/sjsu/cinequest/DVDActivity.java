@@ -134,7 +134,7 @@ public class DVDActivity extends DetailDisplayActivity {
     
     private void loadDVD(int id)  // CSH
     {
-    	MainTab.getQueryManager().getDVD(id, new ProgressMonitorCallback(this,
+    	HomeActivity.getQueryManager().getDVD(id, new ProgressMonitorCallback(this,
     			"Loading Data") { 
 			public void invoke(Object result) {
 				super.invoke(result);
@@ -719,7 +719,7 @@ public class DVDActivity extends DetailDisplayActivity {
         {
         	Log.v("Cinequest", "updatefilter-date");
         	//MainTab.getQueryManager().g
-        	MainTab.getQueryManager().getDVDs(new Callback(){
+        	HomeActivity.getQueryManager().getDVDs(new Callback(){
 
 				public void invoke(Object result) {
 					schedules = (Vector<Filmlet>) result;
@@ -743,7 +743,7 @@ public class DVDActivity extends DetailDisplayActivity {
         {
         	Log.v("Cinequest", "updatefilter-title");
         	//MainTab.getQueryManager().getDVD(1)
-       	 MainTab.getQueryManager().getDVDs(new Callback() {
+       	 HomeActivity.getQueryManager().getDVDs(new Callback() {
     			public void progress(Object value) {
     			}
     			public void invoke(Object result) {

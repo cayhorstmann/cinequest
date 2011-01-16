@@ -6,22 +6,20 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
@@ -38,7 +36,7 @@ public class FilmsActivity extends CinequestTabActivity{
 	private static Vector<Filmlet> mFilms_byTitle;
 	private static Vector<Schedule> mSchedule_byDate;
 	private static boolean REFINE_MODE_ON = false;
-	private static final String LOGCAT_TAG = "FilmsActivity";
+	static final String LOGCAT_TAG = "FilmsActivity";
 	
 	//unique id's for menu options
 	private static final int ADD_REFINE_GROUP_ID = 1;
@@ -116,7 +114,7 @@ public class FilmsActivity extends CinequestTabActivity{
     	//if mode is "by-date"
         if(mListSortType == SortType.BYDATE)
         {
-        	MainTab.getQueryManager().getSchedules(new Callback() {
+        	HomeActivity.getQueryManager().getSchedules(new Callback() {
         		@Override
         		public void invoke(Object result) {
         			
@@ -155,7 +153,7 @@ public class FilmsActivity extends CinequestTabActivity{
         	
         } else {	//if the mode is "by-title"
 
-       	 MainTab.getQueryManager().getAllFilms (new Callback() {
+       	 HomeActivity.getQueryManager().getAllFilms (new Callback() {
        		 
        		public void invoke(Object result) {
 				 mFilms_byTitle = (Vector<Filmlet>) result;
@@ -307,7 +305,7 @@ public class FilmsActivity extends CinequestTabActivity{
 			if(result instanceof Schedule)
 				s = (Schedule) result;
 			
-			if(s != null && MainTab.getUser().getSchedule().contains(s)){
+			if(s != null && HomeActivity.getUser().getSchedule().contains(s)){
 				title.setTextColor(Color.GREEN);
 			} else {
 				title.setTextColor(Color.WHITE);
@@ -388,7 +386,7 @@ public class FilmsActivity extends CinequestTabActivity{
     	
     	ArrayList<Schedule> allcheckedfilms = mCheckBoxMap.allTags();
     	for(Schedule s : allcheckedfilms){
-    		user.getSchedule().add(s);
+    		HomeActivity.getUser().getSchedule().add(s);
     	}
     	
     	DialogPrompt.showToast(this, "Total "+allcheckedfilms.size() 
@@ -524,7 +522,7 @@ public class FilmsActivity extends CinequestTabActivity{
 	    		  return false;
 	    	  
 	    	  //add this schedule to schedule 
-	    	  user.getSchedule().add( (Schedule)result);
+	    	  HomeActivity.getUser().getSchedule().add( (Schedule)result);
 	    	  return true;	      
       
       default:

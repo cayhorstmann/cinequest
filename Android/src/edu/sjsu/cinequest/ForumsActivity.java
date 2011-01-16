@@ -85,7 +85,6 @@ public class ForumsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event_layout);
         v = new View(this);
-        user = MainTab.getUser();
         
         int g = 80;
         
@@ -751,7 +750,7 @@ public class ForumsActivity extends Activity {
     	v = new View(this);
     	DVDTitle = (TextView)findViewById(R.id.DVDTitle);
         TextView textView = new TextView(this);
-        user = MainTab.getUser();
+        user = HomeActivity.getUser();
         
         //sAdapter = filmsList.getAdapter();
        // textView.setText("header"); 
@@ -809,7 +808,7 @@ public class ForumsActivity extends Activity {
         {
         	Log.v("Cinequest", "updatefilter-date");
         	//MainTab.getQueryManager().g
-        	MainTab.getQueryManager().getEventSchedules("forums", new Callback() {
+        	HomeActivity.getQueryManager().getEventSchedules("forums", new Callback() {
 
 				public void invoke(Object result) {
 					schedules = (Vector<Schedule>) result;
@@ -841,7 +840,7 @@ public class ForumsActivity extends Activity {
         {
         	Log.v("Cinequest", "updatefilter-title");
         	//MainTab.getQueryManager().getDVD(1)
-       	 MainTab.getQueryManager().getDVDs(new Callback() {
+       	 HomeActivity.getQueryManager().getDVDs(new Callback() {
     			public void progress(Object value) {
     			}
     			public void invoke(Object result) {

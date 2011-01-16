@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -18,10 +19,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import edu.sjsu.cinequest.comm.Callback;
-import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.ProgramItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
@@ -34,8 +33,6 @@ public class FilmDetail extends DetailDisplayActivity {
 	private ItemType m_itemType;
 	private ListView scheduleList;
 	private int mItemId;
-	private static int chosenId;
-	private QueryManager queryManager;
 	private static ProgressDialog m_ProgressDialog = null;
 	
 	public void onCreate(Bundle savedInstanceState) {    	
@@ -43,9 +40,6 @@ public class FilmDetail extends DetailDisplayActivity {
         setContentView(R.layout.filmdetail);
         
         scheduleList = (ListView)findViewById(R.id.ScheduleList);
-		
-		if( HomeActivity.getQueryManager() != null)
-			queryManager = HomeActivity.getQueryManager();
 		
 		this.getBundleValues( this.getIntent().getExtras() );
 		this.fetchServerData();	
@@ -109,7 +103,7 @@ private void getProgramItem(int proramitemId){
     	m_ProgressDialog = ProgressDialog.show(FilmDetail.this, 
 				"Please wait...", "Fetching data ...", true);
 		
-		queryManager.getProgramItem(proramitemId, new Callback(){
+		HomeActivity.getQueryManager().getProgramItem(proramitemId, new Callback(){
 		
 			@Override
 			public void invoke(Object result) {
@@ -135,7 +129,7 @@ private void getProgramItem(int proramitemId){
     	m_ProgressDialog = ProgressDialog.show(FilmDetail.this, 
 				"Please wait...", "Fetching data ...", true);
 		
-		queryManager.getFilm(filmId, new Callback(){
+		HomeActivity.getQueryManager().getFilm(filmId, new Callback(){
 		
 			@Override
 			public void invoke(Object result) {
@@ -220,7 +214,7 @@ private void getProgramItem(int proramitemId){
 	{
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
 		adapter.addSection("Schedules",
-				new FilmDetailSectionAdapter<Schedule>(this, R.layout.listitem_titletimevenue, schedules));
+				new FilmDetailSectionAdapter(this, R.layout.listitem_titletimevenue, schedules));
 		
 		//toggle the checkbox upon list-item click
 		scheduleList.setOnItemClickListener(new OnItemClickListener() {
@@ -234,7 +228,7 @@ private void getProgramItem(int proramitemId){
 		scheduleList.setAdapter(adapter);
 	}
 	
-	private class FilmDetailSectionAdapter<Schedule> extends SectionAdapter<Schedule>{
+	private class FilmDetailSectionAdapter extends SectionAdapter<Schedule>{
 		final DateUtils du = new DateUtils();
 
 		public FilmDetailSectionAdapter(Context context, int resourceId,
@@ -258,18 +252,18 @@ private void getProgramItem(int proramitemId){
 						= (edu.sjsu.cinequest.comm.cinequestitem.Schedule) buttonView.getTag();
 					
 					if(isChecked){
-						MainTab.getUser().getSchedule().add(s);
+						HomeActivity.getUser().getSchedule().add(s);
 //						DialogPrompt.showToast(FilmDetail.this, 
 //								"Schedule Item Added. Title="+s.getTitle()+", ID="+s.getItemId());
 					}else{
-						MainTab.getUser().getSchedule().remove(s);
+						HomeActivity.getUser().getSchedule().remove(s);
 					}
 					
 				}
 				
 			});
 			
-			if(MainTab.getUser().getSchedule().contains(schd))
+			if(HomeActivity.getUser().getSchedule().contains(schd))
 				checkbox.setChecked(true);
 			else
 				checkbox.setChecked(false);
@@ -301,6 +295,7 @@ private void getProgramItem(int proramitemId){
 		
 	}
 	
+	// TODO: Never used
 	private List<Map<String, Object>> getData(Vector<Schedule> schedules) {
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		Map<String, Object> map = new HashMap<String, Object>();

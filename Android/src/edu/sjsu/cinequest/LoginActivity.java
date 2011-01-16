@@ -40,9 +40,6 @@ public class LoginActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout_portrait);
-        
-        user = MainTab.getUser();
-        
         //get the buttons from layout
         syncScheduleButton = (Button) this.findViewById(R.id.sync_button);
         accountSignupButton = (Button) this.findViewById(R.id.accountsignup_button);
@@ -178,9 +175,10 @@ public class LoginActivity extends Activity {
 							: "Login failed.");
 				}
     			
-    		}, MainTab.getQueryManager());
+    		}, HomeActivity.getQueryManager());
     }
 	
+	// TODO: Remove
 	private void performSync_old(){
 		Callback callback = new Callback() {
 			public void invoke(Object result) {
@@ -210,7 +208,7 @@ public class LoginActivity extends Activity {
 			}
 		};
 		user.readSchedule(LoginActivity.this.attemptLogin(), 
-						callback, MainTab.getQueryManager());
+						callback, HomeActivity.getQueryManager());
 	}
 	
 	/**

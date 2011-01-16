@@ -12,7 +12,6 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import edu.sjsu.cinequest.comm.Callback;
@@ -68,7 +67,7 @@ public class DetailDisplayActivity extends Activity {
 		tv.setText(spstr);
 
 		
-		Bitmap bmp = (Bitmap) MainTab.getImageManager().getImage(in.getImageURL(), new Callback() {
+		Bitmap bmp = (Bitmap) HomeActivity.getImageManager().getImage(in.getImageURL(), new Callback() {
 			@Override
 			public void invoke(Object result) {
 				Bitmap bmp = (Bitmap) result;
@@ -90,7 +89,7 @@ public class DetailDisplayActivity extends Activity {
 		Vector urls = parser.getImageURLs();
 		if (urls.size() > 0) 
 		{
-			MainTab.getImageManager().getImages(urls, new Callback() {
+			HomeActivity.getImageManager().getImages(urls, new Callback() {
 				@Override
 				public void invoke(Object value) {
 					SpannableString ss = new SpannableString(" "); 

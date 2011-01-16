@@ -6,26 +6,20 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import edu.sjsu.cinequest.R;
-import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
-
 import android.content.Context;
-import android.database.Cursor;
-import android.provider.BaseColumns;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
+import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 public class SeparatedListAdapter extends BaseAdapter {
 	public final Map<String,Adapter> sections = new LinkedHashMap<String,Adapter>();  
     public final ArrayAdapter<String> headers;  
     public Vector<Schedule> list;
     public final static int TYPE_SECTION_HEADER = 0;  
-    private int _selectedIndex;
+
     public SeparatedListAdapter(Context context) {  
         headers = new ArrayAdapter<String>(context, R.layout.list_header);  
     }  

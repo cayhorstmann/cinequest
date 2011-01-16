@@ -109,7 +109,7 @@ public class ScheduleActivity extends CinequestTabActivity{
 	@Override
 	protected void refreshListContents(List<?> listItems) {
 		
-	  	Schedule[] scheduleItems = user.getSchedule().getScheduleItems();
+	  	Schedule[] scheduleItems = HomeActivity.getUser().getSchedule().getScheduleItems();
 	  	
       	Log.v(LOGCAT_TAG,"Showing the Schedule List on Screen. Total Schedule items = "
       			+ scheduleItems.length);
@@ -190,6 +190,7 @@ public class ScheduleActivity extends CinequestTabActivity{
 		@Override
 		protected void formatTitle(TextView title, T result) {
 			Schedule schd = (Schedule)result;
+			User user = HomeActivity.getUser();
 			
 			if (schd != null && schd.isSpecialItem())
                	title.setTypeface(null, Typeface.ITALIC);
@@ -216,7 +217,7 @@ public class ScheduleActivity extends CinequestTabActivity{
 		protected void formatRowBackground(View row, T result) {
 			Schedule schd = (Schedule)result;
 			//if this schedule has moved, highlight it in MovedScheduleColor
-            if(user.getSchedule().getType( schd ) == UserSchedule.MOVED){
+            if(HomeActivity.getUser().getSchedule().getType( schd ) == UserSchedule.MOVED){
             	row.setBackgroundColor(mMovedScheduleColor);
             }else{
             	row.setBackgroundColor(android.R.color.transparent);
@@ -234,7 +235,7 @@ public class ScheduleActivity extends CinequestTabActivity{
 		//remove the items that user checked on edit screen from user.getSchedule()
     	ArrayList<Schedule> allcheckedfilms = mCheckBoxMap.allTags();
     	for(Schedule s : allcheckedfilms){
-    		user.getSchedule().remove(s);
+    		HomeActivity.getUser().getSchedule().remove(s);
     	}
 		
 		mCheckBoxMap.clear();
@@ -272,7 +273,7 @@ public class ScheduleActivity extends CinequestTabActivity{
     
     /** When user clicks SYNC, do this*/
     private void performSync(){
-
+    	final User user = HomeActivity.getUser();
     	if(user.isLoggedIn()==true && isNetworkAvailable() == false){
 			DialogPrompt.showDialog(ScheduleActivity.this, 
 					getResources().getString(R.string.no_network_prompt));
@@ -359,7 +360,7 @@ public class ScheduleActivity extends CinequestTabActivity{
 							: "Login failed.");
 				}
     			
-    		}, MainTab.getQueryManager());
+    		}, HomeActivity.getQueryManager());
     }
 
 	
@@ -380,7 +381,7 @@ public class ScheduleActivity extends CinequestTabActivity{
      */
     private void logOut(){
     	Log.d(LOGCAT_TAG, "Logging out...........");
-    	user.logout();
+    	HomeActivity.getUser().logout();
     	refreshListContents(null);
     	Toast.makeText(this, "You have been logged out!", Toast.LENGTH_LONG).show();
     }
@@ -427,7 +428,7 @@ public class ScheduleActivity extends CinequestTabActivity{
     	
 	    	/* if user is logged out, don't show LogOut option in menu, 
     		show Login instead. And vice-versa */
-	        if( user.isLoggedIn() ){
+	        if( HomeActivity.getUser().isLoggedIn() ){
 	        	menu.findItem(LOGOUT_MENUOPTION_ID).setVisible(true);
 	        }else{
 	        	menu.findItem(LOGOUT_MENUOPTION_ID).setVisible(false);
@@ -459,7 +460,7 @@ public class ScheduleActivity extends CinequestTabActivity{
 	    	Schedule s = (Schedule) getListview().getItemAtPosition(info.position);
 	    	
 	    	//delete this schedule from the list 
-	    	user.getSchedule().remove(s);
+	    	HomeActivity.getUser().getSchedule().remove(s);
 	    	
 	    	//refresh list: show the edited schedule on screen
 	    	refreshListContents(null);

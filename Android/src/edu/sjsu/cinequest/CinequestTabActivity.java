@@ -1,13 +1,7 @@
 package edu.sjsu.cinequest;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
-import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
-import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
-import edu.sjsu.cinequest.comm.cinequestitem.User;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -17,23 +11,24 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
+import android.widget.TextView;
+import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
+import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 /**  
  * The super class for all the tabs
@@ -45,7 +40,6 @@ public abstract class CinequestTabActivity extends Activity{
 	private TextView mEmptyListViewMessage;
 	protected SeparatedListAdapter mSeparatedListAdapter = null;
 	protected static ProgressDialog m_ProgressDialog = null;
-	protected static User user;
 	private final static String LOGCAT_TAG = "ScheduleActivity";
 	protected CheckBoxMap mCheckBoxMap;
 	private View mBottomActionBar;
@@ -126,7 +120,6 @@ public abstract class CinequestTabActivity extends Activity{
 	public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cinequest_tab_activity_layout);
-        user = MainTab.getUser();
         listview = (ListView) findViewById(R.id.cinequest_tabactivity_listview);
         mEmptyListViewMessage  = (TextView)this.findViewById(R.id.msg_for_empty_schedyle);
         mCheckBoxMap = new CheckBoxMap(this, mCheckboxClickListener);

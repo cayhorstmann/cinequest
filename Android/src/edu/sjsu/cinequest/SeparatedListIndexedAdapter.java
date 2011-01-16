@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Adapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -48,7 +47,7 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
     private int currPosition = 0;
     private boolean currWidthFillParent = true;
     private ListView listview;
-    private final static String LOGCAT_TAG = "FilmActivity";
+    final static String LOGCAT_TAG = "FilmActivity";
     private boolean SortKeysFirst = false;
 
 	public SeparatedListIndexedAdapter(Context context) {

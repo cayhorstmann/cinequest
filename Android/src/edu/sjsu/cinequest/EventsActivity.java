@@ -128,7 +128,7 @@ public class EventsActivity extends DetailDisplayActivity {
 					if(checked[x])
 					{
 						
-						user.getSchedule().add(schedules.get(x));
+						HomeActivity.getUser().getSchedule().add(schedules.get(x));
 					}
 				}
 	            return true;
@@ -180,8 +180,7 @@ public class EventsActivity extends DetailDisplayActivity {
         setContentView(R.layout.event_layout);
         allowBack=false;
         v = new View(this);
-        user = MainTab.getUser();
-        
+       
         
         
         int g = 80;
@@ -340,7 +339,7 @@ public class EventsActivity extends DetailDisplayActivity {
     
     LinearLayout masterParentRow;
     LinearLayout[] ll;
-    private User user;
+
     public void setUpCheck(Boolean ref)
     {
     	if(numChecked > 0)
@@ -510,7 +509,7 @@ public class EventsActivity extends DetailDisplayActivity {
     private void loadEvent(int id)  // CSH
     {
     	// TODO: Program item or special item?
-    	MainTab.getQueryManager().getProgramItem(id, new Callback() { // TODO: better callback
+    	HomeActivity.getQueryManager().getProgramItem(id, new Callback() { // TODO: better callback
 			public void invoke(Object result) {
 				setContentView(R.layout.eventinfo_layout2);
 				setUpCall();
@@ -909,7 +908,6 @@ public class EventsActivity extends DetailDisplayActivity {
     	v = new View(this);
     	DVDTitle = (TextView)findViewById(R.id.DVDTitle);
         TextView textView = new TextView(this);
-        user = MainTab.getUser();
         
         //sAdapter = filmsList.getAdapter();
        // textView.setText("header"); 
@@ -966,7 +964,7 @@ public class EventsActivity extends DetailDisplayActivity {
         	Log.v("Cinequest", "updatefilter-date");
         	//MainTab.getQueryManager().g
         	
-        	MainTab.getQueryManager().getEventSchedules("special_events", new Callback() {
+        	HomeActivity.getQueryManager().getEventSchedules("special_events", new Callback() {
         		
 				public void invoke(Object result) {
 					schedules = (Vector<Schedule>) result;
@@ -1005,7 +1003,7 @@ public class EventsActivity extends DetailDisplayActivity {
         {
         	Log.v("Cinequest", "updatefilter-title");
         	//MainTab.getQueryManager().getDVD(1)
-       	 MainTab.getQueryManager().getDVDs(new Callback() {
+       	 HomeActivity.getQueryManager().getDVDs(new Callback() {
     			public void progress(Object value) {
     			}
     			public void invoke(Object result) {

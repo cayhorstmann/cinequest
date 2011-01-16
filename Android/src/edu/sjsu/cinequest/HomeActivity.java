@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 import edu.sjsu.cinequest.android.AndroidPlatform;
 import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.ImageManager;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.MobileItem;
@@ -52,7 +53,8 @@ public class HomeActivity extends Activity {
     private Vector<Section> mNewsSections = new Vector<Section>();
     private Button festivalButton, dvdButton;
     public static int OPEN_TAB = 0;
-    private static QueryManager queryManager = new QueryManager();
+    private static QueryManager queryManager;
+	private static ImageManager imageManager;
     private static User user;
 	
 	/** Called when the activity is first created. */
@@ -61,9 +63,12 @@ public class HomeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_layout);
         
-        if(Platform.getInstance() == null)
-        	Platform.setInstance(new AndroidPlatform(getApplicationContext()));
+        // Remove this to turn on test mode
+        // DateUtils.setMode(DateUtils.FESTIVAL_TEST_MODE);
         
+        Platform.setInstance(new AndroidPlatform(getApplicationContext()));
+        queryManager = new QueryManager();
+        imageManager = new ImageManager();
         user = new User();
         
         //get the list and imageview objects from layout
@@ -71,7 +76,6 @@ public class HomeActivity extends Activity {
         title_image = (ImageView) this.findViewById(R.id.homescreen_title_image);
         festivalButton = (Button) findViewById(R.id.goto_festival_button);
         dvdButton = (Button) findViewById(R.id.goto_dvd_button);
-
         
         //Upon clicking the item in list
         list.setOnItemClickListener( new OnItemClickListener() {
@@ -143,6 +147,13 @@ public class HomeActivity extends Activity {
     	
     	//if network is available, get the event/news data
   	    getEventData();
+    }
+    
+    protected void onStop(){
+        // TODO: Persist user schedule
+        imageManager.close();
+        Platform.getInstance().close();
+        super.onStop();
     }
     
     /**Initiates the query to server and acts according to the result returned */
@@ -275,9 +286,11 @@ public class HomeActivity extends Activity {
      * @return queryManager
      */
     public static QueryManager getQueryManager() {
-    	if( queryManager == null ) 
-    		return new QueryManager();
-		return queryManager;
+    	return queryManager;
+	}
+    
+    public static ImageManager getImageManager() {
+		return imageManager;
 	}
     
     /**

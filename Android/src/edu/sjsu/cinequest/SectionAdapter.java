@@ -1,8 +1,8 @@
 package edu.sjsu.cinequest;
 
 import java.util.List;
+
 import android.content.Context;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +11,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
-import edu.sjsu.cinequest.comm.cinequestitem.User;
 
 /**
  * This class is the adapter for a section of the "header-separated-listview".
@@ -30,8 +29,7 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
 	private static LayoutInflater mInflater;
 	public static enum SectionItems {TYPE_SCHEDULE, TYPE_FILMLET}
 	private SectionItems sectionType;
-	private User user;
-	private static final String LOGCAT_TAG = "FilmActivity";
+	static final String LOGCAT_TAG = "FilmActivity";
 	private static int layout_resourceId;
 	
 	public SectionAdapter(Context context, int resourceId, List<T> list) 
@@ -40,8 +38,6 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
         this.list = list;
         layout_resourceId = resourceId;
         
-        user = MainTab.getUser();
-
         if(list != null && list.size() > 0){
         	if(list.get(0) instanceof Filmlet)
         		sectionType = SectionItems.TYPE_FILMLET;
