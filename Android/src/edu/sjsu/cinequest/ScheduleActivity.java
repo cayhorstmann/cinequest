@@ -36,7 +36,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
  * @author Prabhjeet Ghuman
  *
  */
-public class ScheduleActivity extends CinequestTabActivity{
+public class ScheduleActivity extends CinequestTabActivity {
 	private final static String LOGCAT_TAG = "ScheduleActivity";
 	
     private static final int SUB_ACTIVITY_SYNC_SCHEDULE = 0;

@@ -6,20 +6,16 @@ import android.os.Bundle;
 import android.widget.TabHost;
 
 public class MainTab extends TabActivity {
-	public static TabHost tabHost;
+	public static final int FILMS_TAB = 0;
+	public static final int DVDS_TAB = 3;
 	
     public void onCreate(Bundle savedInstanceState) {    	    	
         super.onCreate(savedInstanceState);
         
-        // TODO: Why did this throw an exception? 
-        try {
-        	setContentView(R.layout.main);
-        } catch (Throwable t) {
-        	t.printStackTrace();
-        }
+        setContentView(R.layout.main);
         
         // Get host object from super class
-        tabHost = getTabHost();
+        TabHost tabHost = getTabHost();
         TabHost.TabSpec spec;
         
         // Create the intent associated with the activity
@@ -48,7 +44,7 @@ public class MainTab extends TabActivity {
         tabHost.addTab(spec);
 
         // Display the first tab
-        tabHost.setCurrentTab(HomeActivity.OPEN_TAB);
-
+        int tab = getIntent().getIntExtra("open_tab", 0);
+        tabHost.setCurrentTab(tab);
     }
 }

@@ -1,9 +1,30 @@
 package edu.sjsu.cinequest;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Vector;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 import edu.sjsu.cinequest.android.AndroidPlatform;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.ImageManager;
@@ -12,31 +33,6 @@ import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.MobileItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Section;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Toast;
 
 // TODO: Add click for each item; show the section info
 
@@ -49,12 +45,11 @@ import android.widget.Toast;
 public class HomeActivity extends Activity {	
 	private ListView list;
 	ImageView title_image; 
-    public static int OPEN_TAB = 0;
-    
-    private static QueryManager queryManager;
+
+	private static QueryManager queryManager;
 	private static ImageManager imageManager;
     private static User user;
-	
+    
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,23 +69,21 @@ public class HomeActivity extends Activity {
 
         list = (ListView)this.findViewById(R.id.home_newslist);
  		list.setAdapter(new SeparatedListAdapter(this));
-        // TODO: Needs work
-        //Upon clicking the item in list
         list.setOnItemClickListener( new OnItemClickListener() {
-
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, 
 									int position, long id) {
-				//TODO delete the toast part
 				MobileItem item = (MobileItem) list.getItemAtPosition(position);
 				String linkType = item.getLinkType();
 				String type = "";
 				int link_id = item.getLinkId();
-				
+
+				// TODO: Here we assume that mobile item == program item
+				// https://www.pollett.org/cinequest/mantis/view.php?id=57
+				// TODO: The type key seems hokey
 				if(linkType.equalsIgnoreCase("item"))
 					type = FilmDetail.ItemType.PROGRAM_ITEM.toString();
-				
-				
+								
 				Intent intent = new Intent();
 				intent.setClass(HomeActivity.this, FilmDetail.class);
 				Bundle bundle = new Bundle();
@@ -98,20 +91,15 @@ public class HomeActivity extends Activity {
 				bundle.putString("type", type);
 				intent.putExtras(bundle);
 				HomeActivity.this.startActivity(intent);
-				
-//				String title = item.getTitle();
-//				Toast.makeText(HomeActivity.this, "Title: "+title +", Type: "+linkType + ", ID: "+ link_id, 
-//						Toast.LENGTH_LONG).show();
 			}
         });
         
         Button festivalButton = (Button) findViewById(R.id.goto_festival_button);
-        festivalButton.setOnClickListener(new OnClickListener() {
-			
+        festivalButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
-				OPEN_TAB = 0;
 				Intent i = new Intent(HomeActivity.this, MainTab.class);
+				i.putExtra("open_tab", MainTab.FILMS_TAB);
 				startActivity(i);
 			}
 		});
@@ -121,8 +109,8 @@ public class HomeActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				OPEN_TAB = 3;
 				Intent i = new Intent(HomeActivity.this, MainTab.class);
+				i.putExtra("open_tab", MainTab.DVDS_TAB);
 				startActivityForResult(i, 0);
 			}
 		});        
