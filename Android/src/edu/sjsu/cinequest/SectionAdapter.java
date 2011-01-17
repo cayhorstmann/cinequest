@@ -89,7 +89,7 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
 	                     formatTitle(holder.title, (T) result);
 	                }
 	                if(holder.time != null){
-	                   		
+	                   	  // TODO: Use date utilities	
 	                	  //Display the time in proper AM/PM format
 	                  	  String startTime = result.getStartTime().substring(11, 16);
 	                  	  String endTime = result.getEndTime().substring(11, 16);

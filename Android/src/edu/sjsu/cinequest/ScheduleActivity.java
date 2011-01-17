@@ -108,6 +108,7 @@ public class ScheduleActivity extends CinequestTabActivity {
 
 	@Override
 	protected void refreshListContents(List<?> listItems) {
+		SeparatedListAdapter mSeparatedListAdapter;
 		
 	  	Schedule[] scheduleItems = HomeActivity.getUser().getSchedule().getScheduleItems();
 	  	

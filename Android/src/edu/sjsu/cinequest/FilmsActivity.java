@@ -1,16 +1,9 @@
 package edu.sjsu.cinequest;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
 import java.util.Vector;
 
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Color;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -18,9 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.CheckBox;
-import android.widget.TextView;
-import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
@@ -29,7 +19,7 @@ import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
  * @author Prabhjeet Ghuman
  * @author Chao
  */
-public class FilmsActivity extends CinequestTabActivity{
+public class FilmsActivity extends CinequestTabActivity {
 	
 	private enum SortType {BYDATE, BYTITLE};	
 	private static SortType mListSortType = SortType.BYDATE;
@@ -100,90 +90,36 @@ public class FilmsActivity extends CinequestTabActivity{
 
 	@Override
 	protected void fetchServerData() {
+		// TODO: Move to query manager or at least to superclass
 		//if there is no internet conenctivity
     	if( isNetworkAvailable() == false){
 			DialogPrompt.showDialog(FilmsActivity.this, 
 					getResources().getString(R.string.no_network_prompt));
 			return;
 		}
-    	
-    	//show a progress dialog
-    	m_ProgressDialog = ProgressDialog.show(FilmsActivity.this, 
-				"Please wait...", "Fetching data ...", true);
-    	
     	//if mode is "by-date"
         if(mListSortType == SortType.BYDATE)
         {
-        	HomeActivity.getQueryManager().getSchedules(new Callback() {
+        	HomeActivity.getQueryManager().getSchedules(new ProgressMonitorCallback(this) {
         		@Override
         		public void invoke(Object result) {
-        			
+        			super.invoke(result);
         			mSchedule_byDate = (Vector<Schedule>) result;
 					 //show the result and dimiss the dialog
 					refreshListContents(mSchedule_byDate);
-					m_ProgressDialog.dismiss();
 				}
-
-				@Override
-				public void progress(Object value) {
-			
-				}
-
-				@Override
-				public void failure(Throwable t) {
-					m_ProgressDialog.dismiss();
-					
-					DialogPrompt.showOptionDialog(FilmsActivity.this, "Could not fetch data. Would you like to retry?", 
-							"Retry", new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									fetchServerData();
-								}
-							}, 
-							"Cancel", new DialogInterface.OnClickListener() {
-
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									return;
-								}								
-					});			
-				}        	
         	});
         	
         } else {	//if the mode is "by-title"
 
-       	 HomeActivity.getQueryManager().getAllFilms (new Callback() {
+       	 HomeActivity.getQueryManager().getAllFilms (new ProgressMonitorCallback(this) {
        		 
        		public void invoke(Object result) {
+    			super.invoke(result);
 				 mFilms_byTitle = (Vector<Filmlet>) result;
 				 //show the result and dimiss the dialog
 				 refreshListContents(mFilms_byTitle);
-				 m_ProgressDialog.dismiss();
 			}
-    			
-       		 public void progress(Object value) {
-    		 }
-    			  			
-    		public void failure(Throwable t) {
-    			m_ProgressDialog.dismiss();
-    			
-				DialogPrompt.showOptionDialog(FilmsActivity.this, "Could not fetch data. Would you like to retry?", 
-						"Retry", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								fetchServerData();
-							}
-						}, 
-						"Cancel", new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								return;
-							}								
-				});
-    		}
     	});
       }
 
@@ -192,157 +128,13 @@ public class FilmsActivity extends CinequestTabActivity{
 
 	@Override
 	protected void refreshListContents(List<?> listItems) {
-		if (listItems.size() == 0){
-     		//Clear the items of previous list being displayed (if any)
-			setListViewAdapter(new SeparatedListAdapter(this));
-     		return;
-     	}
-     	
-     	
-     	/*
-     	 * Now, go though the input list, and first sort the list out.
-     	 * Create a tree-map, add each header as the map key, and an array list
-     	 * as map value, and each item under that header goes inside this arraylist. 
-     	 * Later, add this key and value (i.e. arraylist) into the a 
-     	 * separatedlistadapter as section
-     	 *
-     	 **/
-	   	if(mListSortType == SortType.BYTITLE){
-	   		mSeparatedListAdapter = new SeparatedListIndexedAdapter(this);
-	   		TreeMap<String, ArrayList<Filmlet>> filmsTitleMap 
-	   							= new TreeMap<String, ArrayList<Filmlet>>();
-	   		//sort into map
-	   		for(int k = 0; k < listItems.size(); k++){
-	 			Filmlet tempFilmlet = (Filmlet) listItems.get(k);
-	 			String titleInitial = tempFilmlet.getTitle().substring(0,1).toUpperCase();
-	 			
-	 			if(filmsTitleMap.containsKey(titleInitial))
-	 				filmsTitleMap.get(titleInitial).add(tempFilmlet);
-	 			else{
-	 				filmsTitleMap.put(titleInitial, new ArrayList<Filmlet>());
-	 				filmsTitleMap.get(titleInitial).add(tempFilmlet);
-	 			}
-	 		}
-	   		
-	   		//interate over map and add sections in separatedlistadapter
-	   		Set<String> alphabets = filmsTitleMap.keySet();
-	 		Iterator<String> iter = alphabets.iterator();
-	 		while (iter.hasNext()){ 
-	 			String alphabet = (String) iter.next();
-	 			ArrayList<Filmlet> tempList = filmsTitleMap.get(alphabet);
-	 			
-	 			
-	 			((SeparatedListIndexedAdapter)mSeparatedListAdapter).addSection(
-	 					alphabet,	
-	 					new FilmSectionAdapter<Filmlet>(this,R.layout.listitem_title_only,tempList),
-	 					alphabet.substring(0, 1));
-	 		}
-	   	 
-	   	 } 
-	   	 else if(mListSortType == SortType.BYDATE){
-	   		 
-	   		 mSeparatedListAdapter  = new SeparatedListIndexedAdapter(this);
-	   		 
-   	 
-	    	TreeMap<String, ArrayList<Schedule>> filmsMap 
-	    						= new TreeMap<String, ArrayList<Schedule>>();
-	 		
-	 		for(int k = 0; k < listItems.size(); k++){
-	 			Schedule tempSchedule = (Schedule) listItems.get(k);
-	 			String day = tempSchedule.getStartTime().substring(0, 10);
-	 			
-	 			if(filmsMap.containsKey(day))
-	 				filmsMap.get(day).add(tempSchedule);
-	 			else{
-	 				filmsMap.put(day, new ArrayList<Schedule>());
-	 				filmsMap.get(day).add(tempSchedule);
-	 			}
-	 		}
-	 			
-	 		Set<String> days = filmsMap.keySet();
-	 		Iterator<String> iter = days.iterator();
-	 		while (iter.hasNext()){ 
-	 			String day = (String) iter.next();
-	 			ArrayList<Schedule> tempList = filmsMap.get(day);
-	 			
-	 			DateUtils du = new DateUtils();
-	 			String header = du.format(day, DateUtils.DATE_DEFAULT);
-	 			
-	 			//create a key to display as section index while fast-scrolling
-	 			String key = header.substring(0, 6);
-				key.trim();
-				if(key.endsWith(","))
-					key = key.substring(0, key.length()-1);
-				
-				key = key.substring(4);
-				
-				((SeparatedListIndexedAdapter)mSeparatedListAdapter).addSection(
-	 					header,	
-	 					new FilmSectionAdapter<Schedule>(this,R.layout.listitem_titletimevenue,tempList),
-	 					key);
-	 		}
-	   	 }
-
-	   	//now set this adapter as the list-adapter for the listview
-	   	setListViewAdapter(mSeparatedListAdapter);
+	   	if(mListSortType == SortType.BYTITLE) {
+	   		setListViewAdapter(createFilmletList(listItems));
+	   	}
+	   	else {
+	   		setListViewAdapter(createScheduleList(listItems));
+	   	}
 	}
-	
-	/**
-     * Custom List-Adapter to show the schedule items in list 
-     */
-    private class FilmSectionAdapter<T> extends SectionAdapter<T>{
-    	
-    	//constructor
-		public FilmSectionAdapter(Context context, int resourceId,
-									List<T> list)
-		{
-			super(context, resourceId, list);			
-		}
-
-		@Override
-		protected void formatTitle(TextView title, T result) {
-			Schedule s = null;
-			if(result instanceof Schedule)
-				s = (Schedule) result;
-			
-			if(s != null && HomeActivity.getUser().getSchedule().contains(s)){
-				title.setTextColor(Color.GREEN);
-			} else {
-				title.setTextColor(Color.WHITE);
-			}
-		}
-
-		@Override
-		protected void formatTimeVenue(TextView time, TextView venue) {
-			// TODO Auto-generated method stub
-		}
-
-		@Override
-		protected void formatRowBackground(View row, T result) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		protected void formatCheckBox(CheckBox checkbox, T result) {
-			if( mListSortType == SortType.BYDATE && !( result instanceof Schedule) )
-				return;
-			
-			Schedule s = (Schedule) result;
-			//toggle the checkbox visibility based on current sort-mode
-			if(mListSortType == SortType.BYDATE){
-				checkbox.setVisibility(View.VISIBLE);					
-			} else{
-				checkbox.setVisibility(View.GONE);
-			}
-			
-			//set the listener and tag
-			checkbox.setOnCheckedChangeListener(getCheckBoxOnCheckedChangeListener());
-			
-			//manually check or uncheck the checkbox
-			setCheckBoxState(checkbox, s);
-		}    	
-    }
 
 	@Override
 	public void hideBottomBar(){

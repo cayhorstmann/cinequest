@@ -7,8 +7,8 @@ import edu.sjsu.cinequest.comm.Callback;
 public class ProgressMonitorCallback implements Callback {
    private ProgressDialog dialog;
 
-   public ProgressMonitorCallback(Context context, String progressMessage) {
-	   dialog = ProgressDialog.show(context, "Cinequest", progressMessage);
+   public ProgressMonitorCallback(Context context) {
+	   dialog = ProgressDialog.show(context, "Cinequest", "Fetching Data");
    }
 	
 	@Override
