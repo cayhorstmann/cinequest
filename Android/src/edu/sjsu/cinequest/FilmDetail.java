@@ -33,7 +33,7 @@ import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.ProgramItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
-public class FilmDetail extends Activity {
+public class FilmDetail extends CinequestActivity {
 	public static enum ItemType {FILM, PROGRAM_ITEM, DVD}
 	private ListView scheduleList;
 	
@@ -240,36 +240,8 @@ public class FilmDetail extends Activity {
     	ssb.append("\n");
     }
 	
-    public void showFilm(Film in) {
-		SpannableString title = new SpannableString(in.getTitle());
-		title.setSpan(new RelativeSizeSpan(1.2F), 0, title.length(), 0);
-		((TextView) findViewById(R.id.Title)).setText(title);
-		
-		TextView tv = (TextView) findViewById(R.id.Description);
-		HParser parser = new HParser();
-		parser.parse(in.getDescription());
-		SpannableString spstr = new SpannableString(parser.getResultString());
-		byte[] attributes = parser.getAttributes();
-		int[] offsets = parser.getOffsets();
-		for (int i = 0; i < offsets.length - 1; i++) {
-			int start = offsets[i];
-			int end = offsets[i + 1];
-			byte attr = attributes[i];
-			int flags = 0;
-			if ((attr & HParser.BOLD) != 0)
-				spstr.setSpan(new StyleSpan(Typeface.BOLD), start, end, flags);
-			if ((attr & HParser.ITALIC) != 0)
-				spstr.setSpan(new StyleSpan(Typeface.ITALIC), start, end, flags);
-			if ((attr & HParser.LARGE) != 0)
-				spstr.setSpan(new RelativeSizeSpan(1.2F), start, end, flags);					
-			if ((attr & HParser.RED) != 0)
-				spstr.setSpan(new ForegroundColorSpan(Color.RED), start, end, flags);
-		}
-		
-		tv.setText(spstr);
-
-		
-		Bitmap bmp = (Bitmap) HomeActivity.getImageManager().getImage(in.getImageURL(), new Callback() {
+	private void showImage(String imageURL, Vector urls) {
+		Bitmap bmp = (Bitmap) HomeActivity.getImageManager().getImage(imageURL, new Callback() {
 			@Override
 			public void invoke(Object result) {
 				Bitmap bmp = (Bitmap) result;
@@ -286,9 +258,8 @@ public class FilmDetail extends Activity {
 			}   
 		}, R.drawable.fetching, true);					
   		((ImageView) findViewById(R.id.Image)).setImageBitmap(bmp);											  		
-						
+
 		// TODO: Test this--can you really add multiple images?
-		Vector urls = parser.getImageURLs();
 		if (urls.size() > 0) 
 		{
 			HomeActivity.getImageManager().getImages(urls, new Callback() {
@@ -311,7 +282,42 @@ public class FilmDetail extends Activity {
 				}   
 			});					
 		}
-		 				
+	}
+	
+	private SpannableString createSpannableString(HParser parser) 
+	{
+		SpannableString spstr = new SpannableString(parser.getResultString());
+		byte[] attributes = parser.getAttributes();
+		int[] offsets = parser.getOffsets();
+		for (int i = 0; i < offsets.length - 1; i++) {
+			int start = offsets[i];
+			int end = offsets[i + 1];
+			byte attr = attributes[i];
+			int flags = 0;
+			if ((attr & HParser.BOLD) != 0)
+				spstr.setSpan(new StyleSpan(Typeface.BOLD), start, end, flags);
+			if ((attr & HParser.ITALIC) != 0)
+				spstr.setSpan(new StyleSpan(Typeface.ITALIC), start, end, flags);
+			if ((attr & HParser.LARGE) != 0)
+				spstr.setSpan(new RelativeSizeSpan(1.2F), start, end, flags);					
+			if ((attr & HParser.RED) != 0)
+				spstr.setSpan(new ForegroundColorSpan(Color.RED), start, end, flags);
+		}
+		return spstr;
+	}
+	
+    public void showFilm(Film in) {
+		SpannableString title = new SpannableString(in.getTitle());
+		title.setSpan(new RelativeSizeSpan(1.2F), 0, title.length(), 0);
+		((TextView) findViewById(R.id.Title)).setText(title);
+		
+		TextView tv = (TextView) findViewById(R.id.Description);
+		HParser parser = new HParser();
+		parser.parse(in.getDescription());
+		
+		tv.setText(createSpannableString(parser));
+
+		showImage(in.getImageURL(), parser.getImageURLs());
 		
 		SpannableStringBuilder ssb = new SpannableStringBuilder();
 		
@@ -338,30 +344,29 @@ public class FilmDetail extends Activity {
 		{
 			showFilm((Film)films.elementAt(0));
 		} 
-		else if(films.size() > 1){
-			//if it is a program item with multiple films, then show the description of 
-			//program item, instead of description of the film item
-			Film film = (Film)films.elementAt(0);
-			
-			film.setTitle(item.getTitle());
-			film.setDescription(item.getDescription());
-			film.setDirector("");
-			film.setProducer("");
-			film.setEditor("");
-			film.setWriter("");
-			film.setCinematographer("");
-			film.setCast("");
-			film.setCountry("");
-			film.setLanguage("");
-			film.setGenre("");
-			film.setFilmInfo("");
-			
-			showFilm(film);
-		}
-		else 
+		else  						
 		{
-			// TODO: Need one button for each film 
-			((TextView) findViewById(R.id.Title)).setText("TODO: Need one button for each film");
+			// Show just the ProgramItem data
+			SpannableString title = new SpannableString(item.getTitle());
+			title.setSpan(new RelativeSizeSpan(1.2F), 0, title.length(), 0);
+			((TextView) findViewById(R.id.Title)).setText(title);
+			
+			TextView tv = (TextView) findViewById(R.id.Description);
+			HParser parser = new HParser();
+			parser.parse(item.getDescription());
+			
+			tv.setText(createSpannableString(parser));
+
+			showImage(item.getImageURL(), parser.getImageURLs());
+			
+			if (films.size() > 0)
+			{
+				SeparatedListAdapter adapter = createFilmletList(films);
+				// TODO: Fix--Right now, it's displayed as a list of schedules
+				// Try out with Feb. 25 "The darker side..."
+				// http://mobile.cinequest.org/mobileCQ.php?type=program_item&id=1451
+				scheduleList.setAdapter(adapter);
+			}
 		}
     }   	
 }
