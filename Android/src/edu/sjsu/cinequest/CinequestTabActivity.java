@@ -1,5 +1,6 @@
 package edu.sjsu.cinequest;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -7,7 +8,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -43,7 +43,6 @@ import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 public abstract class CinequestTabActivity extends Activity{
 	private ListView listview;
 	private TextView mEmptyListViewMessage;
-	protected static ProgressDialog m_ProgressDialog = null;
 	private final static String LOGCAT_TAG = "ScheduleActivity";
 	protected CheckBoxMap mCheckBoxMap;
 	private View mBottomActionBar;
@@ -166,8 +165,6 @@ public abstract class CinequestTabActivity extends Activity{
 	/**
 	 * Run the query on server through QueryManager and then call
 	 * showHeaderSeparatedFilms(List) method from the Callback's invoke
-	 * Optionally initiate m_ProgressDialog before the query inside this method
-	 * and dismiss the dialog on invoke() or failure() of Callback interface.
 	 */
 	protected abstract void fetchServerData();
 	
@@ -327,11 +324,10 @@ public abstract class CinequestTabActivity extends Activity{
 //					"Film Item click received. Title="+filmlet.getTitle()+", ID="+id);
 		}
 		
-		Bundle bundle=new Bundle();		
-		bundle.putInt("id", id);
-		bundle.putString("type", type);
-		
-		intent.putExtras(bundle);
+		// TODO: Remove
+		intent.putExtra("type", type);
+		intent.putExtra("id", id); 
+		intent.putExtra("target", (Serializable) result);
 		CinequestTabActivity.this.startActivity(intent);
 		
 	}

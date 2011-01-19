@@ -19,6 +19,8 @@
 
 package edu.sjsu.cinequest.comm.cinequestitem;
 
+import net.rim.device.api.util.Persistable;
+
 
 /*
  * Represents a Cinequest entity.
@@ -28,7 +30,7 @@ package edu.sjsu.cinequest.comm.cinequestitem;
  * @author Aaditya Bhatia
  */
 
-public abstract class CinequestItem
+public abstract class CinequestItem implements Persistable
 {
 	private int id;
 	private String title, imageURL, description;

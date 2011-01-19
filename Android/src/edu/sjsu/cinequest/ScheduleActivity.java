@@ -48,6 +48,8 @@ public class ScheduleActivity extends CinequestTabActivity {
 	private static final int LOGOUT_MENUOPTION_ID = Menu.FIRST;
 	private static final int SYNC_MENUOPTION_ID = Menu.FIRST + 1;
 	private static final int DELETE_CONTEXTMENU_ID = Menu.FIRST + 3;
+	
+	private static ProgressDialog m_ProgressDialog;
 
     
     /**

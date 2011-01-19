@@ -1,39 +1,41 @@
 package edu.sjsu.cinequest;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
-import android.app.ProgressDialog;
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.ImageSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.HParser;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
+import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.ProgramItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
-public class FilmDetail extends DetailDisplayActivity {
-	private ProgramItem item;
-	private Film film;
-	
-	public static enum ItemType {FILM, PROGRAM_ITEM}
-	private ItemType m_itemType;
+public class FilmDetail extends Activity {
+	public static enum ItemType {FILM, PROGRAM_ITEM, DVD}
 	private ListView scheduleList;
-	private int mItemId;
-	private static ProgressDialog m_ProgressDialog = null;
 	
 	public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
@@ -41,115 +43,49 @@ public class FilmDetail extends DetailDisplayActivity {
         
         scheduleList = (ListView)findViewById(R.id.ScheduleList);
 		
-		this.getBundleValues( this.getIntent().getExtras() );
-		this.fetchServerData();	
-		
-//      Bundle bundle = this.getIntent().getExtras();
-//		chosenId = bundle.getInt("id");
-		
-//	queryManager.getProgramItem(chosenId, new Callback()
-//	{
-//		// TODO: Better query
-//		@Override
-//		public void invoke(Object result) {
-//			Log.e("Cinequest","invoke");
-//			FilmDetail.this.castResult(result);
-//		}
-//		@Override
-//		public void progress(Object value) {
-//		}
-//		@Override
-//		public void failure(Throwable t) {
-//			Log.e("Cinequest","failure"+t.toString());
-//		}
-//	});
-	
+		this.fetchServerData(getIntent().getExtras());	
 	}
 	
-	private void getBundleValues(Bundle b){
-		mItemId = b.getInt("id");
-		
-        String type = b.getString("type");
-        
-        if(type == null)
-        	return;
-        
-        if(type.equalsIgnoreCase(ItemType.PROGRAM_ITEM.toString()))
-        	m_itemType = ItemType.PROGRAM_ITEM;
-        else if(type.equalsIgnoreCase(ItemType.FILM.toString()))
-        	m_itemType = ItemType.FILM;        
-        else
-        	m_itemType = null;
-	}
-	
-	private void fetchServerData(){
-		if(!isNetworkAvailable()){
+	private void fetchServerData(Bundle b){
+        if(!isNetworkAvailable()){
 			showNoNetworkWarning();
 			return;
 		}
-		
-		if(m_itemType == ItemType.FILM)
-        	getFilm(mItemId);
-        else if(m_itemType == ItemType.PROGRAM_ITEM)
-        	getProgramItem(mItemId);
-        else if(m_itemType == null)
-        	return;
-		
-	}
+        
+        Object target = b.getSerializable("target");
+        
+        if (target instanceof Filmlet) {
+        	Filmlet filmlet = (Filmlet) target;
+        	int id = filmlet.getId();
+        	Callback callback = new ProgressMonitorCallback(this){
+				@Override
+				public void invoke(Object result) {
+					super.invoke(result);
+					processFilm((Film) result);
+				}
+			};
+        	if (filmlet.isDownload() || filmlet.isDVD()) {
+        		HomeActivity.getQueryManager().getDVD(id, callback);	        		
+        	}
+        	else {
+    			HomeActivity.getQueryManager().getFilm(id, callback);			        		
+        	}
+        	
+        } else if (target instanceof Schedule) {
+        	Schedule schedule = (Schedule) target;
+        	final int id = schedule.getItemId();
+    		HomeActivity.getQueryManager().getProgramItem(id, 
+    				new ProgressMonitorCallback(this){
+    			@Override
+    			public void invoke(Object result) {
+					super.invoke(result);
+    				processProgramItem((ProgramItem) result);
+    			}
+    		});        	
+        }
+	}	
 	
-private void getProgramItem(int proramitemId){
-		
-		//show a progress dialog
-    	m_ProgressDialog = ProgressDialog.show(FilmDetail.this, 
-				"Please wait...", "Fetching data ...", true);
-		
-		HomeActivity.getQueryManager().getProgramItem(proramitemId, new Callback(){
-		
-			@Override
-			public void invoke(Object result) {
-				castResult(result);
-				m_ProgressDialog.dismiss();
-			}
-			@Override
-			public void progress(Object value) {
-			}
-			@Override
-			public void failure(Throwable t) {
-				if(t.getMessage()!=null)
-					DialogPrompt.showDialog(FilmDetail.this, t.getMessage());
-				m_ProgressDialog.dismiss();
-			}
-		});
-		
-	}
-	
-	private void getFilm(int filmId){
-		
-		//show a progress dialog
-    	m_ProgressDialog = ProgressDialog.show(FilmDetail.this, 
-				"Please wait...", "Fetching data ...", true);
-		
-		HomeActivity.getQueryManager().getFilm(filmId, new Callback(){
-		
-			@Override
-			public void invoke(Object result) {
-				castResultForFilm(result);
-				m_ProgressDialog.dismiss();
-			}
-			@Override
-			public void progress(Object value) {
-			}
-			@Override
-			public void failure(Throwable t) {
-				if(t.getMessage()!=null)
-					DialogPrompt.showDialog(FilmDetail.this, t.getMessage());
-				m_ProgressDialog.dismiss();
-			}
-		});
-		
-	}
-	
-	
+	// TODO: Move
 	private void showNoNetworkWarning(){
 		DialogPrompt.showDialog(this, "Network unavailable! Please connect to internet first.");
 	}
@@ -157,6 +93,7 @@ private void getProgramItem(int proramitemId){
 	/**
      * Check for active internet connection
      */
+	// TODO: Move
     public boolean isNetworkAvailable() {
     	ConnectivityManager cMgr 
 		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -170,9 +107,8 @@ private void getProgramItem(int proramitemId){
 	
 	
 	
-	private void castResult(Object result)
+	private void processProgramItem(ProgramItem item)
 	{
-		item = (ProgramItem) result;
 		Log.e("ScheduleActivity","For "+item.getTitle()+"["+item.getId()+"], films="+item.getFilms().size());
 		
 		showProgramItem(item);
@@ -180,7 +116,7 @@ private void getProgramItem(int proramitemId){
 		films = item.getFilms();
 		if(films.size() > 0)
 		{
-			film = (Film)films.elementAt(0);
+			Film film = (Film)films.elementAt(0);
 			if(film!=null)
 			{
 				Vector<Schedule> schedules = new Vector<Schedule>();
@@ -191,9 +127,7 @@ private void getProgramItem(int proramitemId){
 		
 	}
 	
-	//TODO: combine it with above castResult method
-	private void castResultForFilm(Object result){
-		Film afilm = (Film) result;
+	private void processFilm(Film afilm){
 		showFilm( afilm);
 		Log.e("ScheduleActivity","film got. title="+afilm.getTitle());
 		Vector<Schedule> schedules = new Vector<Schedule>();
@@ -205,8 +139,8 @@ private void getProgramItem(int proramitemId){
 				s.setTitle(s.getTitle() + " [Short Program's Part]");
 			}
 		}
-		FilmDetail.this.showSchedules(schedules);			
-		
+		if (schedules.size() > 0)
+			FilmDetail.this.showSchedules(schedules);					
 	}
 	
 	
@@ -294,24 +228,140 @@ private void getProgramItem(int proramitemId){
 		
 		
 	}
+
+	private static void addEntry(SpannableStringBuilder ssb, String tag, String s) {
+    	if (s == null || s.equals("")) return;
+    	ssb.append(tag);
+    	ssb.append(": ");
+    	int end = ssb.length();
+    	int start = end - tag.length() - 2;
+    	ssb.setSpan(new StyleSpan(Typeface.BOLD), start, end, 0);
+    	ssb.append(s);
+    	ssb.append("\n");
+    }
 	
-	// TODO: Never used
-	private List<Map<String, Object>> getData(Vector<Schedule> schedules) {
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-		Map<String, Object> map = new HashMap<String, Object>();
+    public void showFilm(Film in) {
+		SpannableString title = new SpannableString(in.getTitle());
+		title.setSpan(new RelativeSizeSpan(1.2F), 0, title.length(), 0);
+		((TextView) findViewById(R.id.Title)).setText(title);
 		
-		DateUtils du = new DateUtils();
-		for(int i = 0;i<schedules.size();i++){
-			Schedule s = schedules.get(i);
-			String day = s.getStartTime().substring(0, 10);
-			String formatDay = du.format(day, DateUtils.DATE_DEFAULT);
-			map = new HashMap<String, Object>();
-			map.put("date", formatDay);
-			map.put("time", "Time: "+du.format(s.getStartTime(), DateUtils.TIME_SHORT) + " - " + 
-					du.format(s.getEndTime(), DateUtils.TIME_SHORT));
-			map.put("venue", "Venue: "+s.getVenue());
-			list.add(i, map);
+		TextView tv = (TextView) findViewById(R.id.Description);
+		HParser parser = new HParser();
+		parser.parse(in.getDescription());
+		SpannableString spstr = new SpannableString(parser.getResultString());
+		byte[] attributes = parser.getAttributes();
+		int[] offsets = parser.getOffsets();
+		for (int i = 0; i < offsets.length - 1; i++) {
+			int start = offsets[i];
+			int end = offsets[i + 1];
+			byte attr = attributes[i];
+			int flags = 0;
+			if ((attr & HParser.BOLD) != 0)
+				spstr.setSpan(new StyleSpan(Typeface.BOLD), start, end, flags);
+			if ((attr & HParser.ITALIC) != 0)
+				spstr.setSpan(new StyleSpan(Typeface.ITALIC), start, end, flags);
+			if ((attr & HParser.LARGE) != 0)
+				spstr.setSpan(new RelativeSizeSpan(1.2F), start, end, flags);					
+			if ((attr & HParser.RED) != 0)
+				spstr.setSpan(new ForegroundColorSpan(Color.RED), start, end, flags);
+		}
+		
+		tv.setText(spstr);
+
+		
+		Bitmap bmp = (Bitmap) HomeActivity.getImageManager().getImage(in.getImageURL(), new Callback() {
+			@Override
+			public void invoke(Object result) {
+				Bitmap bmp = (Bitmap) result;
+		  		((ImageView) findViewById(R.id.Image)).setImageBitmap(bmp);											  		
 			}
-		return list;
-	}
+			@Override
+			public void progress(Object value) {
+		
+			}
+
+			@Override
+			public void failure(Throwable t) {
+			
+			}   
+		}, R.drawable.fetching, true);					
+  		((ImageView) findViewById(R.id.Image)).setImageBitmap(bmp);											  		
+						
+		// TODO: Test this--can you really add multiple images?
+		Vector urls = parser.getImageURLs();
+		if (urls.size() > 0) 
+		{
+			HomeActivity.getImageManager().getImages(urls, new Callback() {
+				@Override
+				public void invoke(Object value) {
+					SpannableString ss = new SpannableString(" "); 
+					Vector images = (Vector) value;
+					for (int i = 0; i < images.size(); i++) 
+					{
+						Bitmap bmp = (Bitmap) images.elementAt(i);
+						ss.setSpan(new ImageSpan(bmp), 0, 1, 0);
+					}
+					((TextView) findViewById(R.id.SmallImages)).setText(ss);
+				}
+				@Override
+				public void progress(Object result) {
+				}
+				@Override
+				public void failure(Throwable t) {		
+				}   
+			});					
+		}
+		 				
+		
+		SpannableStringBuilder ssb = new SpannableStringBuilder();
+		
+        addEntry(ssb, "Director", in.getDirector());
+        addEntry(ssb, "Producer", in.getProducer());
+        addEntry(ssb, "Editor", in.getEditor());
+        addEntry(ssb, "Writer", in.getWriter());
+        addEntry(ssb, "Cinematographer", in.getCinematographer());
+        addEntry(ssb, "Cast", in.getCast());
+        addEntry(ssb, "Country", in.getCountry());
+        addEntry(ssb, "Language", in.getLanguage());
+        addEntry(ssb, "Genre", in.getGenre());
+        addEntry(ssb, "Film Info", in.getFilmInfo());
+        
+        ((TextView) findViewById(R.id.Properties)).setText(ssb);
+    }
+	
+    public void showProgramItem(ProgramItem item) 
+    {
+		Vector films = new Vector();
+		films = item.getFilms();
+		
+		if (films.size() == 1)
+		{
+			showFilm((Film)films.elementAt(0));
+		} 
+		else if(films.size() > 1){
+			//if it is a program item with multiple films, then show the description of 
+			//program item, instead of description of the film item
+			Film film = (Film)films.elementAt(0);
+			
+			film.setTitle(item.getTitle());
+			film.setDescription(item.getDescription());
+			film.setDirector("");
+			film.setProducer("");
+			film.setEditor("");
+			film.setWriter("");
+			film.setCinematographer("");
+			film.setCast("");
+			film.setCountry("");
+			film.setLanguage("");
+			film.setGenre("");
+			film.setFilmInfo("");
+			
+			showFilm(film);
+		}
+		else 
+		{
+			// TODO: Need one button for each film 
+			((TextView) findViewById(R.id.Title)).setText("TODO: Need one button for each film");
+		}
+    }   	
 }
