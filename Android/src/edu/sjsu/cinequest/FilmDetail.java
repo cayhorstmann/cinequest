@@ -336,20 +336,6 @@ public class FilmDetail extends CinequestActivity {
 			
 			if (films.size() > 0)
 			{
-/*				
-				scheduleList.setAdapter(createFilmletList(films));
-				// TODO: Shouldn't this always be the case for lists of filmlets?
-		        scheduleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-					@Override
-					public void onItemClick(AdapterView<?> parent, View view, int position,
-							long id) {
-						Object result = scheduleList.getItemAtPosition( position );
-						launchFilmDetail(result);				
-					}
-				});
-				
-			*/
 				showFilms(films);
 			}
 

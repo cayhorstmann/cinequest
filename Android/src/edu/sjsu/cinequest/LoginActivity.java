@@ -24,16 +24,12 @@ public class LoginActivity extends Activity {
 	
 	//Registration URL
 	private static String REGISTRAION_URL = "http://www.cinequest.org/isch_reg.php";
-	
+
+	// TODO: Eliminate
 	private static ProgressDialog m_ProgressDialog = null;
-	private Button syncScheduleButton;
-	private Button accountSignupButton;
 	private String email;
 	private String password;
 	public static int SYNC_ERROR_ENCOUNTERED = 2;
-	private User user;
-	
-	
 	
 	/** Called when the activity is first created. */
     @Override
@@ -41,8 +37,8 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout_portrait);
         //get the buttons from layout
-        syncScheduleButton = (Button) this.findViewById(R.id.sync_button);
-        accountSignupButton = (Button) this.findViewById(R.id.accountsignup_button);
+        Button syncScheduleButton = (Button) this.findViewById(R.id.sync_button);
+        Button accountSignupButton = (Button) this.findViewById(R.id.accountsignup_button);
         
         //get the edittext boxes
         final EditText emailBox = (EditText) this.findViewById(R.id.login_email_box);
@@ -105,6 +101,7 @@ public class LoginActivity extends Activity {
     /**
      * Check for active internet connection
      */
+    // TODO: Eliminate
     public boolean isNetworkAvailable() {
     	ConnectivityManager cMgr 
 		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -124,7 +121,7 @@ public class LoginActivity extends Activity {
      */
 	private void performSync(){	
     	
-    	user.syncSchedule(/*credentialAction*/ new Action(){
+    	HomeActivity.getUser().syncSchedule(/*credentialAction*/ new Action(){
 					@Override
 					public void start(Object in, Callback cb) {							
 							cb.invoke(new User.Credentials(email, password));
@@ -170,7 +167,7 @@ public class LoginActivity extends Activity {
 					m_ProgressDialog.dismiss();
 					Log.e("LoginActivity",t.getMessage());
 					DialogPrompt.showDialog(LoginActivity.this, 
-							user.isLoggedIn() 
+							HomeActivity.getUser().isLoggedIn() 
 							? "Unable to Sync schedule.\nTry Syncing again."
 							: "Login failed.");
 				}
@@ -198,7 +195,7 @@ public class LoginActivity extends Activity {
 				
 				Log.e("LoginActivity", t.getMessage()+ "-->" + t.getClass().toString());
 				DialogPrompt.showDialog(LoginActivity.this, 
-						user.isLoggedIn() ? "Unable to load schedule" : "Login failed.");
+						HomeActivity.getUser().isLoggedIn() ? "Unable to load schedule" : "Login failed.");
 			}
 
 			@Override
@@ -207,7 +204,7 @@ public class LoginActivity extends Activity {
 				
 			}
 		};
-		user.readSchedule(LoginActivity.this.attemptLogin(), 
+		HomeActivity.getUser().readSchedule(LoginActivity.this.attemptLogin(), 
 						callback, HomeActivity.getQueryManager());
 	}
 	
