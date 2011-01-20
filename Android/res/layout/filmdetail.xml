@@ -5,26 +5,25 @@
 	android:layout_width="fill_parent" 
 	android:layout_height="fill_parent"
 	>
-	
-	<LinearLayout 
-		android:orientation="vertical"
-		android:layout_height="fill_parent" 
-		android:layout_width="fill_parent"
-	>
-
-	<include layout="@layout/detail_layout" />
-
 		<!-- <LinearLayout 
 			android:id="@+id/LinearLayout01"
 			android:layout_width="fill_parent" 
 			android:layout_height="200dip"
 		>-->
-			<ListView 
-				android:layout_width="wrap_content"
-				android:layout_height="200dip" 
-				android:id="@+id/ScheduleList"
-			/>
 		<!--</LinearLayout>-->
 		
+	<LinearLayout 
+		android:orientation="vertical"
+		android:layout_height="fill_parent" 
+		android:layout_width="fill_parent"
+	>
+	<include layout="@layout/detail_layout" />
+			<ListView 
+				android:layout_width="fill_parent"
+				android:layout_height="400dp" 
+				android:id="@+id/ScheduleList"
+			/>
+<!-- TODO: This isn't really satisfactory. Scrolling is weird. -->
 	</LinearLayout>
 </ScrollView>
+	

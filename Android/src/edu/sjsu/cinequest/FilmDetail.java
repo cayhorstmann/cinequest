@@ -3,7 +3,6 @@ package edu.sjsu.cinequest;
 import java.util.List;
 import java.util.Vector;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -42,7 +41,7 @@ public class FilmDetail extends CinequestActivity {
         setContentView(R.layout.filmdetail);
         
         scheduleList = (ListView)findViewById(R.id.ScheduleList);
-		
+        		
 		this.fetchServerData(getIntent().getExtras());	
 	}
 	
@@ -61,7 +60,7 @@ public class FilmDetail extends CinequestActivity {
 				@Override
 				public void invoke(Object result) {
 					super.invoke(result);
-					processFilm((Film) result);
+					showFilm((Film) result);
 				}
 			};
         	if (filmlet.isDownload() || filmlet.isDVD()) {
@@ -79,7 +78,7 @@ public class FilmDetail extends CinequestActivity {
     			@Override
     			public void invoke(Object result) {
 					super.invoke(result);
-    				processProgramItem((ProgramItem) result);
+    				showProgramItem((ProgramItem) result);
     			}
     		});        	
         }
@@ -104,44 +103,6 @@ public class FilmDetail extends CinequestActivity {
         else
         	return false;
     }
-	
-	
-	
-	private void processProgramItem(ProgramItem item)
-	{
-		Log.e("ScheduleActivity","For "+item.getTitle()+"["+item.getId()+"], films="+item.getFilms().size());
-		
-		showProgramItem(item);
-		Vector films = new Vector();
-		films = item.getFilms();
-		if(films.size() > 0)
-		{
-			Film film = (Film)films.elementAt(0);
-			if(film!=null)
-			{
-				Vector<Schedule> schedules = new Vector<Schedule>();
-				schedules = film.getSchedules();
-				FilmDetail.this.showSchedules(schedules);
-			}
-		}
-		
-	}
-	
-	private void processFilm(Film afilm){
-		showFilm( afilm);
-		Log.e("ScheduleActivity","film got. title="+afilm.getTitle());
-		Vector<Schedule> schedules = new Vector<Schedule>();
-		schedules = afilm.getSchedules(); 
-		
-		//if the film is part of short program, change its schedules title
-		if(afilm.getDescription().startsWith("Part of Shorts Program")){
-			for(Schedule s: schedules){
-				s.setTitle(s.getTitle() + " [Short Program's Part]");
-			}
-		}
-		if (schedules.size() > 0)
-			FilmDetail.this.showSchedules(schedules);					
-	}
 	
 	
 	private void showSchedules(Vector<Schedule> schedules)
@@ -333,12 +294,13 @@ public class FilmDetail extends CinequestActivity {
         addEntry(ssb, "Film Info", in.getFilmInfo());
         
         ((TextView) findViewById(R.id.Properties)).setText(ssb);
+        
+		showSchedules(in.getSchedules());        
     }
 	
     public void showProgramItem(ProgramItem item) 
     {
-		Vector films = new Vector();
-		films = item.getFilms();
+		Vector films = item.getFilms();
 		
 		if (films.size() == 1)
 		{
@@ -361,11 +323,18 @@ public class FilmDetail extends CinequestActivity {
 			
 			if (films.size() > 0)
 			{
-				SeparatedListAdapter adapter = createFilmletList(films);
-				// TODO: Fix--Right now, it's displayed as a list of schedules
-				// Try out with Feb. 25 "The darker side..."
-				// http://mobile.cinequest.org/mobileCQ.php?type=program_item&id=1451
-				scheduleList.setAdapter(adapter);
+				scheduleList.setAdapter(createFilmletList(films));
+				// TODO: Shouldn't this always be the case for lists of filmlets?
+		        scheduleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view, int position,
+							long id) {
+						Object result = scheduleList.getItemAtPosition( position );
+						launchFilmDetail(result);				
+					}
+				});
+				
 			}
 		}
     }   	

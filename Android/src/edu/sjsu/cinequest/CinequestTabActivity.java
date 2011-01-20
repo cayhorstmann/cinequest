@@ -24,9 +24,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 /**  
@@ -174,11 +174,11 @@ public abstract class CinequestTabActivity extends CinequestActivity{
       * with items.
       * @param adp adapter for the listview
       */
-     protected final void setListViewAdapter(SeparatedListAdapter adp){
+     protected final void setListViewAdapter(ListAdapter adp){
     	 //set correct list adapter
     	 if(adp instanceof SeparatedListIndexedAdapter){
     		 ((SeparatedListIndexedAdapter)adp).setAsAdapterFor(listview);
-    	 } else if (adp instanceof SeparatedListAdapter){
+    	 } else {
     		 listview.setAdapter(adp);
     	 }
     	 
@@ -287,43 +287,6 @@ public abstract class CinequestTabActivity extends CinequestActivity{
 	 */
 	protected void enableListContextMenu(){
 		registerForContextMenu( getListview() );
-	}
-	
-	/**
-	 * Launches the FilmDetail activity with correct parameters extracted from the 
-	 * object passed to it.
-	 * @param result Object; Can be Schedule, Filmlet etc
-	 */
-	protected void launchFilmDetail(Object result) {
-		Intent intent = new Intent();
-		intent.setClass(CinequestTabActivity.this, FilmDetail.class);
-		
-		int id = -1;
-		String type = "";
-		
-		if(result instanceof Schedule){
-			Schedule schedule = (Schedule)result;
-			id = schedule.getItemId();
-			type=FilmDetail.ItemType.PROGRAM_ITEM.toString();
-			
-//			DialogPrompt.showToast(this, 
-//					"Schedule Item click received. Title="+schedule.getTitle()+", ItemId="+id);
-			
-		} else if(result instanceof Filmlet){
-			Filmlet filmlet = (Filmlet)result;
-			id = filmlet.getId();
-			type=FilmDetail.ItemType.FILM.toString();
-			
-//			DialogPrompt.showToast(this, 
-//					"Film Item click received. Title="+filmlet.getTitle()+", ID="+id);
-		}
-		
-		// TODO: Remove
-		intent.putExtra("type", type);
-		intent.putExtra("id", id); 
-		intent.putExtra("target", (Serializable) result);
-		CinequestTabActivity.this.startActivity(intent);
-		
 	}
 	
 	/**

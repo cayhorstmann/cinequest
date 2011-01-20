@@ -1,5 +1,6 @@
 package edu.sjsu.cinequest;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -8,17 +9,33 @@ import java.util.TreeMap;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 public class CinequestActivity extends Activity
 {
-	protected SeparatedListAdapter createScheduleList(List<?> listItems) {
+	/**
+	 * Launches the FilmDetail activity with correct parameters extracted from the 
+	 * object passed to it.
+	 * @param result Object; Can be Schedule, Filmlet etc
+	 */
+	protected void launchFilmDetail(Object result) {
+		Intent intent = new Intent();
+		intent.setClass(this, FilmDetail.class);
+		intent.putExtra("target", (Serializable) result);
+		startActivity(intent);		
+	}
+	
+	
+	
+	protected ListAdapter createScheduleList(List<?> listItems) {
 		if (listItems.size() == 0) {
      		return new SeparatedListAdapter(this);
      	}
@@ -65,9 +82,11 @@ public class CinequestActivity extends Activity
  	    return mSeparatedListAdapter;
    	 }
      	
-	protected SeparatedListAdapter createFilmletList(List<?> listItems) {
+	protected ListAdapter createFilmletList(List<Filmlet> listItems) {
 		if (listItems.size() == 0){
      		return new SeparatedListAdapter(this);
+     	} else if (listItems.size() <= 10) {
+     		return new FilmSectionAdapter<Filmlet>(this,R.layout.listitem_title_only,listItems, false);
      	}
      	/*
      	 * Now, go though the input list, and first sort the list out.
@@ -109,7 +128,6 @@ public class CinequestActivity extends Activity
  		}
  		return mSeparatedListAdapter;
     }
-    
 	
 	/**
      * Custom List-Adapter to show the schedule items in list 

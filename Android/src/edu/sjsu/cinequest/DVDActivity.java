@@ -25,10 +25,8 @@ public class DVDActivity extends CinequestTabActivity {
 			}});
 	}
 
-	// TODO: Button click doesn't seem to work
-	
 	@Override
 	protected void refreshListContents(List<?> listItems) {
-   		setListViewAdapter(createFilmletList(listItems));
+   		setListViewAdapter(createFilmletList((List<Filmlet>) listItems));
 	}
 }

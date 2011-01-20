@@ -100,6 +100,7 @@ public class FilmsActivity extends CinequestTabActivity {
     	//if mode is "by-date"
         if(mListSortType == SortType.BYDATE)
         {
+
         	HomeActivity.getQueryManager().getSchedules(new ProgressMonitorCallback(this) {
         		@Override
         		public void invoke(Object result) {
@@ -129,7 +130,7 @@ public class FilmsActivity extends CinequestTabActivity {
 	@Override
 	protected void refreshListContents(List<?> listItems) {
 	   	if(mListSortType == SortType.BYTITLE) {
-	   		setListViewAdapter(createFilmletList(listItems));
+	   		setListViewAdapter(createFilmletList((List<Filmlet>) listItems));
 	   	}
 	   	else {
 	   		setListViewAdapter(createScheduleList(listItems));
