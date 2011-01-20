@@ -53,7 +53,11 @@ public class FilmDetail extends CinequestActivity {
         
         Object target = b.getSerializable("target");
         
-        if (target instanceof Filmlet) {
+        if (target instanceof Film) {
+        	// This happens when showing a film inside a program item
+    		showFilm((Film) target);
+        } 
+        else if (target instanceof Filmlet) {
         	Filmlet filmlet = (Filmlet) target;
         	int id = filmlet.getId();
         	Callback callback = new ProgressMonitorCallback(this){
@@ -122,7 +126,25 @@ public class FilmDetail extends CinequestActivity {
 		});
 		scheduleList.setAdapter(adapter);
 	}
-	
+
+	// TODO: Fix poor generics. The FilmSectionAdapter should have the wildcard
+	private void showFilms(Vector<? extends Filmlet> films)
+	{
+		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
+		adapter.addSection("Films",
+		new FilmSectionAdapter<Filmlet>(this,
+				R.layout.listitem_title_only, (Vector<Filmlet>) films, false));
+        scheduleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long id) {
+				Object result = scheduleList.getItemAtPosition( position );
+				launchFilmDetail(result);				
+			}
+		});
+		scheduleList.setAdapter(adapter);
+	}
+
 	private class FilmDetailSectionAdapter extends SectionAdapter<Schedule>{
 		final DateUtils du = new DateUtils();
 
@@ -132,33 +154,24 @@ public class FilmDetail extends CinequestActivity {
 		}
 
 		@Override
-		protected void formatCheckBox(CheckBox checkbox, Schedule result) {
-			edu.sjsu.cinequest.comm.cinequestitem.Schedule schd 
-					= (edu.sjsu.cinequest.comm.cinequestitem.Schedule) result;
-			
+		protected void formatCheckBox(CheckBox checkbox, final Schedule result) {
 			checkbox.setVisibility(View.VISIBLE);
-			Log.e("FilmActivity","Processing Schedule Checkbox. Title="+schd.getTitle()+", ID="+schd.getItemId());
+			// TODO: Seems inefficient to do this on every formatCheckBox
+			Log.e("FilmActivity","Processing Schedule Checkbox. Title="+result.getTitle()+", ID="+result.getItemId());
 			checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
 
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView,
 						boolean isChecked) {
-					edu.sjsu.cinequest.comm.cinequestitem.Schedule s 
-						= (edu.sjsu.cinequest.comm.cinequestitem.Schedule) buttonView.getTag();
-					
 					if(isChecked){
-						HomeActivity.getUser().getSchedule().add(s);
-//						DialogPrompt.showToast(FilmDetail.this, 
-//								"Schedule Item Added. Title="+s.getTitle()+", ID="+s.getItemId());
+						HomeActivity.getUser().getSchedule().add(result);
 					}else{
-						HomeActivity.getUser().getSchedule().remove(s);
-					}
-					
-				}
-				
+						HomeActivity.getUser().getSchedule().remove(result);
+					}					
+				}				
 			});
 			
-			if(HomeActivity.getUser().getSchedule().contains(schd))
+			if(HomeActivity.getUser().getSchedule().contains(result))
 				checkbox.setChecked(true);
 			else
 				checkbox.setChecked(false);
@@ -323,6 +336,7 @@ public class FilmDetail extends CinequestActivity {
 			
 			if (films.size() > 0)
 			{
+/*				
 				scheduleList.setAdapter(createFilmletList(films));
 				// TODO: Shouldn't this always be the case for lists of filmlets?
 		        scheduleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -335,7 +349,10 @@ public class FilmDetail extends CinequestActivity {
 					}
 				});
 				
+			*/
+				showFilms(films);
 			}
+
 		}
     }   	
 }

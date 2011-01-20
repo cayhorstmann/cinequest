@@ -132,7 +132,7 @@ public class CinequestActivity extends Activity
 	/**
      * Custom List-Adapter to show the schedule items in list 
      */
-    private class FilmSectionAdapter<T> extends SectionAdapter<T>{
+    protected class FilmSectionAdapter<T> extends SectionAdapter<T>{
     	private boolean useCheckboxes;
     	//constructor
 		public FilmSectionAdapter(Context context, int resourceId,

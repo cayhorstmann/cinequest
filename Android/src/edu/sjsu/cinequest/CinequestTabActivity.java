@@ -1,6 +1,5 @@
 package edu.sjsu.cinequest;
 
-import java.io.Serializable;
 import java.util.List;
 
 import android.content.Context;
