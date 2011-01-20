@@ -71,11 +71,8 @@ public class RegistrationActivity extends Activity {
                              activity.setTitle(R.string.app_name);
                 }
        });
-       
-       if( isNetworkAvailable() == false ){
+		if (!HomeActivity.isNetworkAvailable(this)) {
     	   webview.setNetworkAvailable(false);
-			DialogPrompt.showDialog(RegistrationActivity.this, 
-					getResources().getString(R.string.no_network_prompt));			
 		}else{
 			webview.setNetworkAvailable(true);
 	       //Load the URL
@@ -106,20 +103,6 @@ public class RegistrationActivity extends Activity {
 	        }
 	}
 	
-	/**
-     * Check for active internet connection
-     */
-    public boolean isNetworkAvailable() {
-    	ConnectivityManager cMgr 
-		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cMgr.getActiveNetworkInfo();
-        
-        if( netInfo != null)
-        	return netInfo.isAvailable();
-        else
-        	return false;
-    }
-    
     /**
      * Create a menu to be displayed when user hits Menu key on device
      */

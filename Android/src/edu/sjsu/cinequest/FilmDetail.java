@@ -7,8 +7,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -46,10 +44,7 @@ public class FilmDetail extends CinequestActivity {
 	}
 	
 	private void fetchServerData(Bundle b){
-        if(!isNetworkAvailable()){
-			showNoNetworkWarning();
-			return;
-		}
+		if (!HomeActivity.isNetworkAvailable(this)) return;
         
         Object target = b.getSerializable("target");
         
@@ -87,27 +82,6 @@ public class FilmDetail extends CinequestActivity {
     		});        	
         }
 	}	
-	
-	// TODO: Move
-	private void showNoNetworkWarning(){
-		DialogPrompt.showDialog(this, "Network unavailable! Please connect to internet first.");
-	}
-	
-	/**
-     * Check for active internet connection
-     */
-	// TODO: Move
-    public boolean isNetworkAvailable() {
-    	ConnectivityManager cMgr 
-		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cMgr.getActiveNetworkInfo();
-        
-        if( netInfo != null)
-        	return netInfo.isAvailable();
-        else
-        	return false;
-    }
-	
 	
 	private void showSchedules(Vector<Schedule> schedules)
 	{

@@ -125,11 +125,7 @@ public class HomeActivity extends Activity {
     	super.onResume();
     	
     	//check network connection
-    	if (!isNetworkAvailable()) {
-    		Toast.makeText(this, getResources().getString(R.string.no_network_msg), 
-    				Toast.LENGTH_LONG).show();
-    		return;
-    	}
+    	if (!isNetworkAvailable(this)) return;
     	
     	//if network is available, get the event/news data
         queryManager.getSpecialScreen("ihome", new Callback(){
@@ -218,13 +214,20 @@ public class HomeActivity extends Activity {
     /**
      * Check for active internet connection
      */
-    public boolean isNetworkAvailable() {
+    public static boolean isNetworkAvailable(Context context) {
     	ConnectivityManager cMgr 
-		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+  		= (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cMgr.getActiveNetworkInfo();
-        
-        return netInfo != null && netInfo.isAvailable();
-    }
+
+        if (netInfo != null && netInfo.isAvailable()) {       
+     	   return true;
+        }
+        else {
+    		Toast.makeText(context, context.getResources().getString(R.string.no_network_msg), 
+    				Toast.LENGTH_LONG).show();
+     	   return false;
+        }
+    }    
     
     /**
      * Create a menu to be displayed when user hits Menu key on device

@@ -90,17 +90,10 @@ public class FilmsActivity extends CinequestTabActivity {
 
 	@Override
 	protected void fetchServerData() {
-		// TODO: Move to query manager or at least to superclass
-		//if there is no internet conenctivity
-    	if( isNetworkAvailable() == false){
-			DialogPrompt.showDialog(FilmsActivity.this, 
-					getResources().getString(R.string.no_network_prompt));
-			return;
-		}
+		if (!HomeActivity.isNetworkAvailable(this)) return;
     	//if mode is "by-date"
         if(mListSortType == SortType.BYDATE)
         {
-
         	HomeActivity.getQueryManager().getSchedules(new ProgressMonitorCallback(this) {
         		@Override
         		public void invoke(Object result) {

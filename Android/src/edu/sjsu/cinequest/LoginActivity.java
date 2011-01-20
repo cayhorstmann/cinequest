@@ -1,19 +1,15 @@
 package edu.sjsu.cinequest;
 
-import edu.sjsu.cinequest.comm.Action;
-import edu.sjsu.cinequest.comm.Callback;
-import edu.sjsu.cinequest.comm.cinequestitem.User;
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import edu.sjsu.cinequest.comm.Action;
+import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.cinequestitem.User;
 
 /**
  * The screen for getting login credentials from user
@@ -26,7 +22,6 @@ public class LoginActivity extends Activity {
 	private static String REGISTRAION_URL = "http://www.cinequest.org/isch_reg.php";
 
 	// TODO: Eliminate
-	private static ProgressDialog m_ProgressDialog = null;
 	private String email;
 	private String password;
 	public static int SYNC_ERROR_ENCOUNTERED = 2;
@@ -49,16 +44,6 @@ public class LoginActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				
-				if(isNetworkAvailable() == false){
-					DialogPrompt.showDialog(LoginActivity.this, 
-							getResources().getString(R.string.no_network_prompt));
-					return;
-				}
-				
-				m_ProgressDialog = ProgressDialog.show(LoginActivity.this, 
-						"Please wait...", "Syncing data ...", true);
-				
 				email = emailBox.getText().toString();
 				password = passwordBox.getText().toString();
 				
@@ -77,13 +62,6 @@ public class LoginActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				
-				if(isNetworkAvailable() == false){
-					DialogPrompt.showDialog(LoginActivity.this, 
-							getResources().getString(R.string.no_network_prompt));
-					return;
-				}
-				
 				//Create the intent
 		    	Intent i = new Intent(LoginActivity.this, RegistrationActivity.class);
 		    	//Create a bundle, save url into it and add it to intent
@@ -99,28 +77,13 @@ public class LoginActivity extends Activity {
     }
     
     /**
-     * Check for active internet connection
-     */
-    // TODO: Eliminate
-    public boolean isNetworkAvailable() {
-    	ConnectivityManager cMgr 
-		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cMgr.getActiveNetworkInfo();
-        
-        if( netInfo != null)
-        	return netInfo.isAvailable();
-        else
-        	return false;
-    }
-    
-    /**
      * Performs the sync operation. 
      * If successful result is returned (in invoke method)n finish the activity with Result = RESULT_OK
      * If error occurs (in failure method), show a popup and ask user to try again
      * If a schedule conflict is detected (in syncAction), finish the activity with Result = SYNC_ERROR_ENCOUNTERED 
      */
 	private void performSync(){	
-    	
+		if (!HomeActivity.isNetworkAvailable(this)) return;    	
     	HomeActivity.getUser().syncSchedule(/*credentialAction*/ new Action(){
 					@Override
 					public void start(Object in, Callback cb) {							
@@ -131,23 +94,18 @@ public class LoginActivity extends Activity {
 
 				@Override
 				public void start(Object in, final Callback cb) {
-					if(m_ProgressDialog != null){
-						m_ProgressDialog.dismiss();
-						m_ProgressDialog = null;
-					}
-					
 					//Since this is a sub-activity, set result=SYNC_ERROR_ENCOUNTERED and finish it.
 					Intent i = new Intent();
 					setResult(SYNC_ERROR_ENCOUNTERED, i);
 		            finish();				//finish the activity and return to search view
 				}
     			
-    		}, new Callback(){
+    		}, new ProgressMonitorCallback(this, "Synchronizing"){
 
 				@Override
 				public void invoke(Object result) {
+					super.invoke(result);
 					Log.d("LoginActivity","Invoke method called. Result = RESULT_OK");					
-					m_ProgressDialog.dismiss();
 					
 					//Since this is a sub-activity, set result=ok and finish it.
 					Intent i = new Intent();
@@ -156,15 +114,8 @@ public class LoginActivity extends Activity {
 				}
 
 				@Override
-				public void progress(Object value) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
 				public void failure(Throwable t) {
-					
-					m_ProgressDialog.dismiss();
+					super.invoke(t);
 					Log.e("LoginActivity",t.getMessage());
 					DialogPrompt.showDialog(LoginActivity.this, 
 							HomeActivity.getUser().isLoggedIn() 
@@ -176,6 +127,7 @@ public class LoginActivity extends Activity {
     }
 	
 	// TODO: Remove
+	/*
 	private void performSync_old(){
 		Callback callback = new Callback() {
 			public void invoke(Object result) {
@@ -207,7 +159,7 @@ public class LoginActivity extends Activity {
 		HomeActivity.getUser().readSchedule(LoginActivity.this.attemptLogin(), 
 						callback, HomeActivity.getQueryManager());
 	}
-	
+	*/
 	/**
 	 * Attempts to login using user entered email and password.
 	 * 

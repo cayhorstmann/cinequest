@@ -377,22 +377,7 @@ public abstract class CinequestTabActivity extends CinequestActivity{
 		setResult(RESULT_OK, i);
         finish();
     }
-    
-    /**
-     * Check for active internet connection
-     */
-    // TODO: Duplicate from HomeScreen
-    public boolean isNetworkAvailable() {
-    	ConnectivityManager cMgr 
-		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cMgr.getActiveNetworkInfo();
         
-        if( netInfo != null)
-        	return netInfo.isAvailable();
-        else
-        	return false;
-    }
-    
     /**
      * Create a menu to be displayed when user hits Menu key on device
      */

@@ -276,12 +276,9 @@ public class ScheduleActivity extends CinequestTabActivity {
     
     /** When user clicks SYNC, do this*/
     private void performSync(){
+		if (!HomeActivity.isNetworkAvailable(this)) return;
+
     	final User user = HomeActivity.getUser();
-    	if(user.isLoggedIn()==true && isNetworkAvailable() == false){
-			DialogPrompt.showDialog(ScheduleActivity.this, 
-					getResources().getString(R.string.no_network_prompt));
-			return;
-		}
     	
     	// TODO Fix it
     	m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
