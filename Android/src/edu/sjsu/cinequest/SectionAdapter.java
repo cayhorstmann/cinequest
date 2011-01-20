@@ -31,6 +31,7 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
 	private SectionItems sectionType;
 	static final String LOGCAT_TAG = "FilmActivity";
 	private static int layout_resourceId;
+	private DateUtils du = new DateUtils();
 	
 	public SectionAdapter(Context context, int resourceId, List<T> list) 
 	{
@@ -89,29 +90,8 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
 	                     formatTitle(holder.title, (T) result);
 	                }
 	                if(holder.time != null){
-	                   	  // TODO: Use date utilities	
-	                	  //Display the time in proper AM/PM format
-	                  	  String startTime = result.getStartTime().substring(11, 16);
-	                  	  String endTime = result.getEndTime().substring(11, 16);
-	                  	  Integer startHour = Integer.parseInt(startTime.substring(0,2)); 
-	                   	  Integer endHour = Integer.parseInt(endTime.substring(0,2));
-	                   	  
-	                   	  if( startHour > 12 ){
-	                   		  Integer substitute = startHour - 12;
-	                   		  startTime = substitute + startTime.substring(2);
-	                   		  startTime += "PM";
-	                   	  }else{
-	                   		  startTime += "AM";
-	                   	  }
-	                   	  
-	                   	  if( endHour > 12 ){
-	                   		  Integer substitute = endHour - 12;
-	                   		  endTime = substitute + endTime.substring(2);
-	                   		  endTime += "PM";
-	                   	  }else{
-	                   		  endTime += "AM";
-	                   	  }
-	                   	  
+	                	String startTime = du.format(result.getStartTime(), DateUtils.TIME_SHORT);
+	                	String endTime = du.format(result.getEndTime(), DateUtils.TIME_SHORT);
 	                      holder.time.setText("Time: " + startTime + " - " + endTime);
 	                      
 	                      formatTimeVenue(holder.time, holder.venue);
@@ -121,8 +101,6 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
 	                   if(holder.venue != null){
 	                      holder.venue.setText("Venue: " + result.getVenue());
 	                 }
-	//                 Log.d(LOGCAT_TAG,"getView() called [v=null:"+(convertView==null) +"]for:" + result.getTitle());
-	                   
 	                   formatRowBackground(v, (T) result);
 	                   
 	                   if(holder.checkbox != null){

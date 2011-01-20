@@ -89,10 +89,12 @@ public class Schedule implements Persistable {
 	 * @return true if this item needs to be retrieved with a "mobile_item"
 	 *         query
 	 */
+	// TODO: Obsolete
 	public boolean isMobileItem() {
 		return mobileItem;
 	}
 
+	// TODO: Obsolete
 	public void setMobileItem(boolean special) {
 		this.mobileItem = special;
 	}

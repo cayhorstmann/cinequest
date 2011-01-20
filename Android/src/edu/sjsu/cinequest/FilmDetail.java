@@ -27,6 +27,7 @@ import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.HParser;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
+import edu.sjsu.cinequest.comm.cinequestitem.MobileItem;
 import edu.sjsu.cinequest.comm.cinequestitem.ProgramItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
@@ -80,6 +81,39 @@ public class FilmDetail extends CinequestActivity {
     				showProgramItem((ProgramItem) result);
     			}
     		});        	
+        } else if (target instanceof MobileItem) {
+        	MobileItem mobileItem = (MobileItem) target;
+        	final int id = mobileItem.getLinkId();
+			String linkType = mobileItem.getLinkType();
+			if(linkType.equals("item") || linkType.equals("program_item"))
+			{
+	    		HomeActivity.getQueryManager().getProgramItem(id, 
+	    				new ProgressMonitorCallback(this){
+	    			@Override
+	    			public void invoke(Object result) {
+						super.invoke(result);
+	    				showProgramItem((ProgramItem) result);
+	    			}
+	    		});
+			}        	
+			else if (linkType.equals("DVD")) 
+			{
+				HomeActivity.getQueryManager().getDVD(id,
+						new ProgressMonitorCallback(this) {    		
+					public void invoke(Object result) {
+						super.invoke(result);
+						showFilm((Film) result);
+					}});				
+			}
+			else if (linkType.equals("Film"))
+			{
+				HomeActivity.getQueryManager().getFilm(id,
+						new ProgressMonitorCallback(this) {    		
+					public void invoke(Object result) {
+						super.invoke(result);
+						showFilm((Film) result);
+					}});				
+			}			
         }
 	}	
 	

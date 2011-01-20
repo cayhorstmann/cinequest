@@ -11,13 +11,9 @@ public class ActiveRichTextField extends Field{
 			Font[] arg3, int[] arg4, int[] arg5, int arg6) {}
 	@Override
 	protected void layout(int arg0, int arg1) {
-		// TODO Auto-generated method stub
-		
 	}  
 	
 	@Override
 	protected void paint(Graphics arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 }

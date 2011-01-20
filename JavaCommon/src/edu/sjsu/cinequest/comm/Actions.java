@@ -35,35 +35,6 @@ public class Actions {
 		};
 	}
 	
-	// TODO: Eliminate?
-	// No varargs in Java 1.3 :-(
-	public static Action andThen(final Action[] actions) {
-		return new Action() {
-			private int current = 0;
-			private Callback cb1;
-			public void start(Object in, final Callback cb) {
-				if (actions.length == 0) { cb.invoke(null); return; }
-				cb1 = new Callback() {
-					public void progress(Object value) {
-						cb.progress(value);
-					}
-
-					public void failure(Throwable t) {
-						cb.failure(t);
-					}
-
-					public void invoke(Object result) {
-						current++;
-						if (current < actions.length)
-							actions[current].start(result, cb1);
-						else 
-							cb.invoke(result);
-					}};
-				actions[0].start(in, cb1);
-			}
-		};
-	}
-
 	public static abstract class Step implements Action {
 		public abstract Object invoke(Object in);
 
@@ -76,8 +47,7 @@ public class Actions {
 		}
 	}
 
-	// TODO: Should it be ifThenElse?
-	public static Action ifThen(final Action first, final Action second) {
+	public static Action ifThenElse(final Action first, final Action second, final Action third) {
 		return new Action() {
 			public void start(final Object in, final Callback cb) {
 				first.start(in, new Callback() {
@@ -91,43 +61,15 @@ public class Actions {
 
 					public void invoke(Object result) {
 						if (result == Boolean.TRUE) second.start(in, cb);
-						else cb.invoke(in);
+						else third.start(in, cb);
 					}
 				});
 			}
 		};
 	}
 
-	
-	
-	// TODO: Eliminate?
-	public static Action orElse(final Action first, final Action second) {
-		return new Action() {
-			public void start(final Object in, final Callback cb) {
-				first.start(in, new Callback() {
-					public void progress(Object value) {
-						cb.progress(value);
-					}
-
-					public void failure(Throwable t) {
-						second.start(t, cb);
-					}
-
-					public void invoke(Object result) {
-						cb.invoke(result);
-					}
-				});
-			}
-		};
-	}
-
-	// TODO: Eliminate?
-	public static Action withResult(final Object result) {
-		return new Action() {
-			public void start(Object in, Callback cb) {
-				cb.invoke(result);
-			}
-		};
+	public static Action ifThen(final Action first, final Action second) {
+		return ifThenElse(first, second, nothing());
 	}
 
 	public static Action nothing() {

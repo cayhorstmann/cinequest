@@ -56,7 +56,7 @@ public class HomeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_layout);
         
-        // Remove this to turn on test mode
+        // TODO: What about this??? Remove this to turn on test mode
         // DateUtils.setMode(DateUtils.FESTIVAL_TEST_MODE);
         
         Platform.setInstance(new AndroidPlatform(getApplicationContext()));
@@ -74,23 +74,10 @@ public class HomeActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view, 
 									int position, long id) {
 				MobileItem item = (MobileItem) list.getItemAtPosition(position);
-				String linkType = item.getLinkType();
-				String type = "";
-				int link_id = item.getLinkId();
-
-				// TODO: Here we assume that mobile item == program item
-				// https://www.pollett.org/cinequest/mantis/view.php?id=57
-				// TODO: The type key seems hokey
-				if(linkType.equalsIgnoreCase("item"))
-					type = FilmDetail.ItemType.PROGRAM_ITEM.toString();
-								
 				Intent intent = new Intent();
 				intent.setClass(HomeActivity.this, FilmDetail.class);
-				Bundle bundle = new Bundle();
-				bundle.putInt("id", link_id);
-				bundle.putString("type", type);
-				intent.putExtras(bundle);
-				HomeActivity.this.startActivity(intent);
+				intent.putExtra("target", item);
+				startActivity(intent);
 			}
         });
         
@@ -139,7 +126,7 @@ public class HomeActivity extends Activity {
     }
     
     protected void onStop(){
-        // TODO: Persist user schedule
+        user.persistSchedule();
         imageManager.close();
         Platform.getInstance().close();
         super.onStop();
@@ -188,7 +175,7 @@ public class HomeActivity extends Activity {
      		}
      	}
      	
- 		HomeActivity.this.list.setAdapter(separatedListAdapter);    	
+ 		list.setAdapter(separatedListAdapter);    	
  	}
      
     /**

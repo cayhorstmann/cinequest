@@ -62,7 +62,7 @@ public class QueryManager
                 "?type=dvd&id=", // 12
                 "?type=films&genre=", // 13
                 "?type=xml&name=", // 14
-                "?type=xml&name=items&id=", // 15
+                "?type=xml&name=items&id=", // 15, TODO: obsolete--use type 0
                 "?type=schedules", //16 schedules by date
                 "?type=programs" //17 program items by title
         };
@@ -341,6 +341,7 @@ public class QueryManager
      * Gets a "mobile" item (i.e. a kind of event that is not in the database but described by an external XML file)
      * @param id the item ID
      * @param callback returns the result
+     * TODO: Obsolete
      */
     public void getMobileItem(final int id, final Callback callback)
     {

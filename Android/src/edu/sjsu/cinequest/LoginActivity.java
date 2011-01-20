@@ -46,12 +46,6 @@ public class LoginActivity extends Activity {
 			public void onClick(View v) {
 				email = emailBox.getText().toString();
 				password = passwordBox.getText().toString();
-				
-				//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-				//TODO delete it. If email field is empty, use Prabh's credentials
-				if(email.length()==0) {email = "prabhjeetsg@gmail.com"; password="mm";}
-				
-				//Start the sync operation
 				performSync();
 			}        	
         });        

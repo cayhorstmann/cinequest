@@ -391,6 +391,7 @@ public class ControlList extends CinequestScreen
                         else
                         {
                             Callback callback = new ControlListCallback();
+                            // TODO: Obsolete--always call getProgramItem
                             if (linkType.equals("mobile_item_id") || linkType.equals("item"))
                                 Main.getQueryManager().getMobileItem(
                                         in.getLinkId(), callback);

@@ -57,13 +57,13 @@ public class CinequestActivity extends Activity
  			}
  		}
  			
+		DateUtils du = new DateUtils();
  		Set<String> days = filmsMap.keySet();
  		Iterator<String> iter = days.iterator();
  		while (iter.hasNext()){ 
  			String day = (String) iter.next();
  			ArrayList<Schedule> tempList = filmsMap.get(day);
  			
- 			DateUtils du = new DateUtils();
  			String header = du.format(day, DateUtils.DATE_DEFAULT);
  			
  			//create a key to display as section index while fast-scrolling

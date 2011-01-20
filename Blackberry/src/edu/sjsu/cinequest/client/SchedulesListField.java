@@ -57,6 +57,7 @@ public class SchedulesListField extends ObjectListField
         {
             Schedule s = (Schedule) get(this, index);
             Callback callback = new ControlListCallback();
+            // TODO: Obsolete--always call getProgramItem
             if (s.isMobileItem())
                 Main.getQueryManager().getMobileItem(s.getItemId(), callback);
             else

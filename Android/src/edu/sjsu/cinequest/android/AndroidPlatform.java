@@ -183,7 +183,6 @@ public class AndroidPlatform extends Platform {
 
 	@Override
 	public void progress(final Callback callback, final Object arg) {
-		// TODO Auto-generated method stub
 		if (callback == null)
 			return;
 		handler.post(new Runnable() {

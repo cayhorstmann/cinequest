@@ -159,7 +159,6 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
 
 	@Override
 	public int getSectionForPosition(int position) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
