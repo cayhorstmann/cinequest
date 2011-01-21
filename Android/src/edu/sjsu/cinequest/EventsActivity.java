@@ -9,7 +9,6 @@ public class EventsActivity extends CinequestTabActivity {
 
 	@Override
 	protected void init() {
-		setBottomBarEnabled(false);
 		// TODO: Why?
 		enableListContextMenu();
 	}

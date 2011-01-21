@@ -9,7 +9,6 @@ public class ForumsActivity extends CinequestTabActivity {
 
 	@Override
 	protected void init() {
-		setBottomBarEnabled(false);
 		// TODO: Why?
 		enableListContextMenu();
 	}

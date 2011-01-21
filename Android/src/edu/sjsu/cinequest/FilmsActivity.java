@@ -1,6 +1,5 @@
 package edu.sjsu.cinequest;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -9,7 +8,6 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
@@ -25,15 +23,11 @@ public class FilmsActivity extends CinequestTabActivity {
 	private static SortType mListSortType = SortType.BYDATE;
 	private static Vector<Filmlet> mFilms_byTitle;
 	private static Vector<Schedule> mSchedule_byDate;
-	private static boolean REFINE_MODE_ON = false;
 	static final String LOGCAT_TAG = "FilmsActivity";
 	
 	//unique id's for menu options
-	private static final int ADD_REFINE_GROUP_ID = 1;
-	private static final int ADD_MENUOPTION_ID = Menu.FIRST;
-	private static final int REFINE_MENUOPTION_ID = Menu.FIRST + 1;
-	private static final int SORT_MENUOPTION_ID = Menu.FIRST + 2;
-	private static final int ADD_CONTEXTMENU_ID = Menu.FIRST + 3;
+	private static final int SORT_MENUOPTION_ID = Menu.FIRST;
+	private static final int ADD_CONTEXTMENU_ID = Menu.FIRST + 1;
 	
 	/**
      * Gets called when user returns to this tab. Also gets called once after the 
@@ -57,34 +51,6 @@ public class FilmsActivity extends CinequestTabActivity {
 	@Override
 	protected void init() {
 		enableListContextMenu();
-		setBottomBarEnabled(true);
-		addBottomBarButton(ButtonType.LELT, "Add", new OnClickListener(){
-
-			@Override
-			public void onClick(View arg0) {
-				addAllSelected();
-			}
-        });
-		
-		addBottomBarButton(ButtonType.MIDDLE, "Refine", new OnClickListener(){
-
-			@Override
-			public void onClick(View arg0) {
-				toggleRefineMode();
-			}
-        });
-		
-		addBottomBarButton(ButtonType.RIGHT, "Cancel", new OnClickListener(){
-
-			@Override
-			public void onClick(View arg0) {
-				if(REFINE_MODE_ON)
-					toggleRefineMode();
-				else
-					mCheckBoxMap.uncheckAll();
-			}
-        });
-		
 	}
 	
 
@@ -130,72 +96,12 @@ public class FilmsActivity extends CinequestTabActivity {
 	   	}
 	}
 
-	@Override
-	public void hideBottomBar(){
-		super.hideBottomBar();
-		//if the refine mode is on, after hiding the bar, turn it off
-		if(REFINE_MODE_ON)
-			toggleRefineMode();
-	}
-	
-    /**
-     * Toggle the refine-mode on or off
-     */
-    private void toggleRefineMode(){
-    	if(mListSortType == SortType.BYTITLE)
-    		return;
-    	
-    	if(REFINE_MODE_ON == false && mCheckBoxMap.size() == 0){
-    		DialogPrompt.showDialog(this, "First select some movies you want to add to your schedule!");
-    		return;
-    	}
-    	
-    	if(!REFINE_MODE_ON){
-	    	REFINE_MODE_ON = true;
-	    	getBottomBarButton(ButtonType.MIDDLE).setText("Full");
-	    	getBottomBarButton(ButtonType.MIDDLE).setVisibility(View.INVISIBLE);
-	    	refreshListContents(mCheckBoxMap.allTags());
-    	} else{
-    		REFINE_MODE_ON = false;
-    		getBottomBarButton(ButtonType.MIDDLE).setText("Refine");
-    		getBottomBarButton(ButtonType.MIDDLE).setVisibility(View.VISIBLE);
-    		refreshListContents(mSchedule_byDate);
-    	}
-    }
-    
-    /**
-     * Add all selected movies to the user schedule
-     */
-    private void addAllSelected(){
-    	if(mListSortType == SortType.BYTITLE)
-    		return;
-    	
-    	ArrayList<Schedule> allcheckedfilms = mCheckBoxMap.allTags();
-    	for(Schedule s : allcheckedfilms){
-    		HomeActivity.getUser().getSchedule().add(s);
-    	}
-    	
-    	DialogPrompt.showToast(this, "Total "+allcheckedfilms.size() 
-    									+" films were added to your schedule.");
-    	mCheckBoxMap.clear();
-    	refreshListContents(mSchedule_byDate);
-    	
-    	if(REFINE_MODE_ON)
-    		toggleRefineMode();
-    }
-    
     /**
      * Toggle the Sort mode and redisplay the list with new mode
      */
     private void toggleSortAndRedisplayList(){
     	if(mListSortType == SortType.BYDATE){
     		mListSortType = SortType.BYTITLE;
-    		
-    		if(mCheckBoxMap.size() > 0)
-    			mCheckBoxMap.clear();
-        	
-        	if(REFINE_MODE_ON)
-        		toggleRefineMode();
     		
     		if(mFilms_byTitle == null)
     			fetchServerData();
@@ -217,10 +123,6 @@ public class FilmsActivity extends CinequestTabActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {        
         
-    	//Insert "add" and "refine" options with unique groupid, so that 
-    	//these can be later made invisible in Sort-by-title mode.
-        menu.add(ADD_REFINE_GROUP_ID, ADD_MENUOPTION_ID, 0,"Add").setIcon(R.drawable.add);
-        menu.add(ADD_REFINE_GROUP_ID, REFINE_MENUOPTION_ID, 0,"Refine Mode").setIcon(R.drawable.refine);
         menu.add(0, SORT_MENUOPTION_ID, 0,"Sort by Title").setIcon(R.drawable.sort);
         
         
@@ -236,12 +138,6 @@ public class FilmsActivity extends CinequestTabActivity {
         // Handle item selection
         switch (item.getItemId()) {
         	
-	        case ADD_MENUOPTION_ID:
-	        	addAllSelected();
-	            return true;
-	        case REFINE_MENUOPTION_ID:
-	        	toggleRefineMode();
-	            return true;    
 	        case SORT_MENUOPTION_ID:
 	        	toggleSortAndRedisplayList();
 	            return true;
@@ -252,36 +148,6 @@ public class FilmsActivity extends CinequestTabActivity {
         
     }
     
-    /** This method is called before showing the menu to user after user clicks menu button*/
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-    	
-    	if(REFINE_MODE_ON)
-    		menu.findItem(REFINE_MENUOPTION_ID).setTitle("Full Mode");
-    	else
-    		menu.findItem(REFINE_MENUOPTION_ID).setTitle("Refine Mode");
-    	
-    	//if it is sort-by-title mode, then hide the "add" and "refine" options
-    	if(mListSortType == SortType.BYDATE){
-    		menu.findItem(SORT_MENUOPTION_ID).setTitle("Sort by Title");    		
-    		menu.setGroupVisible(ADD_REFINE_GROUP_ID, true);
-    	} else if(mListSortType == SortType.BYTITLE){
-    		menu.findItem(SORT_MENUOPTION_ID).setTitle("Sort by Date");
-    		//make groupId=1 invisible, which includes Add and Refine options
-    		menu.setGroupVisible(ADD_REFINE_GROUP_ID, false);
-    	}
-    	
-    	//if there are no items selected, then disable the add and refine options
-    	if(mListSortType == SortType.BYDATE && mCheckBoxMap.size()==0){
-    		menu.setGroupEnabled(ADD_REFINE_GROUP_ID, false);
-    	} else if(mListSortType == SortType.BYDATE && mCheckBoxMap.size()>0){
-    		menu.setGroupEnabled(ADD_REFINE_GROUP_ID, true);
-    	}
-    	
-    	return super.onPrepareOptionsMenu(menu);
-    }
-    
-
     /**
      * Called when creating the context menu (for our list items)
      */
@@ -292,6 +158,8 @@ public class FilmsActivity extends CinequestTabActivity {
       if(mListSortType == SortType.BYDATE)
     	  menu.add(0, ADD_CONTEXTMENU_ID, 0, "Add to Schedule");      
     }
+    
+    // TODO: Do we really want add in context menu???
     
     /**
      * Called when an item in context menu is selected

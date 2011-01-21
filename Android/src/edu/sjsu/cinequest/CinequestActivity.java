@@ -10,9 +10,9 @@ import java.util.TreeMap;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListAdapter;
 import android.widget.TextView;
@@ -144,15 +144,6 @@ public class CinequestActivity extends Activity
 
 		@Override
 		protected void formatTitle(TextView title, T result) {
-			Schedule s = null;
-			if(result instanceof Schedule)
-				s = (Schedule) result;
-			
-			if(s != null && HomeActivity.getUser().getSchedule().contains(s)){
-				title.setTextColor(Color.GREEN);
-			} else {
-				title.setTextColor(Color.WHITE);
-			}
 		}
 
 		@Override
@@ -172,9 +163,10 @@ public class CinequestActivity extends Activity
 				checkbox.setVisibility(View.GONE);
 				return;
 			}
-			checkbox.setVisibility(View.VISIBLE);					
+			checkbox.setVisibility(View.VISIBLE);	
 			
 			Schedule s = (Schedule) result;
+			checkbox.setTag(s);
 			
 			//set the listener and tag
 			OnCheckedChangeListener listener = getCheckBoxOnCheckedChangeListener();
@@ -186,11 +178,25 @@ public class CinequestActivity extends Activity
 		}    	
     }
 
-    // TODO: Fix this hack.
+    // TODO: Is this the right level?
 	protected void setCheckBoxState(CheckBox checkbox, Schedule s){
+		checkbox.setChecked(HomeActivity.getUser().getSchedule().contains(s));		
 	}    
+	
 	public OnCheckedChangeListener getCheckBoxOnCheckedChangeListener(){
-		return null;
+		return new CompoundButton.OnCheckedChangeListener(){
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				Schedule s = (Schedule) buttonView.getTag();
+				if(isChecked){
+					HomeActivity.getUser().getSchedule().add(s);
+				}else{
+					HomeActivity.getUser().getSchedule().remove(s);
+				}					
+			}				
+		};		
 	}
 
 }

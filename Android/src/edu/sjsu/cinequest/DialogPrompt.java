@@ -42,6 +42,7 @@ public class DialogPrompt {
 	 * @param context the context which is requesting the prompt
 	 * @param msg the message to display
 	 */
+	// TODO: Either use consistently or eliminate
 	public static void showToast(Context context, String msg){
 		Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
 	}

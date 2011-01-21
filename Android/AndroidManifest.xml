@@ -12,16 +12,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-		<activity android:name=".MainTab" />		
-		<activity android:name=".DVDActivity" />
-		<activity android:name=".EventsActivity" />
-		<activity android:name=".FilmsActivity" />
-		<activity android:name=".FilmDetail" />
-		<activity android:name=".ForumsActivity" />
-		<activity android:name=".ScheduleActivity" />
-		<activity android:name=".LoginActivity" />		
+		<activity android:name=".MainTab" 
+		 	android:configChanges="orientation"/>		
+		<activity android:name=".DVDActivity" 
+		 	android:configChanges="orientation" />
+		<activity android:name=".EventsActivity" 
+		 	android:configChanges="orientation" />
+		<activity android:name=".FilmsActivity" 
+		 	android:configChanges="orientation" />
+		<activity android:name=".FilmDetail" 
+		 	android:configChanges="orientation" />
+		<activity android:name=".ForumsActivity" 
+		 	android:configChanges="orientation" />
+		<activity android:name=".ScheduleActivity"
+		 	android:configChanges="orientation" />
+		<activity android:name=".LoginActivity"
+		 	android:configChanges="orientation" />		
 		<activity android:name=".RegistrationActivity"
-                  android:configChanges="orientation">
+            android:configChanges="orientation">
         </activity>
     </application>
 
