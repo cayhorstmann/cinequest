@@ -93,6 +93,7 @@ public class User {
 	 * with some dialog. Input and output are a User.Credentials object.
 	 * @param syncAction an action for getting the user's sync preference
 	 * (merge, discard phone, discard server)
+	 * @param uiCallback the callback when the schedule query occurs
 	 * @param queryManager
 	 */
 	public void syncSchedule(final Action credentialsAction,

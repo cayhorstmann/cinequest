@@ -12,7 +12,6 @@ import edu.sjsu.cinequest.comm.cinequestitem.User;
 import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -44,12 +43,12 @@ public class ScheduleActivity extends CinequestActionBarActivity {
     private final int mMovedScheduleColor = Color.parseColor("#E41B17");//Red2
     private int mNormalScheduleTextColor = Color.parseColor("#FFFFFF");
     
+    private Callback loginCallback = null;
+    
     //unique id's for menu options
 	private static final int LOGOUT_MENUOPTION_ID = Menu.FIRST;
 	private static final int SYNC_MENUOPTION_ID = Menu.FIRST + 1;
 	private static final int DELETE_CONTEXTMENU_ID = Menu.FIRST + 3;
-	
-	private static ProgressDialog m_ProgressDialog;
 
     
     /**
@@ -197,9 +196,11 @@ public class ScheduleActivity extends CinequestActionBarActivity {
 			
 			if (schd != null && schd.isSpecialItem())
                	title.setTypeface(null, Typeface.ITALIC);
+			/*
             if(schd != null && user.getSchedule().isScheduled(schd))
                	title.setTypeface(null, Typeface.BOLD);
-			
+
+            
 			//if this schedule item conflicts with another, 
             //use ConflictScheduleColor for title
 			if (user.getSchedule().conflictsWith(schd) 
@@ -208,6 +209,7 @@ public class ScheduleActivity extends CinequestActionBarActivity {
             } else {
             	title.setTextColor( mNormalScheduleTextColor );
             }
+            */
 		}
 
 		@Override
@@ -218,6 +220,7 @@ public class ScheduleActivity extends CinequestActionBarActivity {
 
 		@Override
 		protected void formatRowBackground(View row, T result) {
+			/*
 			Schedule schd = (Schedule)result;
 			//if this schedule has moved, highlight it in MovedScheduleColor
             if(HomeActivity.getUser().getSchedule().getType( schd ) == UserSchedule.MOVED){
@@ -225,7 +228,7 @@ public class ScheduleActivity extends CinequestActionBarActivity {
             }else{
             	row.setBackgroundColor(android.R.color.transparent);
             }
-			
+			*/
 		}
     	 
      }
@@ -252,26 +255,15 @@ public class ScheduleActivity extends CinequestActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        
+
+        // TODO: Remove
         if (resultCode == Activity.RESULT_CANCELED) {
-            Log.i(LOGCAT_TAG, "LoginActivity was cancelled or encountered an error.");            
+        	loginCallback.failure(new RuntimeException("Login canceled"));
         }
         else if (resultCode == Activity.RESULT_OK){
-        	refreshListContents(null);
-        	
-            switch (requestCode) {
-              //only this case is used in latest iternation of code, as others are now redundant
-              case SUB_ACTIVITY_SYNC_SCHEDULE:
-	          	  Log.d(LOGCAT_TAG,"User Logged In. Schedule Synced with server.");
-	          	  Toast.makeText(this, getString(R.string.myschedule_loggedin_synced_msg), 
-	          			  Toast.LENGTH_LONG).show();
-          	  	  break;                          
-            }
-        }
-        else if (resultCode == LoginActivity.SYNC_ERROR_ENCOUNTERED){
-        	performSync();
-        }
-    	
+        	loginCallback.invoke(new User.Credentials(data.getStringExtra("email"),
+					data.getStringExtra("password")));
+        }    	
     }
     
     /** When user clicks SYNC, do this*/
@@ -280,84 +272,52 @@ public class ScheduleActivity extends CinequestActionBarActivity {
 
     	final User user = HomeActivity.getUser();
     	
-    	// TODO Fix it
-    	m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
-												"Please wait...", "Syncing data ...", true);
     	user.syncSchedule(/*credentialAction*/ new Action(){
 
 					@Override
 					public void start(Object in, Callback cb) {
-							if(m_ProgressDialog != null){
-								m_ProgressDialog.dismiss();
-								m_ProgressDialog = null;
-							}
-							LoginPrompt.showPrompt(ScheduleActivity.this);
+						// LoginPrompt.showPrompt(ScheduleActivity.this);
+						loginCallback = cb;
+						launchLoginScreen(ScheduleActivity.this);
+						// TODO: onActivityResult should return result
 					}
     		
     		}, /*syncAction*/new Action(){
 
 				@Override
 				public void start(Object in, final Callback cb) {
-					if(m_ProgressDialog != null){
-						m_ProgressDialog.dismiss();
-						m_ProgressDialog = null;
-					}
 					DialogPrompt.showOptionDialog(ScheduleActivity.this, 
 						getResources().getString(R.string.schedule_conflict_dialogmsg), 
 						"Keep Server", new DialogInterface.OnClickListener(){
 							public void onClick(DialogInterface dialog,	int which) {
-								m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
-										"Please wait...", "Syncing data ...", true);
 								cb.invoke(new Integer(User.SYNC_REVERT));									
 							}
 						}
 						,"Keep Device", new DialogInterface.OnClickListener(){
 							public void onClick(DialogInterface dialog,	int which) {									
 								cb.invoke(new Integer(User.SYNC_SAVE));
-								m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
-										"Please wait...", "Syncing data ...", true);
 							}
 						},
 						"Merge Both", new DialogInterface.OnClickListener() {
 							
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
-								m_ProgressDialog = ProgressDialog.show(ScheduleActivity.this, 
-										"Please wait...", "Syncing data ...", true);
-								cb.invoke(new Integer(User.SYNC_MERGE));
-								
+								cb.invoke(new Integer(User.SYNC_MERGE));								
 							}
 						}
 					);					
 				}
     			
-    		}, new Callback(){
+    		}, new ProgressMonitorCallback(this, "Synchronizing..."){
 
 				@Override
 				public void invoke(Object result) {
-					Log.d(LOGCAT_TAG,"Result returned...");
+					super.invoke(result);
 					refreshListContents(null);
-					m_ProgressDialog.dismiss();
 					//Display a confirmation notification
 					Toast.makeText(ScheduleActivity.this, 
 							getString(R.string.myschedule_synced_msg), 
 							Toast.LENGTH_LONG).show();					
-				}
-
-				@Override
-				public void progress(Object value) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void failure(Throwable t) {
-					m_ProgressDialog.dismiss();
-					Log.e(LOGCAT_TAG,t.getMessage());
-					DialogPrompt.showDialog(ScheduleActivity.this, 
-							user.isLoggedIn() 
-							? "Unable to Sync schedule.\nTry Syncing again."
-							: "Login failed.");
 				}
     			
     		}, HomeActivity.getQueryManager());
@@ -481,12 +441,6 @@ public class ScheduleActivity extends CinequestActionBarActivity {
     	 * @param context the context which is requesting the prompt    	 * 
     	 */
     	public static void showPrompt(final Context context){
-    		
-    		if(m_ProgressDialog != null){
-    	    			m_ProgressDialog.dismiss();
-    	    			m_ProgressDialog = null;
-    		}
-    				
     		Log.d(LOGCAT_TAG,"Prompting user for login credentials");
 		    AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		    builder.setMessage("This feature needs you to be logged in." +

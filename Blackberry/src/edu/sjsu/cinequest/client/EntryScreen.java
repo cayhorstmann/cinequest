@@ -44,6 +44,9 @@ public class EntryScreen extends CinequestScreen
     {
 
        Main.getQueryManager().getFestivalDates(new Callback() {
+          public void starting() 
+          {
+          }          
           public void failure(Throwable t)
           {
         	  Platform.getInstance().log(t.getMessage());
@@ -121,6 +124,9 @@ public class EntryScreen extends CinequestScreen
         Bitmap bitmap = (Bitmap) Main.getImageManager()
                 .getImage(url, new Callback()
                 {
+                    public void starting() 
+                    {
+                    }
                     public void invoke(Object result)
                     {
                         image.setBitmap((Bitmap) result);

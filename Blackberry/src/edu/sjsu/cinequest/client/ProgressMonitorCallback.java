@@ -31,11 +31,11 @@ import edu.sjsu.cinequest.comm.Callback;
  * A callback for progress reporting.
  * @author Cay Horstmann
  */
-public abstract class ProgressMonitorCallback implements Callback
+public class ProgressMonitorCallback implements Callback
 {
     private MainScreen progressScreen = new CinequestScreen();
     private LabelField label = new LabelField();
-    private int count = 0;
+    private int count = -1; 
     private ProgressIndicator progressIndicator;
     
     class ProgressIndicator extends LabelField
@@ -78,30 +78,38 @@ public abstract class ProgressMonitorCallback implements Callback
         
     }
 
-    public ProgressMonitorCallback()
+    public void starting()
     {
+    	if (count >= 0) return;
         progressScreen.add(label);
         
         progressIndicator = new ProgressIndicator();
         progressScreen.add(progressIndicator);
         
         Ui.getUiEngine().pushScreen(progressScreen);
+    	
+    	label.setText("Connecting");
+    	count = 0;
     }
 
     public void invoke(Object result)
     {
-        try
-        {
-            Ui.getUiEngine().popScreen(progressScreen);
-        }
-        catch (IllegalArgumentException ex)
-        {
-            // This happens if the user already popped off the progress screen
-        }
+    	if (count >= 0)
+    	{
+	        try
+	        {
+	            Ui.getUiEngine().popScreen(progressScreen);
+	        }
+	        catch (IllegalArgumentException ex)
+	        {
+	            // This happens if the user already popped off the progress screen
+	        }
+    	}
     }
 
     public void failure(final Throwable t)
     {
+    	if (count < 0) starting();
     	// TODO: For some classes of Throwable, just pop the dialog?
     	// E.g. user canceling login dialog
     	count = 0;
@@ -111,20 +119,15 @@ public abstract class ProgressMonitorCallback implements Callback
         LabelField report = new LabelField(t.getMessage());
         progressScreen.add(report);
     }
-
+    
     public void progress(final Object value)
     {
-        if(value.equals("Connecting..."))
-        {
-        	label.setText(value);
-        	count = 0;
-        }
-        else
-        {
-			if (count == 0) label.setText("Fetching data...");
-            count++;
-		    progressIndicator.invalidate();
-		}
-        // try { Thread.sleep(100); } catch (InterruptedException ex) {} // for testing
+    	if (count >= 0)
+    	{
+	  		label.setText("Fetching data...");
+	        count++;
+			progressIndicator.invalidate();
+	        // try { Thread.sleep(100); } catch (InterruptedException ex) {} // for testing
+    	}
     }
 }

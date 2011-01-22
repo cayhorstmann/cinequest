@@ -58,11 +58,8 @@ public class UserScheduleScreen extends CinequestScreen {
 			final User user = Main.getUser();
 			user.syncSchedule(LoginDialog1.getLoginAction(),
 					SyncDialog.getSyncAction(),
-					new ProgressMonitorCallback() {
-						public void invoke(Object result) {
-							super.invoke(result);
-						}
-					}, Main.getQueryManager());				
+					new ProgressMonitorCallback(), 
+					Main.getQueryManager());				
 		}};
 	
 	public UserScheduleScreen() {

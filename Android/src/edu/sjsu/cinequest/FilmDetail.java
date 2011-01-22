@@ -229,14 +229,17 @@ public class FilmDetail extends CinequestActivity {
 				Bitmap bmp = (Bitmap) result;
 		  		((ImageView) findViewById(R.id.Image)).setImageBitmap(bmp);											  		
 			}
+			
+			@Override
+			public void starting() {
+			}
+			
 			@Override
 			public void progress(Object value) {
-		
 			}
 
 			@Override
-			public void failure(Throwable t) {
-			
+			public void failure(Throwable t) {			
 			}   
 		}, R.drawable.fetching, true);					
   		((ImageView) findViewById(R.id.Image)).setImageBitmap(bmp);											  		
@@ -255,6 +258,9 @@ public class FilmDetail extends CinequestActivity {
 						ss.setSpan(new ImageSpan(bmp), 0, 1, 0);
 					}
 					((TextView) findViewById(R.id.SmallImages)).setText(ss);
+				}
+				@Override
+				public void starting() {
 				}
 				@Override
 				public void progress(Object result) {

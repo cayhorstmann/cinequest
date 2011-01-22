@@ -31,6 +31,11 @@ package edu.sjsu.cinequest.comm;
  */
 public interface Callback
 {
+	/**
+	 * This method is called when a long-running activity is started, so
+	 * that the user interface can pop up a progress dialog.
+	 */
+	public void starting();
     /**
      * This method returns the query result
      * @param result the query result

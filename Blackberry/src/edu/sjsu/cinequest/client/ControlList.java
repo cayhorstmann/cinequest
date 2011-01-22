@@ -276,6 +276,10 @@ public class ControlList extends CinequestScreen
                         image.setBitmap((Bitmap) result);
                         invalidate();
                     }
+                    
+                    public void starting() 
+                    {
+                    }
 
                     public void progress(Object value)
                     {
@@ -304,6 +308,10 @@ public class ControlList extends CinequestScreen
                         .resolveRelativeImageURL((String) images.elementAt(i)));
             Main.getImageManager().getImages(resolvedImages, new Callback()
             {
+                public void starting() 
+                {
+                }
+
                 public void invoke(Object result)
                 {
                 }

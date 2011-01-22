@@ -120,6 +120,7 @@ public class HomeActivity extends Activity {
 			public void invoke(Object result) {
 				populateNewsEventsList((Vector<Section>) result);
 			}
+			@Override public void starting() {}			
 			@Override public void progress(Object value) {}
 			@Override public void failure(Throwable t) {}        	
         });
@@ -162,6 +163,7 @@ public class HomeActivity extends Activity {
  			        	@Override public void invoke(Object result) {
  					  		title_image.setImageBitmap((Bitmap) result);	        		
  			        	}
+ 			        	@Override public void starting() {}
  			        	@Override public void progress(Object value) {}
  			        	@Override public void failure(Throwable t) {}
  			        }, null, false);		

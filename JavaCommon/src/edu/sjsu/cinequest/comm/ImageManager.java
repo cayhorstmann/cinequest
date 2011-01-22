@@ -88,6 +88,7 @@ public class ImageManager
     public Object getImage(final String imageUrl, final Callback callback,
             Object fallback, final boolean usePersistentCache)
     {
+    	callback.starting();
         Object img = bitmapCache.get(imageUrl); 
         if (img != null) {
         	if (fallback == null) callback.invoke(img);
@@ -135,6 +136,7 @@ public class ImageManager
      */
     public void getImages(final Vector imageUrls, final Callback callback)
     {
+    	callback.starting();
         Thread t = new Thread(new Runnable()
         {
             public void run()

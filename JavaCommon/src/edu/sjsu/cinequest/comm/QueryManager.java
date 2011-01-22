@@ -91,6 +91,7 @@ public class QueryManager
     {
         if (callback == null || task == null)
             throw new NullPointerException();
+        callback.starting();
         Thread t = new Thread(new Runnable()
         {
             public void run()

@@ -1,5 +1,8 @@
 package edu.sjsu.cinequest.comm;
 
+// TODO: How do we know that start isn't called more than once?
+// TODO: How do we know that invoke/failure isn't called more than once?
+
 /**
  * Utility methods for combining actions
  */
@@ -20,7 +23,12 @@ public class Actions {
 		return new Action() {
 			public void start(Object in, final Callback cb) {
 				first.start(in, new Callback() {
-					public void progress(Object value) {
+                    public void starting() 
+                    {
+        				cb.starting();
+                    }
+
+                    public void progress(Object value) {
 						cb.progress(value);
 					}
 
@@ -51,6 +59,11 @@ public class Actions {
 		return new Action() {
 			public void start(final Object in, final Callback cb) {
 				first.start(in, new Callback() {
+                    public void starting() 
+                    {
+                    	cb.starting();
+                    }
+					
 					public void progress(Object value) {
 						cb.progress(value);
 					}
