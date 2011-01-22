@@ -24,6 +24,7 @@ public abstract class CinequestTabActivity extends CinequestActivity{
 	private ListView listview;
 	private TextView mEmptyListViewMessage;
 	final static String LOGCAT_TAG = "CinequestTabActivity";
+	protected boolean viewSet = false;
 	
 	
 	//menu options unique id
@@ -37,7 +38,10 @@ public abstract class CinequestTabActivity extends CinequestActivity{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
+        if (!viewSet) {
         setContentView(R.layout.cinequest_tab_activity_layout);
+        	viewSet = true;
+        }
         listview = (ListView) findViewById(R.id.cinequest_tabactivity_listview);
         mEmptyListViewMessage  = (TextView)this.findViewById(R.id.msg_for_empty_schedyle);
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {

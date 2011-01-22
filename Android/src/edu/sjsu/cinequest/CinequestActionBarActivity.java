@@ -25,9 +25,11 @@ public abstract class CinequestActionBarActivity extends CinequestTabActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		setBottomBarEnabled(true);
 		// TODO: Hack--rethink construction order
-        setContentView(R.layout.cinequest_tab_activity_layout);
+        if (!viewSet) {
+            setContentView(R.layout.cinequest_tab_activity_layout);
+            	viewSet = true;
+            }
 
         mCheckBoxMap = new CheckBoxMap(this, mCheckboxClickListener);
         
@@ -127,6 +129,7 @@ public abstract class CinequestActionBarActivity extends CinequestTabActivity {
     	if(mBottomActionBar.getVisibility() == View.VISIBLE){
     		return;
     	}
+    	
     	Animation anim = AnimationUtils.loadAnimation(this, R.anim.bottom_up_slidein);
     	mBottomActionBar.setAnimation(anim);
     	
