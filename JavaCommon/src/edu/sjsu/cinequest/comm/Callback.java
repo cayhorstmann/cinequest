@@ -42,11 +42,6 @@ public interface Callback
      */
 	public void invoke(Object result);
 	/**
-	 * This method returns a progress indicator
-	 * @param value a value that denotes what the query is currently working on
-	 */
-	public void progress(Object value);
-	/**
 	 * This method returns an exception that terminated the query
 	 * @param t the throwable that terminated the query
 	 */

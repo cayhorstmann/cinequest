@@ -34,7 +34,7 @@ public class DatesParser extends BasicHandler
 	
    public static String[] parse(String url, Callback callback) throws SAXException, IOException
 	{
-    	 DatesParser handler = new DatesParser(callback);
+    	 DatesParser handler = new DatesParser();
 	    Platform.getInstance().parse(url, handler, callback);
 	    Vector fdates = new Vector();
 	    
@@ -64,11 +64,6 @@ public class DatesParser extends BasicHandler
          }
       }
       return "" + y + (m < 10 ? "-0" : "-") + m +  (d < 10 ? "-0" : "-") + d;  
-   }
-
-   public DatesParser(Callback callback)
-   {
-        super(callback);
    }
 
 	/**

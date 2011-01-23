@@ -23,9 +23,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.CharUtils;
-import edu.sjsu.cinequest.comm.Platform;
 
 /**
  * A SAX parser handler with convenience methods for our application
@@ -33,17 +31,12 @@ import edu.sjsu.cinequest.comm.Platform;
  */
 public class BasicHandler extends DefaultHandler
 {
-    private Callback callback;    
-    private long millis;
     private boolean fixed;
     private StringBuffer lastStr = new StringBuffer();
     private String tagName;
-    private static final int INTERVAL = 100; // reporting interval in millis
     
-    public BasicHandler(Callback callback)
+    public BasicHandler()
     {
-        this.callback = callback;
-        millis = System.currentTimeMillis();
     }
 
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
@@ -52,12 +45,6 @@ public class BasicHandler extends DefaultHandler
            tagName = qName;
     	else
     		tagName = localName;
-        long currentMillis = System.currentTimeMillis();
-        if (currentMillis > millis + INTERVAL)
-        {            
-            Platform.getInstance().progress(callback, tagName);
-            millis = currentMillis;
-        }
         lastStr.setLength(0);
         fixed = false;
     }

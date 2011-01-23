@@ -55,15 +55,10 @@ public class UserScheduleParser extends BasicHandler
    public static UserSchedule parseSchedule(String url, Hashtable postData, Callback callback)
          throws SAXException, IOException
    {
-      UserScheduleParser handler = new UserScheduleParser(callback);
+      UserScheduleParser handler = new UserScheduleParser();
       handler.result = null; // To indicate auth error
       Platform.getInstance().parse(url, postData, handler, callback);
       return handler.result;
-   }
-
-   public UserScheduleParser(Callback callback)
-   {
-      super(callback);
    }
 
    public void startElement(String uri, String localName, String qName,

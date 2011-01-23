@@ -52,14 +52,9 @@ public class SectionsParser extends BasicHandler
     public static Vector parse(String url, Callback callback)
             throws SAXException, IOException
     {
-        SectionsParser handler = new SectionsParser(callback);
+        SectionsParser handler = new SectionsParser();
         Platform.getInstance().parse(url, handler, callback);
         return handler.result;
-    }
-
-    public SectionsParser(Callback callback)
-    {
-        super(callback);
     }
 
     public void startElement(String uri, String localName, String qName,

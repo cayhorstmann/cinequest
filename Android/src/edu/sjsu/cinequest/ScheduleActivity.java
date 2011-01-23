@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import edu.sjsu.cinequest.comm.Action;
 import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.CallbackException;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
 import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
@@ -258,7 +259,7 @@ public class ScheduleActivity extends CinequestActionBarActivity {
 
         // TODO: Remove
         if (resultCode == Activity.RESULT_CANCELED) {
-        	loginCallback.failure(new RuntimeException("Login canceled"));
+        	loginCallback.failure(new CallbackException("Login canceled", CallbackException.IGNORE));
         }
         else if (resultCode == Activity.RESULT_OK){
         	loginCallback.invoke(new User.Credentials(data.getStringExtra("email"),
@@ -277,9 +278,15 @@ public class ScheduleActivity extends CinequestActionBarActivity {
 					@Override
 					public void start(Object in, Callback cb) {
 						// LoginPrompt.showPrompt(ScheduleActivity.this);
+						// TODO: Use in
 						loginCallback = cb;
-						launchLoginScreen(ScheduleActivity.this);
-						// TODO: onActivityResult should return result
+					   	Intent i = new Intent(ScheduleActivity.this, LoginActivity.class);
+					   	User.Credentials creds = (User.Credentials) in; 
+					   	i.putExtra("email", creds.email);
+					   	i.putExtra("password", creds.password);
+				        //Instead of startActivity(i), use startActivityForResult, 
+					   	//so we could return back to this activity after login finishes
+						startActivityForResult(i, SUB_ACTIVITY_SYNC_SCHEDULE);
 					}
     		
     		}, /*syncAction*/new Action(){
@@ -308,33 +315,25 @@ public class ScheduleActivity extends CinequestActionBarActivity {
 					);					
 				}
     			
-    		}, new ProgressMonitorCallback(this, "Synchronizing..."){
-
+    		}, new ProgressMonitorCallback(this, "Synchronizing..."),
+    		new Callback() {
+				@Override
+				public void starting() {
+				}
 				@Override
 				public void invoke(Object result) {
-					super.invoke(result);
 					refreshListContents(null);
 					//Display a confirmation notification
 					Toast.makeText(ScheduleActivity.this, 
 							getString(R.string.myschedule_synced_msg), 
 							Toast.LENGTH_LONG).show();					
 				}
-    			
+				@Override
+				public void failure(Throwable t) {
+				}
     		}, HomeActivity.getQueryManager());
     }
 
-	
-    /**
-     * Take user to loginActivity to login
-     */
-    private static void launchLoginScreen(Context context){    	
-    	Log.d(LOGCAT_TAG,"Launching LoginActivity");
-    	
-	   	Intent i = new Intent(context, LoginActivity.class);		    		                
-        //Instead of startActivity(i), use startActivityForResult, 
-	   	//so we could return back to this activity after login finishes
-		((Activity) context).startActivityForResult(i, SUB_ACTIVITY_SYNC_SCHEDULE);
-    }
 	
 	/**
      * log the user out from cinequest scheduler account
@@ -429,36 +428,5 @@ public class ScheduleActivity extends CinequestActionBarActivity {
       default:
         return super.onContextItemSelected(item);
       }
-    }
-    
-    /**
-     * This class handles the dialog prompts for getting user input and showing info
-     */
-    public static class LoginPrompt {
-    	
-    	/**
-    	 * Shows a login prompt to user while syncing data if the user is not logged in.
-    	 * @param context the context which is requesting the prompt    	 * 
-    	 */
-    	public static void showPrompt(final Context context){
-    		Log.d(LOGCAT_TAG,"Prompting user for login credentials");
-		    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-		    builder.setMessage("This feature needs you to be logged in." +
-		    					"\nWould you like to sign in now?")
-		    	   .setCancelable(true)
-		           .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-		               public void onClick(DialogInterface dialog, int id) {
-		                    launchLoginScreen(context);
-		            		
-		               }
-		           })
-		           .setNegativeButton("No", new DialogInterface.OnClickListener() {
-		        	   public void onClick(DialogInterface dialog, int id) {		    		        	   
-		    		              dialog.cancel();
-		    		   }
-		           });
-		    AlertDialog alert = builder.create();
-		    alert.show();
-    	}
     }
 }

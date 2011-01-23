@@ -95,7 +95,6 @@ public class RIMPlatform extends Platform {
 
 	public void parse(final String url, DefaultHandler handler,
 			Callback callback) throws SAXException, IOException {
-		progress(callback, "Connecting...");
 		SAXParser parser = null;
 		InputSource inputSource = null;
 		WebConnection connection = null;
@@ -136,7 +135,6 @@ public class RIMPlatform extends Platform {
 	public void parse(final String url, Hashtable postData,
 			DefaultHandler handler, Callback callback) throws SAXException,
 			IOException {
-		progress(callback, "Connecting...");
 		SAXParser parser = null;
 		try {
 			parser = factory.newSAXParser();
@@ -188,16 +186,6 @@ public class RIMPlatform extends Platform {
 		UiApplication.getUiApplication().invokeLater(new Runnable() {
 			public void run() {
 				callback.failure(arg);
-			}
-		});
-	}
-
-	public void progress(final Callback callback, final Object arg) {
-		if (callback == null)
-			return;
-		UiApplication.getUiApplication().invokeLater(new Runnable() {
-			public void run() {
-				callback.progress(arg);
 			}
 		});
 	}

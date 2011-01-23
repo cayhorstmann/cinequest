@@ -29,9 +29,11 @@ import net.rim.device.api.ui.MenuItem;
 import net.rim.device.api.ui.Ui;
 import net.rim.device.api.ui.component.BitmapField;
 import net.rim.device.api.ui.container.MainScreen;
+import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.MobileItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.Section;
+import edu.sjsu.cinequest.comm.cinequestitem.User;
 
 /**
  * This abstract class describes a CinequestScreen. It's up to the implementor
@@ -93,7 +95,23 @@ public class CinequestScreen extends MainScreen
         {
             public void run()
             {
-                UserScheduleScreen.sync.run();
+            	new Runnable() {
+            		public void run() {
+            			final User user = Main.getUser();
+            			Callback resultCallback = new Callback() {
+            				public void starting() {}
+            				public void invoke(Object result) {
+            					if (CinequestScreen.this instanceof UserScheduleScreen)
+            						((UserScheduleScreen) CinequestScreen.this).setScheduleItems();
+            				}
+            				public void failure(Throwable t) {}
+            			};
+            			user.syncSchedule(LoginDialog1.getLoginAction(),
+            					SyncDialog.getSyncAction(),
+            					new ProgressMonitorCallback(), 
+            					resultCallback,
+            					Main.getQueryManager());				
+            		}};            	
             }
         });        
         if (!DateUtils.isOffSeason()) addMenuItem(new MenuItem("Festival", 23, 80)

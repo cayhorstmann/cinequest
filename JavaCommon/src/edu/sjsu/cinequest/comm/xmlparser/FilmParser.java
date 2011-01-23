@@ -48,16 +48,11 @@ public class FilmParser extends BasicHandler
 	 */
     public static Film parseFilm(String url, Callback callback) throws SAXException, IOException
 	{
-        FilmParser handler = new FilmParser(callback);
+        FilmParser handler = new FilmParser();
         handler.setFilm(new Film());
 	    Platform.getInstance().parse(url, handler, callback);
 	    return handler.getFilm();
 	}
-
-	public FilmParser(Callback callback)
-    {
-        super(callback);
-    }
 
 	public Film getFilm()
     {

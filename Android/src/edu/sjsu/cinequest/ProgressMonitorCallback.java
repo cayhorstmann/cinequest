@@ -32,10 +32,6 @@ public class ProgressMonitorCallback implements Callback {
 	}
 
 	@Override
-	public void progress(Object value) {
-	}
-
-	@Override
 	public void failure(Throwable t) {
 		if (dialog != null) dialog.dismiss();
 		dialog = null;

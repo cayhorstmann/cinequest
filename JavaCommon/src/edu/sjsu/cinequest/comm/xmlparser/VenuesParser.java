@@ -49,16 +49,11 @@ public class VenuesParser extends BasicHandler
 	 */
 	public static Vector parse(String url, Callback callback) throws SAXException, IOException
 	{	
-	    VenuesParser handler = new VenuesParser(callback);
+	    VenuesParser handler = new VenuesParser();
 		Platform.getInstance().parse(url, handler, callback);
 		return handler.result;
 	}
 	
-	public VenuesParser(Callback callback)
-    {
-        super(callback);
-    }
-
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
 	{
         super.startElement(uri, localName, qName, attributes);

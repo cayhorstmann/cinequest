@@ -51,9 +51,6 @@ public class EntryScreen extends CinequestScreen
           {
         	  Platform.getInstance().log(t.getMessage());
           }
-          public void progress(Object value)
-          {
-          }
           public void invoke(Object result)
           {
              DateUtils.setFestivalDates((String[]) result);            
@@ -131,10 +128,6 @@ public class EntryScreen extends CinequestScreen
                     {
                         image.setBitmap((Bitmap) result);
                         invalidate();
-                    }
-
-                    public void progress(Object value)
-                    {
                     }
 
                     public void failure(Throwable t)

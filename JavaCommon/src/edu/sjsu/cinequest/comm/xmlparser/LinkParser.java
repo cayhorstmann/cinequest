@@ -33,15 +33,10 @@ public class LinkParser extends BasicHandler
 
     public static String parse(String url, Callback callback) throws SAXException, IOException
 	{
-        LinkParser handler = new LinkParser(callback);
+        LinkParser handler = new LinkParser();
 	    Platform.getInstance().parse(url, handler, callback);
 	    return handler.link;
 	}
-
-	public LinkParser(Callback callback)
-    {
-        super(callback);
-    }
 
 	public void startElement(String uri, String localName, String qName,
             Attributes attributes) throws SAXException

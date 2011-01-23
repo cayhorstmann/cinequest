@@ -26,14 +26,13 @@ public class EventsParser extends SchedulesParser
     public static Vector parseEvents(String url, String type, Callback callback) throws SAXException, IOException
     {
         Vector result = new Vector();        
-        EventsParser handler = new EventsParser(callback, type, result);
+        EventsParser handler = new EventsParser(type, result);
         Platform.getInstance().parse(url, handler, callback);
         return result;
     }
 
-    public EventsParser(Callback callback, String type, Vector result)
+    public EventsParser(String type, Vector result)
     {
-        super(callback);
         this.type = type;
         this.result = result;
         setResult(result);

@@ -46,16 +46,11 @@ public class GenresParser extends BasicHandler
      */
     public static Vector parse(String url, Callback callback) throws SAXException, IOException
     {
-        GenresParser handler = new GenresParser(callback);
+        GenresParser handler = new GenresParser();
         Platform.getInstance().parse(url, handler, callback);
         return handler.result;
     }    
 	
-	public GenresParser(Callback callback)
-    {
-        super(callback);
-    }
-
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
 	{
         super.startElement(uri, localName, qName, attributes);

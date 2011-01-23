@@ -51,11 +51,6 @@ public class TestCallback implements Callback
         // Do nothing
     }
     
-    public void progress(Object value)
-    {
-        // Do nothing        
-    }
-    
     public synchronized void failure(Throwable t)
     {
         t.printStackTrace();

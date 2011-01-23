@@ -49,17 +49,12 @@ public class ProgramItemsParser extends BasicHandler
      */
     public static Vector parse(String url, Callback callback) throws SAXException, IOException
     {
-        ProgramItemsParser handler = new ProgramItemsParser(callback);
+        ProgramItemsParser handler = new ProgramItemsParser();
         handler.result = new Vector();
         Platform.getInstance().parse(url, handler, callback);
         return handler.result;
     }
-    
-    public ProgramItemsParser(Callback callback)
-    {
-        super(callback);
-    }
-    
+        
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
 	{
 	    super.startElement(uri, localName, qName, attributes);

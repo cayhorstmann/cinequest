@@ -19,6 +19,10 @@
 
 package edu.sjsu.cinequest.client;
 
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.ui.Ui;
@@ -37,7 +41,9 @@ public class ProgressMonitorCallback implements Callback
     private MainScreen progressScreen = new CinequestScreen();
     private LabelField label = new LabelField();
     private int count = -1; 
-    private ProgressIndicator progressIndicator;
+    private ProgressIndicator progressIndicator = new ProgressIndicator();
+    private Timer timer = new Timer();
+    private static final int DELAY = 200; // Delay between progress increments (milliseconds)
     
     class ProgressIndicator extends LabelField
     {
@@ -81,15 +87,21 @@ public class ProgressMonitorCallback implements Callback
 
     public void starting()
     {
-    	if (count >= 0) return;
+    	if (count >= 0) return;    	
+    	
+    	timer.schedule(new TimerTask() {
+    		public void run() {
+    	        count++;
+    			progressIndicator.invalidate();    			
+    		}
+    	}, new Date(), DELAY);
+    	
         progressScreen.add(label);
         
-        progressIndicator = new ProgressIndicator();
         progressScreen.add(progressIndicator);
         
+  		label.setText("Fetching data...");
         Ui.getUiEngine().pushScreen(progressScreen);
-    	
-    	label.setText("Connecting");
     	count = 0;
     }
 
@@ -105,6 +117,7 @@ public class ProgressMonitorCallback implements Callback
 	        {
 	            // This happens if the user already popped off the progress screen
 	        }
+	        timer.cancel();
     	}    	
     }
     
@@ -131,16 +144,5 @@ public class ProgressMonitorCallback implements Callback
         progressScreen.add(new SeparatorField());
         LabelField report = new LabelField(t.getMessage());
         progressScreen.add(report);
-    }
-    
-    public void progress(final Object value)
-    {
-    	if (count >= 0)
-    	{
-	  		label.setText("Fetching data...");
-	        count++;
-			progressIndicator.invalidate();
-	        // try { Thread.sleep(100); } catch (InterruptedException ex) {} // for testing
-    	}
     }
 }

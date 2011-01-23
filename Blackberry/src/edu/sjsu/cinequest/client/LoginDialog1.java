@@ -87,25 +87,6 @@ public class LoginDialog1 extends CinequestScreen {
 		return false;
 	}	
 	
-	public static User.CredentialsPrompt getLoginPrompt() {
-		return new User.CredentialsPrompt() {
-			private LoginDialog1 dialog;
-			public void promptForCredentials(String command, String defaultUsername,
-					String defaultPassword, final User.CredentialsAction action) {
-				dialog = new LoginDialog1(command,
-						defaultUsername, defaultPassword, 
-						new Runnable() {
-							public void run() {
-								action.actWithCredentials(dialog.getEmail(),
-										dialog.getPassword());
-							}},
-						new Runnable() { public void run() {							
-							}});				
-				Ui.getUiEngine().pushScreen(dialog);
-			}
-		};
-	}
-
 	public static Action getLoginAction() {
 		return new Action() {
 			private LoginDialog1 dialog;

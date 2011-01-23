@@ -45,16 +45,11 @@ public class SeasonParser extends BasicHandler
 	 */
     public static String parse(String url, Callback callback) throws SAXException, IOException
 	{
-        SeasonParser handler = new SeasonParser(callback);
+        SeasonParser handler = new SeasonParser();
 	    Platform.getInstance().parse(url, handler, callback);
 	    return handler.mode;
 	}
 
-	public SeasonParser(Callback callback)
-    {
-        super(callback);
-    }
-	
 	public void endElement(String uri, String localName, String qName) throws SAXException
 	{
 		super.endElement(uri, localName, qName);

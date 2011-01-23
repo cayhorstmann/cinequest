@@ -131,13 +131,6 @@ public class JavaSEPlatform extends Platform
         callback.failure(arg);
     }
 
-    public void progress(Callback callback, Object arg)
-    {
-        if (callback == null)
-            return;
-        callback.progress(arg);
-    }
-
     public Object loadPersistentObject(long key)
     {
         File file = new File("" + key);

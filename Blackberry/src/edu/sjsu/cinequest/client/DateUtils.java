@@ -42,9 +42,6 @@ public class DateUtils
     // TODO: Set to NORMAL_MODE before release
     private static int mode = FESTIVAL_TEST_MODE;
     
-	private static String dvdLink = "http://www.cinequestonline.org/theater/detail_view.php";
-	private static String ticketLink = "http://mobile.cinequest.org/event_view.php";
-
     private static String[] festivalDates =
     { 
     "2010-02-23", "2010-02-24", "2010-02-25", "2010-02-26", 
@@ -73,22 +70,6 @@ public class DateUtils
     		festivalDates = fdates;
     }
  
-    public static void setDvdLink(String link)
-    {
-    	DateUtils.dvdLink = link;
-    }
-    public static void setTicketLink(String link)
-    {
-    	DateUtils.ticketLink = link;
-    }
-    public static String getDvdLink()
-    {
-    	return dvdLink;
-    }
-    public static String getTicketLink()
-    {
-    	return ticketLink;
-    }
     
     /**
      * Checks whether we are in off-season

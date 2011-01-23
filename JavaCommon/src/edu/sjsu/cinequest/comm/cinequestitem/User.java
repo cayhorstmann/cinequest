@@ -51,11 +51,6 @@ public class User {
 		return schedule;
 	}
 	
-	public void setSchedule(UserSchedule newUserSchedule) {
-	    this.schedule = newUserSchedule;
-	    persistSchedule();
-	}
-	
 	public String getEmail() {
 		return email;
 	}
@@ -94,12 +89,18 @@ public class User {
 	 * with some dialog. Input and output are a User.Credentials object.
 	 * @param syncAction an action for getting the user's sync preference
 	 * (merge, discard phone, discard server)
-	 * @param uiCallback the callback when the schedule query occurs
+	 * @param progressCallback the callback when a schedule query occurs
+	 * @param resultCallback the callback for completion of the sync task
 	 * @param queryManager
 	 */
+	// TODO: It would be better to have TWO callbacks: a 
+	// progress monitor callback for running alongside the time-consuming
+	// tasks and a callback for returning the actual result
 	public void syncSchedule(final Action credentialsAction,
 			final Action syncAction, 
-	    final Callback uiCallback, final QueryManager queryManager) {
+	    final Callback progressCallback, 
+	    final Callback resultCallback,
+	    final QueryManager queryManager) {
 		
 		Action auth = loggedIn && !failedAuthorization 
 			? Actions.nothing() 
@@ -111,14 +112,14 @@ public class User {
 					return in;
 				}});
 			
-		Action load = new Action() {
+		Action load = Actions.withCallback(new Action() {
 			public void start(Object in, Callback cb) {
 				if (loggedIn)
 					queryManager.saveSchedule(cb, email, password,
 						schedule);
 				else
 					queryManager.getSchedule(cb, email, password);
-			}};
+			}}, progressCallback);
 		
 		// This variable is needed to pass the conflicting schedule
 		// from checkConflict to resolveConflict
@@ -130,7 +131,7 @@ public class User {
 				if (in == null) {
 					failedAuthorization = true; 
 						// Next save prompts for username/password
-					cb.failure(new CallbackException("Login failed", CallbackException.IGNORE));
+					cb.failure(new CallbackException("Login failed", CallbackException.ERROR));
 					return;
 				} else {
 					failedAuthorization = false;
@@ -183,7 +184,7 @@ public class User {
 			}
 		};
 		
-		Action saveIfNeeded = new Action() {
+		Action saveIfNeeded = Actions.withCallback(new Action() {
 			public void start(Object in, Callback cb) {
 				if (schedule.isSaved()) {
 					cb.invoke(null);
@@ -194,7 +195,7 @@ public class User {
 						schedule);
 				}
 			}
-		};
+		}, progressCallback);
 		
 		Actions.andThen(auth, 
 				Actions.andThen(load, 
@@ -203,31 +204,7 @@ public class User {
 						saveIfNeeded
 						)
 				)
-			).start(new Credentials(email, password), uiCallback);
-	}
-
-	public static interface CredentialsPrompt {
-		void promptForCredentials(String command, String defaultUsername,
-				String defaultPassword, CredentialsAction action);
-	}
-
-	public static interface CredentialsAction {
-		void actWithCredentials(String username, String password);
-	}
-
-	public static class RemoteScheduleException extends RuntimeException {
-	}
-
-	public static class ConflictingScheduleException extends RuntimeException {
-		private UserSchedule conflictingSchedule;
-		
-		public ConflictingScheduleException(UserSchedule conflictingSchedule) {
-			this.conflictingSchedule = conflictingSchedule;
-		}
-
-		public UserSchedule getConflictingSchedule() {
-			return conflictingSchedule;
-		}
+			).start(new Credentials(email, password), resultCallback);
 	}
 
 	public static class Credentials {

@@ -96,12 +96,6 @@ public abstract class Platform
      * @param arg the argument to be provided
      */
     public abstract void failure(Callback callback, Throwable arg);
-    /**
-     * Calls the Callback's progress method
-     * @param callback the callback whose method is being called
-     * @param arg the argument to be provided
-     */
-    public abstract void progress(Callback callback, Object arg);
     
     /**
      * Persistently stores an object. The object must be persistable (RIM) or serializable (Java SE)

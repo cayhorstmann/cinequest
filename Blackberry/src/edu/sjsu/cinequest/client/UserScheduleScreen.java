@@ -27,6 +27,7 @@ import net.rim.device.api.ui.MenuItem;
 import net.rim.device.api.ui.component.Dialog;
 import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.container.HorizontalFieldManager;
+import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
 import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
@@ -53,15 +54,6 @@ public class UserScheduleScreen extends CinequestScreen {
 	
 	private int currentCommandSet = LOGGED_OUT;
 
-	static Runnable sync = new Runnable() {
-		public void run() {
-			final User user = Main.getUser();
-			user.syncSchedule(LoginDialog1.getLoginAction(),
-					SyncDialog.getSyncAction(),
-					new ProgressMonitorCallback(), 
-					Main.getQueryManager());				
-		}};
-	
 	public UserScheduleScreen() {
 		addMenuItem(new MenuItem("Remove", 1, 100) {
 			public void run() {
@@ -75,6 +67,22 @@ public class UserScheduleScreen extends CinequestScreen {
 		add(new LabelField("Cinequest Interactive Schedule"));
 				
 		fm = new HorizontalFieldManager();
+		
+		Runnable sync = new Runnable() {
+			public void run() {
+				final User user = Main.getUser();
+				Callback resultCallback = new Callback() {
+					public void starting() {}
+					public void invoke(Object result) { setScheduleItems(); }
+					public void failure(Throwable t) {}
+				};
+				user.syncSchedule(LoginDialog1.getLoginAction(),
+						SyncDialog.getSyncAction(),
+						new ProgressMonitorCallback(), 
+						resultCallback,
+						Main.getQueryManager());				
+			}};		
+		
 		fm.add(new ClickableField("Sync", sync));	
 		add(fm);
 		separator = new LabelField(" | ");

@@ -51,18 +51,12 @@ public class ProgramItemParser extends FilmParser
      */
 	public static ProgramItem parseProgramItem(String url, Callback callback) throws SAXException, IOException
 	{
-        ProgramItemParser handler = new ProgramItemParser(callback);
+        ProgramItemParser handler = new ProgramItemParser();
         handler.item = new ProgramItem();
         Platform.getInstance().parse(url, handler, callback);
         return handler.item;
 	}
 	
-	public ProgramItemParser(Callback callback)
-    {
-        super(callback);
-    }
-
-
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
 	{
     	super.startElement(uri, localName, qName, attributes);

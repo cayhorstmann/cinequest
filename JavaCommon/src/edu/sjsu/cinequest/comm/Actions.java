@@ -28,10 +28,6 @@ public class Actions {
         				cb.starting();
                     }
 
-                    public void progress(Object value) {
-						cb.progress(value);
-					}
-
 					public void failure(Throwable t) {
 						cb.failure(t);
 					}
@@ -54,6 +50,33 @@ public class Actions {
 			}
 		}
 	}
+	
+	/**
+	 * Produces an action with a secondary callback (e.g. for progress reporting)
+	 * @param action an action
+	 * @param cb2 a secondary callback
+	 * @return the decorated action
+	 */
+	public static Action withCallback(final Action action, final Callback cb2) {
+		return new Action() {
+			public void start(Object in, final Callback cb) {
+				action.start(in, new Callback() {
+					public void starting() {
+						cb2.starting();
+						cb.starting();
+					}
+					public void invoke(Object result) {
+						cb2.invoke(result);
+						cb.invoke(result);
+					}
+					public void failure(Throwable t) {
+						cb2.failure(t);
+						cb.failure(t);
+					}
+				});				
+			}
+		};
+	}
 
 	public static Action ifThenElse(final Action first, final Action second, final Action third) {
 		return new Action() {
@@ -64,10 +87,6 @@ public class Actions {
                     	cb.starting();
                     }
 					
-					public void progress(Object value) {
-						cb.progress(value);
-					}
-
 					public void failure(Throwable t) {
 						cb.failure(t);
 					}

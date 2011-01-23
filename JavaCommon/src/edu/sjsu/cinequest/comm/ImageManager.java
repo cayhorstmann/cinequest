@@ -110,7 +110,6 @@ public class ImageManager
         {
             public void run()
             {
-                Platform.getInstance().progress(callback, imageUrl);
                 try
                 {
                     Object result = fetchImage(imageUrl, usePersistentCache);
@@ -149,7 +148,6 @@ public class ImageManager
                     {
                         Object result = fetchImage(imageUrl, true);
                         images.addElement(result);
-                        Platform.getInstance().progress(callback, result);
                     }
                     catch (Throwable e)
                     {

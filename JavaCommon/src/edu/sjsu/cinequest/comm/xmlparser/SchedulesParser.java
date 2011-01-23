@@ -50,15 +50,10 @@ public class SchedulesParser extends BasicHandler
      */
     public static Vector parseSchedule(String url, Callback callback) throws SAXException, IOException
     {
-        SchedulesParser handler = new SchedulesParser(callback);
+        SchedulesParser handler = new SchedulesParser();
         handler.result = new Vector();
         Platform.getInstance().parse(url, handler, callback);
         return handler.result;
-    }
-    
-    public SchedulesParser(Callback callback)
-    {
-        super(callback);
     }
     
     public void setResult(Vector result)

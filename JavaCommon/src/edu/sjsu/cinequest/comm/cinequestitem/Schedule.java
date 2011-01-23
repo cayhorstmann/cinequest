@@ -48,13 +48,6 @@ public class Schedule implements Persistable {
 	}
 
 	/**
-	 * @return the dateString
-	 */
-	public String getDateString() {
-		return dateString;
-	}
-
-	/**
 	 * @return the showingTime
 	 */
 	public String getStartTime() {
@@ -150,5 +143,4 @@ public class Schedule implements Persistable {
 	private String venue;
 	private String startTime;
 	private String endTime;
-	private String dateString;
 }

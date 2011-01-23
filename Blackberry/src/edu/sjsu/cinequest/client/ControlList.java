@@ -92,7 +92,7 @@ public class ControlList extends CinequestScreen
         if (current instanceof ProgramItem)
         {
             ProgramItem item = (ProgramItem) current;
-            String link = DateUtils.getTicketLink() + PRG_QUERY_STRING + item.getId();
+            String link = PRG_QUERY_STRING + item.getId();
             addEmailMenuItem(item.getTitle(), link);
             Vector v = item.getFilms();
             if (v.size() == 1) // Program item with single film
@@ -106,7 +106,7 @@ public class ControlList extends CinequestScreen
         	this.film(film);
         	if(film.isDownload() || film.isDVD())
         	{
-        		String link = DateUtils.getDvdLink() + DVD_QUERY_STRING + film.getId();
+        		String link = DVD_QUERY_STRING + film.getId();
         		addEmailMenuItem(film.getTitle(), link);
         	}
         }
@@ -281,10 +281,6 @@ public class ControlList extends CinequestScreen
                     {
                     }
 
-                    public void progress(Object value)
-                    {
-                    }
-
                     public void failure(Throwable t)
                     {
                         image.setBitmap(null);
@@ -314,13 +310,13 @@ public class ControlList extends CinequestScreen
 
                 public void invoke(Object result)
                 {
-                }
-
-                public void progress(Object value)
-                {
-                    BitmapField image = new BitmapField();
-                    image.setBitmap((Bitmap) value);
-                    vfm.add(image);
+                	Vector images = (Vector) result;
+                	for (int i = 0; i < images.size(); i++)
+                	{
+                		BitmapField image = new BitmapField();
+                		image.setBitmap((Bitmap) images.elementAt(i));
+                		vfm.add(image);
+                	}
                     invalidate();
                 }
 
@@ -540,9 +536,11 @@ public class ControlList extends CinequestScreen
     	});
     	addMenuItem(MenuItem.separator(1));
     }
-    
-    private final String PRG_QUERY_STRING = "?eid=";
-    private final String DVD_QUERY_STRING = "?m=";
+        
+    // TODO: Put into more visible place
+    private final String PRG_QUERY_STRING = "http://mobile.cinequest.org/event_view.php?eid=";
+    private final String DVD_QUERY_STRING = "http://www.cinequestonline.org/theater/detail_view.php?m=";
+
     private static final int MAX_REGIONS = 100;
     private int[] off = new int[MAX_REGIONS + 1];
     private byte[] attrs = new byte[MAX_REGIONS];

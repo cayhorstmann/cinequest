@@ -49,14 +49,9 @@ public class FilmsParser extends BasicHandler
     public static Vector parse(String url, Callback callback)
             throws SAXException, IOException
     {
-        FilmsParser handler = new FilmsParser(callback);
+        FilmsParser handler = new FilmsParser();
         Platform.getInstance().parse(url, handler, callback);
         return handler.result;
-    }
-
-    public FilmsParser(Callback callback)
-    {
-        super(callback);
     }
 
     public void startElement(String uri, String localName, String qName,

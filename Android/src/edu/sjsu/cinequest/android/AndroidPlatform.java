@@ -182,17 +182,6 @@ public class AndroidPlatform extends Platform {
 	}
 
 	@Override
-	public void progress(final Callback callback, final Object arg) {
-		if (callback == null)
-			return;
-		handler.post(new Runnable() {
-			public void run() {
-				callback.progress(arg);
-			}
-		});
-	}
-
-	@Override
 	// TODO: Add hint whether this is a cache or a truly persistent object
 	public void storePersistentObject(long key, Object object) {
 		try {
