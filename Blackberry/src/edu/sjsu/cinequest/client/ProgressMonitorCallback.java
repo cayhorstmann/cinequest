@@ -26,6 +26,7 @@ import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.component.SeparatorField;
 import net.rim.device.api.ui.container.MainScreen;
 import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.CallbackException;
 
 /**
  * A callback for progress reporting.
@@ -92,7 +93,7 @@ public class ProgressMonitorCallback implements Callback
     	count = 0;
     }
 
-    public void invoke(Object result)
+    private void popScreen()
     {
     	if (count >= 0)
     	{
@@ -104,14 +105,26 @@ public class ProgressMonitorCallback implements Callback
 	        {
 	            // This happens if the user already popped off the progress screen
 	        }
-    	}
+    	}    	
+    }
+    
+    public void invoke(Object result)
+    {
+    	popScreen();
     }
 
     public void failure(final Throwable t)
     {
-    	if (count < 0) starting();
-    	// TODO: For some classes of Throwable, just pop the dialog?
-    	// E.g. user canceling login dialog
+		if (t instanceof CallbackException) {
+			int level = ((CallbackException) t).getLevel();
+			if (level == CallbackException.IGNORE)
+			{
+				popScreen();
+				return;
+			}
+		}
+		
+    	if (count < 0) starting();    	    	
     	count = 0;
     	progressIndicator.invalidate();
         label.setText("Application Error");

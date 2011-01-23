@@ -47,6 +47,10 @@ public class TestCallback implements Callback
         notify();
     }
     
+    public void starting() {
+        // Do nothing
+    }
+    
     public void progress(Object value)
     {
         // Do nothing        

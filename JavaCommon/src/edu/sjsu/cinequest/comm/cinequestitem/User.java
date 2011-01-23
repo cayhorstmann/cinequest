@@ -4,6 +4,7 @@ import net.rim.device.api.util.Persistable;
 import edu.sjsu.cinequest.comm.Action;
 import edu.sjsu.cinequest.comm.Actions;
 import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.CallbackException;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.QueryManager;
 
@@ -129,7 +130,7 @@ public class User {
 				if (in == null) {
 					failedAuthorization = true; 
 						// Next save prompts for username/password
-					cb.failure(new RuntimeException("Login failed"));
+					cb.failure(new CallbackException("Login failed", CallbackException.IGNORE));
 					return;
 				} else {
 					failedAuthorization = false;

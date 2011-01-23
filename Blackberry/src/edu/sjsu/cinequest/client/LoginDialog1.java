@@ -20,6 +20,7 @@ package edu.sjsu.cinequest.client;
 
 import edu.sjsu.cinequest.comm.Action;
 import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.CallbackException;
 import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
 import net.rim.blackberry.api.browser.Browser;
@@ -118,7 +119,7 @@ public class LoginDialog1 extends CinequestScreen {
 							}
 						}, new Runnable() {
 							public void run() {
-								cb.failure(new RuntimeException("Login canceled"));
+								cb.failure(new CallbackException("Login canceled", CallbackException.IGNORE));
 							}
 						});
 				Ui.getUiEngine().pushScreen(dialog);
