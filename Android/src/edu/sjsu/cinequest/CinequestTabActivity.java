@@ -18,13 +18,13 @@ import android.widget.TextView;
 /**  
  * The super class for all the tabs
  * @author Prabhjeet Ghuman
- *
+ * A tabbed activity shows a list of items (films or schedules) and
+ * shows a detail view when an item is selected. 
  */
 public abstract class CinequestTabActivity extends CinequestActivity{
 	private ListView listview;
 	private TextView mEmptyListViewMessage;
 	final static String LOGCAT_TAG = "CinequestTabActivity";
-	protected boolean viewSet = false;
 	
 	
 	//menu options unique id
@@ -32,16 +32,10 @@ public abstract class CinequestTabActivity extends CinequestActivity{
 	private static final int HOME_MENUOPTION_ID = Menu.FIRST + 11;
 	private static final int ABOUT_MENUOPTION_ID = Menu.FIRST + 12;
     
-    /**
-     * Called when the activity is created
-     * */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
-        if (!viewSet) {
         setContentView(R.layout.cinequest_tab_activity_layout);
-        	viewSet = true;
-        }
         listview = (ListView) findViewById(R.id.cinequest_tabactivity_listview);
         mEmptyListViewMessage  = (TextView)this.findViewById(R.id.msg_for_empty_schedyle);
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -53,19 +47,10 @@ public abstract class CinequestTabActivity extends CinequestActivity{
 				launchFilmDetail(result);				
 			}
 		});
+		registerForContextMenu(listview);
 
-        init();
-        fetchServerData();
-        
+        fetchServerData();        
 	}
-	
-	/**
-	 * Do any kind of initialzation in this method.
-	 * 
-	 * For example, set the bottom bar enabled here, and add the bottom bar buttons 
-	 * and their clicklisteners in this method.
-	 */
-	protected abstract void init();
 	
 	/**
 	 * Run the query on server through QueryManager and then call
@@ -119,15 +104,7 @@ public abstract class CinequestTabActivity extends CinequestActivity{
      protected final void setEmptyListviewMessage(int resourceId){
     	 this.setEmptyListviewMessage( this.getString(resourceId) );
      }
-	
-	/**
-	 * Enables the context menu for the list-view
-	 * Call it from the init() method of sub-class
-	 */
-	protected void enableListContextMenu(){
-		registerForContextMenu( getListview() );
-	}
-	
+		
 	
 
 	/**

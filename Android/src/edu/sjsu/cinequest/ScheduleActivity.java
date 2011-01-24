@@ -1,34 +1,28 @@
 package edu.sjsu.cinequest;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeMap;
+
+import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.CheckBox;
+import android.widget.TextView;
+import android.widget.Toast;
 import edu.sjsu.cinequest.comm.Action;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.CallbackException;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
-import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.util.Log;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.View.OnClickListener;
-import android.widget.CheckBox;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 /**
  * The Schedule Tab of the app 
@@ -36,13 +30,8 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
  * @author Prabhjeet Ghuman
  *
  */
-public class ScheduleActivity extends CinequestActionBarActivity {
-	private final static String LOGCAT_TAG = "ScheduleActivity";
-	
+public class ScheduleActivity extends CinequestBottomBarActivity {	
     private static final int SUB_ACTIVITY_SYNC_SCHEDULE = 0;
-    private final int mConflictScheduleColor = Color.parseColor("#E42217");//Firebrick2
-    private final int mMovedScheduleColor = Color.parseColor("#E41B17");//Red2
-    private int mNormalScheduleTextColor = Color.parseColor("#FFFFFF");
     
     private Callback loginCallback = null;
     
@@ -69,8 +58,8 @@ public class ScheduleActivity extends CinequestActionBarActivity {
      * here
      */
 	@Override
-	protected void init() {
-		enableListContextMenu();
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		setEmptyListviewMessage(R.string.myschedule_msg_for_emptyschd);
 		
 		setBottomBarEnabled(true);
@@ -109,130 +98,82 @@ public class ScheduleActivity extends CinequestActionBarActivity {
 	}
 
 	@Override
-	protected void refreshListContents(List<?> listItems) {
-		SeparatedListAdapter mSeparatedListAdapter;
-		
+	protected void refreshListContents(List<?> listItems) {		
+		// TODO: Lots of code duplication with other schedules list
 	  	Schedule[] scheduleItems = HomeActivity.getUser().getSchedule().getScheduleItems();
 	  	
-      	Log.v(LOGCAT_TAG,"Showing the Schedule List on Screen. Total Schedule items = "
-      			+ scheduleItems.length);
-      	
-      	if (scheduleItems.length == 0){
-      		//Clear the items of previous list being displayed (if any)
+      	if (scheduleItems.length == 0) {
       		setListViewAdapter(new SeparatedListAdapter(this));	
       		return;
       	}
       	
-      	// create our list and custom adapter  
-      	mSeparatedListAdapter = new SeparatedListIndexedAdapter(this);
-      	
-      	TreeMap<String, ArrayList<Schedule>> movieScheduleMap 
+      	SeparatedListIndexedAdapter adapter = new SeparatedListIndexedAdapter(this);
+		DateUtils du = new DateUtils();
+
+      	TreeMap<String, ArrayList<Schedule>> scheduleMap 
       						= new TreeMap<String, ArrayList<Schedule>>();
   		
-  		for(int k = 0; k < scheduleItems.length; k++){
-  			Schedule tempSchedule = scheduleItems[k];
-  			String day = scheduleItems[k].getStartTime().substring(0, 10);
+  		for(Schedule s : scheduleItems) {
+  			String day = s.getStartTime().substring(0, 10);
   			
-  			if(movieScheduleMap.containsKey(day))
-  				movieScheduleMap.get(day).add(tempSchedule);
-  			else{
-  				movieScheduleMap.put(day, new ArrayList<Schedule>());
-  				movieScheduleMap.get(day).add(tempSchedule);
-  			}
+  			if(!scheduleMap.containsKey(day))
+  				scheduleMap.put(day, new ArrayList<Schedule>());
+			scheduleMap.get(day).add(s);
   		}
   			
-  		Set<String> days = movieScheduleMap.keySet();
-  		Iterator<String> iter = days.iterator();
-  		
-  		while (iter.hasNext()){ 
-  			//String day = days.nextElement().toString();
-  			String day = (String) iter.next();
-  			ArrayList<Schedule> tempList = movieScheduleMap.get(day);
+  		for (String day : scheduleMap.keySet()) { 
+  			ArrayList<Schedule> schedulesForDay = scheduleMap.get(day);
   			
-  			DateUtils du = new DateUtils();
-  			//DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);
   			String header = du.format(day, DateUtils.DATE_DEFAULT);
+ 			String key = du.format(day, DateUtils.DAY_ONLY);
   			
-  		    //create a key to display as section index while fast-scrolling
- 			String key = header.substring(0, 6);
-			key.trim();
-			if(key.endsWith(","))
-				key = key.substring(0, key.length()-1);			
-			key = key.substring(4);  			
-  			
-			((SeparatedListIndexedAdapter)mSeparatedListAdapter).addSection(header,	
-  					new SchedulesSectionAdapter<Schedule>(this,
-  										R.layout.listitem_titletimevenue,tempList),	
-  					key);
+			adapter.addSection(header, key,	
+				new ScheduleListAdapter(this, schedulesForDay) {
+		  			@Override
+		  			protected void configureCheckBox(View v, CheckBox checkbox, Schedule s) {
+		  				// Configure checkbox to manage bottom bar
+		  				ScheduleActivity.this.configureCheckBox(v, checkbox, s);
+		  			}
+		
+		  			@Override
+		  			protected void formatContents(View v, TextView title, TextView time, TextView venue, DateUtils du, Schedule schd) {			
+		  				/*
+		  				TODO: Which of these do we want?
+		  				
+						final int mConflictScheduleColor = Color.parseColor("#E42217");//Firebrick2
+					    final int mMovedScheduleColor = Color.parseColor("#E41B17");//Red2
+					    int mNormalScheduleTextColor = Color.parseColor("#FFFFFF");
+							  				
+		  				User user = HomeActivity.getUser();
+		  	            if(schd != null && user.getSchedule().isScheduled(schd))
+		  	               	title.setTypeface(null, Typeface.BOLD);
+		
+		  	            
+		  				//if this schedule item conflicts with another, 
+		  	            //use ConflictScheduleColor for title
+		  				if (user.getSchedule().conflictsWith(schd) 
+		  						&& user.getSchedule().isScheduled(schd)){
+		  	            	title.setTextColor( mConflictScheduleColor );
+		  	            } else {
+		  	            	title.setTextColor( mNormalScheduleTextColor );
+		  	            }
+		
+		  				//if this schedule has moved, highlight it in MovedScheduleColor
+		  	            if(HomeActivity.getUser().getSchedule().getType( schd ) == UserSchedule.MOVED){
+		  	            	row.setBackgroundColor(mMovedScheduleColor);
+		  	            }else{
+		  	            	row.setBackgroundColor(android.R.color.transparent);
+		  	            }
+		  				*/
+		  			}
+					
+				});
   		}
   		
-  		setListViewAdapter(mSeparatedListAdapter);		
+  		
+  		setListViewAdapter(adapter);		
 	}
      
-     /**
-      * Custom List-Adapter to show the schedule items in list 
-      */
-     private class SchedulesSectionAdapter<T> extends SectionAdapter<T>{
-
-		public SchedulesSectionAdapter(Context context, int resourceId,
-										List<T> list) {
-			super(context, resourceId, list);
-		}
-
-		@Override
-		protected void formatCheckBox(CheckBox checkbox, T result) {
-			Schedule s = (Schedule)result;
-			
-			checkbox.setVisibility(View.VISIBLE);
-			checkbox.setOnCheckedChangeListener(getCheckBoxOnCheckedChangeListener());
-			
-			//manually check or uncheck the checkbox
-			setCheckBoxState(checkbox, s);
-		}
-
-		@Override
-		protected void formatTitle(TextView title, T result) {
-			Schedule schd = (Schedule)result;
-			User user = HomeActivity.getUser();
-			
-			if (schd != null && schd.isSpecialItem())
-               	title.setTypeface(null, Typeface.ITALIC);
-			/*
-            if(schd != null && user.getSchedule().isScheduled(schd))
-               	title.setTypeface(null, Typeface.BOLD);
-
-            
-			//if this schedule item conflicts with another, 
-            //use ConflictScheduleColor for title
-			if (user.getSchedule().conflictsWith(schd) 
-					&& user.getSchedule().isScheduled(schd)){
-            	title.setTextColor( mConflictScheduleColor );
-            } else {
-            	title.setTextColor( mNormalScheduleTextColor );
-            }
-            */
-		}
-
-		@Override
-		protected void formatTimeVenue(TextView time, TextView venue) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		protected void formatRowBackground(View row, T result) {
-			/*
-			Schedule schd = (Schedule)result;
-			//if this schedule has moved, highlight it in MovedScheduleColor
-            if(HomeActivity.getUser().getSchedule().getType( schd ) == UserSchedule.MOVED){
-            	row.setBackgroundColor(mMovedScheduleColor);
-            }else{
-            	row.setBackgroundColor(android.R.color.transparent);
-            }
-			*/
-		}
-    	 
-     }
 	
 	/** 
 	 * When user clicks Delete, delete all selected movies
@@ -339,7 +280,6 @@ public class ScheduleActivity extends CinequestActionBarActivity {
      * log the user out from cinequest scheduler account
      */
     private void logOut(){
-    	Log.d(LOGCAT_TAG, "Logging out...........");
     	HomeActivity.getUser().logout();
     	refreshListContents(null);
     	Toast.makeText(this, "You have been logged out!", Toast.LENGTH_LONG).show();

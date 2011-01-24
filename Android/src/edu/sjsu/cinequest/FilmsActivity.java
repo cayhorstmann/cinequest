@@ -23,7 +23,6 @@ public class FilmsActivity extends CinequestTabActivity {
 	private static SortType mListSortType = SortType.BYDATE;
 	private static Vector<Filmlet> mFilms_byTitle;
 	private static Vector<Schedule> mSchedule_byDate;
-	static final String LOGCAT_TAG = "FilmsActivity";
 	
 	//unique id's for menu options
 	private static final int SORT_MENUOPTION_ID = Menu.FIRST;
@@ -48,12 +47,6 @@ public class FilmsActivity extends CinequestTabActivity {
     		
     }
 	
-	@Override
-	protected void init() {
-		enableListContextMenu();
-	}
-	
-
 	@Override
 	protected void fetchServerData() {
 		if (!HomeActivity.isNetworkAvailable(this)) return;
@@ -92,7 +85,7 @@ public class FilmsActivity extends CinequestTabActivity {
 	   		setListViewAdapter(createFilmletList((List<Filmlet>) listItems));
 	   	}
 	   	else {
-	   		setListViewAdapter(createScheduleList(listItems));
+	   		setListViewAdapter(createScheduleList((List<Schedule>) listItems));
 	   	}
 	}
 

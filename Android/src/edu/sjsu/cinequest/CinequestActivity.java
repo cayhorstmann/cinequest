@@ -2,28 +2,32 @@ package edu.sjsu.cinequest;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeMap;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
+/*
+ * This superclass has convenience methods for making lists of schedules and
+ * filmlets.
+ */
 public class CinequestActivity extends Activity
 {
 	/**
-	 * Launches the FilmDetail activity with correct parameters extracted from the 
-	 * object passed to it.
+	 * Launches the FilmDetail activity for the given object.
 	 * @param result Object; Can be Schedule, Filmlet etc
 	 */
 	protected void launchFilmDetail(Object result) {
@@ -33,170 +37,167 @@ public class CinequestActivity extends Activity
 		startActivity(intent);		
 	}
 	
+	/**
+	 * Creates a list of schedules
+	 * @param listItems the list items
+	 * @param isChecked a function to determine when to check a checkbox, or null for no checkboxes
+	 * @param listener the listener for checkboxes, or null for no checkboxes
+	 * @return the list adapter
+	 */
 	
-	
-	protected ListAdapter createScheduleList(List<?> listItems) {
+	protected ListAdapter createScheduleList(List<Schedule> listItems) {
 		if (listItems.size() == 0) {
      		return new SeparatedListAdapter(this);
      	}
-		SeparatedListAdapter mSeparatedListAdapter  = new SeparatedListIndexedAdapter(this);
+		SeparatedListIndexedAdapter adapter  = new SeparatedListIndexedAdapter(this);
   		 
 	   	 
     	TreeMap<String, ArrayList<Schedule>> filmsMap 
     						= new TreeMap<String, ArrayList<Schedule>>();
  		
- 		for(int k = 0; k < listItems.size(); k++){
- 			Schedule tempSchedule = (Schedule) listItems.get(k);
- 			String day = tempSchedule.getStartTime().substring(0, 10);
+ 		for(Schedule s : listItems) {
+ 			String day = s.getStartTime().substring(0, 10);
  			
- 			if(filmsMap.containsKey(day))
- 				filmsMap.get(day).add(tempSchedule);
- 			else{
+ 			if (!filmsMap.containsKey(day))
  				filmsMap.put(day, new ArrayList<Schedule>());
- 				filmsMap.get(day).add(tempSchedule);
- 			}
+			filmsMap.get(day).add(s);
  		}
  			
 		DateUtils du = new DateUtils();
- 		Set<String> days = filmsMap.keySet();
- 		Iterator<String> iter = days.iterator();
- 		while (iter.hasNext()){ 
- 			String day = (String) iter.next();
- 			ArrayList<Schedule> tempList = filmsMap.get(day);
- 			
- 			String header = du.format(day, DateUtils.DATE_DEFAULT);
- 			
- 			//create a key to display as section index while fast-scrolling
- 			String key = header.substring(0, 6);
-			key.trim();
-			if(key.endsWith(","))
-				key = key.substring(0, key.length()-1);
-			
-			key = key.substring(4);
-			
-			((SeparatedListIndexedAdapter)mSeparatedListAdapter).addSection(
- 					header,	
- 					new FilmSectionAdapter<Schedule>(this,R.layout.listitem_titletimevenue,tempList, true),
- 					key);
+ 		for (String day : filmsMap.keySet()) { 
+ 			ArrayList<Schedule> filmsForDay = filmsMap.get(day); 			
+ 			String header = du.format(day, DateUtils.DATE_DEFAULT); 			
+ 			String key = du.format(day, DateUtils.DAY_ONLY); 			
+			adapter.addSection(header, key, new ScheduleListAdapter(this, filmsForDay));
  		}
- 	    return mSeparatedListAdapter;
+ 	    return adapter;
    	 }
      	
-	protected ListAdapter createFilmletList(List<Filmlet> listItems) {
-		if (listItems.size() == 0){
+	protected ListAdapter createFilmletList(List<? extends Filmlet> listItems) {
+		if (listItems.size() == 0) {
      		return new SeparatedListAdapter(this);
-     	} else if (listItems.size() <= 10) {
-     		return new FilmSectionAdapter<Filmlet>(this,R.layout.listitem_title_only,listItems, false);
-     	}
-     	/*
-     	 * Now, go though the input list, and first sort the list out.
-     	 * Create a tree-map, add each header as the map key, and an array list
-     	 * as map value, and each item under that header goes inside this arraylist. 
-     	 * Later, add this key and value (i.e. arraylist) into the a 
-     	 * separatedlistadapter as section
-     	 *
-     	 **/
-		
-   		SeparatedListAdapter mSeparatedListAdapter = new SeparatedListIndexedAdapter(this);
+     	} 
+
+		SeparatedListIndexedAdapter adapter = new SeparatedListIndexedAdapter(this);
    		TreeMap<String, ArrayList<Filmlet>> filmsTitleMap 
    							= new TreeMap<String, ArrayList<Filmlet>>();
-   		//sort into map
-   		for(int k = 0; k < listItems.size(); k++){
- 			Filmlet tempFilmlet = (Filmlet) listItems.get(k);
- 			String titleInitial = tempFilmlet.getTitle().substring(0,1).toUpperCase();
+   		for (Filmlet f : listItems) {
+ 			String titleInitial = f.getTitle().substring(0,1).toUpperCase();
  			
- 			if(filmsTitleMap.containsKey(titleInitial))
- 				filmsTitleMap.get(titleInitial).add(tempFilmlet);
- 			else{
+ 			if (!filmsTitleMap.containsKey(titleInitial))
  				filmsTitleMap.put(titleInitial, new ArrayList<Filmlet>());
- 				filmsTitleMap.get(titleInitial).add(tempFilmlet);
- 			}
+			filmsTitleMap.get(titleInitial).add(f);
  		}
    		
-   		//interate over map and add sections in separatedlistadapter
-   		Set<String> alphabets = filmsTitleMap.keySet();
- 		Iterator<String> iter = alphabets.iterator();
- 		while (iter.hasNext()){ 
- 			String alphabet = (String) iter.next();
- 			ArrayList<Filmlet> tempList = filmsTitleMap.get(alphabet);
- 			
- 			
- 			((SeparatedListIndexedAdapter)mSeparatedListAdapter).addSection(
- 					alphabet,	
- 					new FilmSectionAdapter<Filmlet>(this,R.layout.listitem_title_only,tempList, false),
- 					alphabet.substring(0, 1));
+ 		for (String title : filmsTitleMap.keySet()) { 
+ 			adapter.addSection(
+				title, title.substring(0, 1),	
+				new FilmletListAdapter(this, filmsTitleMap.get(title)));
  		}
- 		return mSeparatedListAdapter;
+ 		return adapter;
     }
 	
 	/**
-     * Custom List-Adapter to show the schedule items in list 
-     */
-    protected class FilmSectionAdapter<T> extends SectionAdapter<T>{
-    	private boolean useCheckboxes;
-    	//constructor
-		public FilmSectionAdapter(Context context, int resourceId,
-									List<T> list, boolean useCheckboxes)
-		{			
-			super(context, resourceId, list);			
-			this.useCheckboxes = useCheckboxes;
+	 * An adapter for a list of schedule items. These lists occur (1) in the Films tab 
+	 * (when sorted by date), Events and Forums tabs, (2) in each film detail,
+	 * and (3) in the Schedule tab.
+	 */
+	protected static class ScheduleListAdapter extends ArrayAdapter<Schedule> {
+		private static final int RESOURCE_ID = R.layout.listitem_titletimevenue;
+		private DateUtils du = new DateUtils();
+		
+		public ScheduleListAdapter(Context context, List<Schedule> list) 
+		{
+		    super(context, RESOURCE_ID, list);
 		}
-
+		
 		@Override
-		protected void formatTitle(TextView title, T result) {
+	    public View getView(int position, View v, ViewGroup parent) {            
+	        if (v == null) {
+	        	LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	        	v = inflater.inflate(RESOURCE_ID, null);
+	        }
+	        
+        	TextView title = (TextView) v.findViewById(R.id.titletext);
+        	TextView time = (TextView) v.findViewById(R.id.timetext);
+            TextView venue = (TextView) v.findViewById(R.id.venuetext);
+            CheckBox checkbox = (CheckBox) v.findViewById(R.id.myschedule_checkbox);	                
+	        Schedule result = getItem(position);            
+	        title.setText(result.getTitle());	                 
+			if (result.isSpecialItem())
+               	title.setTypeface(null, Typeface.ITALIC);
+        	String startTime = du.format(result.getStartTime(), DateUtils.TIME_SHORT);
+        	String endTime = du.format(result.getEndTime(), DateUtils.TIME_SHORT);
+	        time.setText("Time: " + startTime + " - " + endTime);
+	        venue.setText("Venue: " + result.getVenue());
+	        formatContents(v, title, time, venue, du, result);		        
+    	    checkbox.setTag(result);	        
+    	    configureCheckBox(v, checkbox, result);
+	        return v;	        
 		}
-
-		@Override
-		protected void formatTimeVenue(TextView time, TextView venue) {
-			// TODO Auto-generated method stub
+		
+	    /**
+		 * Override to change the formatting of the contents
+	     */
+	    protected void formatContents(View v, TextView title, TextView time, TextView venue, DateUtils du, Schedule result) {
+	    }
+	    
+	    /**
+		 * This contains the configuration of the checkbox. By default,
+		 * the checkbox adds or removes the schedule item in the user's schedule.
+		 * Override if you want a different behavior.
+	     */
+		protected void configureCheckBox(View v, CheckBox checkbox, final Schedule result) {
+			checkbox.setVisibility(View.VISIBLE);
+			checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView,
+						boolean isChecked) {
+					Schedule s = (Schedule) buttonView.getTag();
+					if (isChecked){
+						HomeActivity.getUser().getSchedule().add(s);
+					} else{
+						HomeActivity.getUser().getSchedule().remove(s);
+					}					
+				}				
+			});
+			
+			checkbox.setChecked(HomeActivity.getUser().getSchedule().contains(result));
 		}
+	}	
 
-		@Override
-		protected void formatRowBackground(View row, T result) {
-			// TODO Auto-generated method stub
-			
+	/**
+	 * An adapter for a list of films. These lists occur (1) in the Films tab 
+	 * (when sorted by name) (2) in the DVDs tab and (3) in the detail view of a
+	 * program item with multiple films.
+	 */
+	protected static class FilmletListAdapter extends ArrayAdapter<Filmlet> {
+		private static final int RESOURCE_ID = R.layout.listitem_title_only;
+		
+		public FilmletListAdapter(Context context, List<Filmlet> list) 
+		{
+		    super(context, RESOURCE_ID, list);
 		}
-
+		
 		@Override
-		protected void formatCheckBox(CheckBox checkbox, T result) {
-			if (!useCheckboxes) {
-				checkbox.setVisibility(View.GONE);
-				return;
-			}
-			checkbox.setVisibility(View.VISIBLE);	
-			
-			Schedule s = (Schedule) result;
-			checkbox.setTag(s);
-			
-			//set the listener and tag
-			OnCheckedChangeListener listener = getCheckBoxOnCheckedChangeListener();
-			if (listener != null)
-				checkbox.setOnCheckedChangeListener(listener);
-			
-			//manually check or uncheck the checkbox
-			setCheckBoxState(checkbox, s);
-		}    	
-    }
-
-    // TODO: Is this the right level?
-	protected void setCheckBoxState(CheckBox checkbox, Schedule s){
-		checkbox.setChecked(HomeActivity.getUser().getSchedule().contains(s));		
-	}    
-	
-	public OnCheckedChangeListener getCheckBoxOnCheckedChangeListener(){
-		return new CompoundButton.OnCheckedChangeListener(){
-
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				Schedule s = (Schedule) buttonView.getTag();
-				if(isChecked){
-					HomeActivity.getUser().getSchedule().add(s);
-				}else{
-					HomeActivity.getUser().getSchedule().remove(s);
-				}					
-			}				
-		};		
-	}
+	    public View getView(int position, View v, ViewGroup parent) {            
+	        if (v == null) {
+	        	LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	        	v = inflater.inflate(RESOURCE_ID, null);
+	        }
+	        
+	        Filmlet result = getItem(position);            
+        	TextView title = (TextView) v.findViewById(R.id.titletext);
+	        title.setText(result.getTitle());	                 
+	        formatContents(v, title, result);		        
+	        return v;	        
+		}
+		
+	    /**
+		 * Override to change the formatting of the contents
+	     */
+	    protected void formatContents(View v, TextView title, Filmlet result) {
+	    }
+	}	
 
 }

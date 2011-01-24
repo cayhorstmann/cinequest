@@ -1,9 +1,7 @@
 package edu.sjsu.cinequest;
 
-import java.util.List;
 import java.util.Vector;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -14,12 +12,10 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -121,7 +117,13 @@ public class FilmDetail extends CinequestActivity {
 	{
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
 		adapter.addSection("Schedules",
-				new FilmDetailSectionAdapter(this, R.layout.listitem_titletimevenue, schedules));
+		    new ScheduleListAdapter(this, schedules) {
+				@Override
+				protected void formatContents(View v, TextView title, TextView time, TextView venue, DateUtils du, Schedule result) {
+					title.setText(du.format(result.getStartTime(), DateUtils.DATE_DEFAULT));
+					title.setTypeface(null, Typeface.NORMAL);
+				}
+			});
 		
 		//toggle the checkbox upon list-item click
 		scheduleList.setOnItemClickListener(new OnItemClickListener() {
@@ -135,13 +137,11 @@ public class FilmDetail extends CinequestActivity {
 		scheduleList.setAdapter(adapter);
 	}
 
-	// TODO: Fix poor generics. The FilmSectionAdapter should have the wildcard
 	private void showFilms(Vector<? extends Filmlet> films)
 	{
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
 		adapter.addSection("Films",
-		new FilmSectionAdapter<Filmlet>(this,
-				R.layout.listitem_title_only, (Vector<Filmlet>) films, false));
+		new FilmletListAdapter(this, (Vector<Filmlet>) films));
         scheduleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -153,63 +153,6 @@ public class FilmDetail extends CinequestActivity {
 		scheduleList.setAdapter(adapter);
 	}
 
-	private class FilmDetailSectionAdapter extends SectionAdapter<Schedule>{
-		final DateUtils du = new DateUtils();
-
-		public FilmDetailSectionAdapter(Context context, int resourceId,
-				List<Schedule> list) {
-			super(context, resourceId, list);
-		}
-
-		@Override
-		protected void formatCheckBox(CheckBox checkbox, final Schedule result) {
-			checkbox.setVisibility(View.VISIBLE);
-			// TODO: Seems inefficient to do this on every formatCheckBox
-			Log.e("FilmActivity","Processing Schedule Checkbox. Title="+result.getTitle()+", ID="+result.getItemId());
-			checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
-
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView,
-						boolean isChecked) {
-					if(isChecked){
-						HomeActivity.getUser().getSchedule().add(result);
-					}else{
-						HomeActivity.getUser().getSchedule().remove(result);
-					}					
-				}				
-			});
-			
-			if(HomeActivity.getUser().getSchedule().contains(result))
-				checkbox.setChecked(true);
-			else
-				checkbox.setChecked(false);
-			
-		}
-
-		@Override
-		protected void formatTitle(TextView title, Schedule result) {
-			String day = ((edu.sjsu.cinequest.comm.cinequestitem.Schedule) result)
-							.getStartTime().substring(0, 10);
-			String formatDay = du.format(day, DateUtils.DATE_DEFAULT);
-			title.setText(formatDay);
-			title.setTypeface(title.getTypeface(),Typeface.NORMAL);
-		}
-
-		@Override
-		protected void formatTimeVenue(TextView time, TextView venue) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		protected void formatRowBackground(View row, Schedule result) {
-			// TODO Auto-generated method stub
-			
-		}
-		
-		
-		
-	}
 
 	private static void addEntry(SpannableStringBuilder ssb, String tag, String s) {
     	if (s == null || s.equals("")) return;

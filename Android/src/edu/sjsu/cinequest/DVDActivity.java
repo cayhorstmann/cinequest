@@ -8,12 +8,6 @@ import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 public class DVDActivity extends CinequestTabActivity {
 
 	@Override
-	protected void init() {
-		// TODO: Why?
-		enableListContextMenu();
-	}
-
-	@Override
 	protected void fetchServerData() {
 		if (!HomeActivity.isNetworkAvailable(this)) return;
 		HomeActivity.getQueryManager().getDVDs(

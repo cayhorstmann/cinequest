@@ -11,10 +11,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
-public abstract class CinequestActionBarActivity extends CinequestTabActivity {
+public abstract class CinequestBottomBarActivity extends CinequestTabActivity {
 	protected CheckBoxMap mCheckBoxMap;
 	private View mBottomActionBar;
 	private Button actionBarButton_01, actionBarButton_02, actionBarButton_03;
@@ -25,12 +24,7 @@ public abstract class CinequestActionBarActivity extends CinequestTabActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		// TODO: Hack--rethink construction order
-        if (!viewSet) {
-            setContentView(R.layout.cinequest_tab_activity_layout);
-            	viewSet = true;
-            }
-
+        super.onCreate(savedInstanceState);
         mCheckBoxMap = new CheckBoxMap(this, mCheckboxClickListener);
         
         mBottomActionBar = (View) findViewById(R.id.bottom_action_bar);
@@ -44,8 +38,6 @@ public abstract class CinequestActionBarActivity extends CinequestTabActivity {
         actionBarButton_01.setWidth(buttonwidth);
         actionBarButton_02.setWidth(buttonwidth);
         actionBarButton_03.setWidth(buttonwidth);
-
-        super.onCreate(savedInstanceState);
 	}
 	
     /**
@@ -155,45 +147,21 @@ public abstract class CinequestActionBarActivity extends CinequestTabActivity {
 		mBottomActionBar.setVisibility(View.GONE);
     }
     
-	/**
-	 * Set the checkbox state based on a schedule present in the mCheckBoxMap 
-	 * @param checkbox
-	 * @param s
-	 */
-	protected void setCheckBoxState(CheckBox checkbox, Schedule s){
+	protected void configureCheckBox(View v, CheckBox checkbox, Schedule s) {
+		checkbox.setVisibility(View.VISIBLE);
+		checkbox.setOnCheckedChangeListener(mCheckboxClickListener);
+
 		if( mCheckBoxMap.containsKey( s.getId() ) ){
-			Log.e(LOGCAT_TAG,"Manually Setting checkbox: "+s.getTitle());
 			IGNORE_NEXT_OnCheckChanged = true;
 			checkbox.setChecked(true);
 		}	//and uncheck the checkboxes if they were not checked  
 		else if( !mCheckBoxMap.containsKey( s.getId() ) 
 				&& checkbox.isChecked()	){
-			Log.e(LOGCAT_TAG,"Manually UNsetting checkbox: "+s.getTitle());
 			IGNORE_NEXT_OnCheckChanged = true;
 			checkbox.setChecked(false);        			
 		}
 	}
-	
-	/**
-	 * Provide a custom onCheckedChangeListener for the checkboxes of listviews 
-	 * It will reinitalize the mCheckBoxMap, so call it in init() method
-	 * before using mCheckBoxMap,
-	 * @param l the custom listener for checkbox change
-	 */
-	public void setCheckBoxOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener l){
-		this.mCheckboxClickListener = l;
-		mCheckBoxMap = new CheckBoxMap(this, mCheckboxClickListener);
-	}
-	
-	/**
-	 * Return the current OnCheckedChangeListener for the checkboxes of listview
-	 * @return OnCheckedChangeListener
-	 */
-	public OnCheckedChangeListener getCheckBoxOnCheckedChangeListener(){
-		return mCheckboxClickListener;
-	}
-
-	
+    	
 	/**
      * Checkbox click listener for list checkboxes
      */
@@ -208,15 +176,12 @@ public abstract class CinequestActionBarActivity extends CinequestTabActivity {
 			String filmID = "" + schedule.getId();
 			String filmTitle = schedule.getTitle();
 			
-			//if the checkchanged was to be ignored, return 
 			if(IGNORE_NEXT_OnCheckChanged){
 				IGNORE_NEXT_OnCheckChanged = false;
 				Log.d(LOGCAT_TAG,"IGNORED checkchange for: " + filmTitle);
 				return;
 			}			
-			
-//			Log.w(LOGCAT_TAG,"Checkchange called for: " + filmTitle);
-			
+						
 			//if the checkbox is checked
 			if(isChecked==true){
 				

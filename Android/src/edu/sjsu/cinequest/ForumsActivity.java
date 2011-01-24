@@ -6,13 +6,6 @@ import java.util.Vector;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 public class ForumsActivity extends CinequestTabActivity {
-
-	@Override
-	protected void init() {
-		// TODO: Why?
-		enableListContextMenu();
-	}
-
 	@Override
 	protected void fetchServerData() {
 		if (!HomeActivity.isNetworkAvailable(this)) return;
@@ -26,6 +19,6 @@ public class ForumsActivity extends CinequestTabActivity {
 
 	@Override
 	protected void refreshListContents(List<?> listItems) {
-   		setListViewAdapter(createScheduleList(listItems));
+   		setListViewAdapter(createScheduleList((List<Schedule>) listItems));
 	}
 }

@@ -8,12 +8,6 @@ import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 public class EventsActivity extends CinequestTabActivity {
 
 	@Override
-	protected void init() {
-		// TODO: Why?
-		enableListContextMenu();
-	}
-
-	@Override
 	protected void fetchServerData() {
 		if (!HomeActivity.isNetworkAvailable(this)) return;
 		HomeActivity.getQueryManager().getEventSchedules("special_events", 
@@ -26,6 +20,6 @@ public class EventsActivity extends CinequestTabActivity {
 
 	@Override
 	protected void refreshListContents(List<?> listItems) {
-   		setListViewAdapter(createScheduleList(listItems));
+   		setListViewAdapter(createScheduleList((List<Schedule>) listItems));
 	}
 }

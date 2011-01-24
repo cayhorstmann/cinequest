@@ -47,7 +47,6 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
     private int currPosition = 0;
     private boolean currWidthFillParent = true;
     private ListView listview;
-    final static String LOGCAT_TAG = "FilmActivity";
     private boolean SortKeysFirst = false;
 
 	public SeparatedListIndexedAdapter(Context context) {
@@ -77,7 +76,7 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
 	}
 	
 	
-	public void addSection(String section, Adapter adapter, String sectionKey) {
+	public void addSection(String section, String sectionKey, Adapter adapter) {
 		super.addSection(section, adapter);
 		
 		keyList.add(sectionKey);

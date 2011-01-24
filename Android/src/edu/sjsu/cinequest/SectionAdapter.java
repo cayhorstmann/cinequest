@@ -24,12 +24,11 @@ import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
  * @param <T>
  *
  */
-public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
+public abstract class SectionAdapter<T> extends ArrayAdapter<T> {
 	private List<T> list;
 	private static LayoutInflater mInflater;
-	public static enum SectionItems {TYPE_SCHEDULE, TYPE_FILMLET}
+	public static enum SectionItems { TYPE_SCHEDULE, TYPE_FILMLET }
 	private SectionItems sectionType;
-	static final String LOGCAT_TAG = "FilmActivity";
 	private static int layout_resourceId;
 	private DateUtils du = new DateUtils();
 	
@@ -39,21 +38,18 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
         this.list = list;
         layout_resourceId = resourceId;
         
-        if(list != null && list.size() > 0){
+        if (list != null && list.size() > 0) {
         	if(list.get(0) instanceof Filmlet)
         		sectionType = SectionItems.TYPE_FILMLET;
         	else if(list.get(0) instanceof Schedule)
         		sectionType = SectionItems.TYPE_SCHEDULE;
         }
         
-        if(mInflater == null)
-        	mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-            View v = convertView;
+    public View getView(int position, View v, ViewGroup parent) {            
             final ListViewHolder holder;
             
             if (v == null) {
@@ -151,18 +147,18 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T>{
     /**
 	 * This contains the logic of formating the look of title
      */
-    protected abstract void formatTitle(TextView title, T result);
+    protected void formatTitle(TextView title, T result) {
+    }
     
     /**
 	 * This contains the logic of formating the look of time and venue
      */
-    protected abstract void formatTimeVenue(TextView time, TextView venue);
+    protected void formatTimeVenue(TextView time, TextView venue) {    	
+    }
     
     /**
 	 * This contains the logic of formating the background of the row
      */
-    protected abstract void formatRowBackground(View row, T result);
-    
-    
-
+    protected void formatRowBackground(View row, T result) {    	
+    }
 }
