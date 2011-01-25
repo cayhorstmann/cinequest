@@ -36,13 +36,17 @@ public class FilmDetail extends CinequestActivity {
         setContentView(R.layout.filmdetail);
         
         scheduleList = (ListView)findViewById(R.id.ScheduleList);
-        		
-		this.fetchServerData(getIntent().getExtras());	
+
+        View headerView = getLayoutInflater().inflate(
+                R.layout.detail_layout, null);
+        ListView listView = (ListView) findViewById(R.id.ScheduleList);
+        listView.addHeaderView(headerView, null, false);        
+
+        fetchServerData(getIntent().getExtras());	
 	}
 	
 	private void fetchServerData(Bundle b){
 		if (!HomeActivity.isNetworkAvailable(this)) return;
-        
         Object target = b.getSerializable("target");
         
         if (target instanceof Film) {
@@ -258,7 +262,7 @@ public class FilmDetail extends CinequestActivity {
         
         ((TextView) findViewById(R.id.Properties)).setText(ssb);
         
-		showSchedules(in.getSchedules());        
+		showSchedules(in.getSchedules());   
     }
 	
     public void showProgramItem(ProgramItem item) 
@@ -288,7 +292,6 @@ public class FilmDetail extends CinequestActivity {
 			{
 				showFilms(films);
 			}
-
 		}
-    }   	
+    }
 }
