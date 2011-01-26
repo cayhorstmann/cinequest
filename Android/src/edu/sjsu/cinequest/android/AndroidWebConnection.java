@@ -1,6 +1,5 @@
 package edu.sjsu.cinequest.android;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -9,24 +8,48 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HTTP;
 
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.WebConnection;
 
-// TODO: Identical to JavaSEWebConnection
 public class AndroidWebConnection extends WebConnection {
 	private String url;
 	private Hashtable postData;
     private HttpResponse response;
+    private static HttpParams params;
+    private static ClientConnectionManager conman;
     
+    static {
+    	params = new BasicHttpParams();
+    	HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+    	HttpProtocolParams.setContentCharset(params, HTTP.DEFAULT_CONTENT_CHARSET);
+    	HttpProtocolParams.setUseExpectContinue(params, true);
+
+    	SchemeRegistry registry = new SchemeRegistry();
+    	registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+    	registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+
+    	conman = new ThreadSafeClientConnManager(params, registry);
+    }
     
     public AndroidWebConnection(String url) throws IOException
     {
@@ -42,7 +65,8 @@ public class AndroidWebConnection extends WebConnection {
     private void execute() throws IOException
     {
     	if (response != null) return;
-        HttpClient client = new DefaultHttpClient();
+    	HttpClient client = new DefaultHttpClient(conman, params);
+        // HttpClient client = new DefaultHttpClient();
     	if (postData == null) 
     	{
             HttpGet request = new HttpGet(url);
@@ -80,6 +104,7 @@ public class AndroidWebConnection extends WebConnection {
 
     public void close() throws IOException
     {
+    	if (response != null) response.getEntity().consumeContent();
         Platform.getInstance().log("Closing connection");
     }
 }
