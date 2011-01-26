@@ -121,7 +121,9 @@ public class HomeActivity extends Activity {
 				populateNewsEventsList((Vector<Section>) result);
 			}
 			@Override public void starting() {}			
-			@Override public void failure(Throwable t) {}        	
+			@Override public void failure(Throwable t) {
+				Platform.getInstance().log(t.getMessage());				
+			}        	
         });
     }
     
@@ -163,7 +165,9 @@ public class HomeActivity extends Activity {
  					  		title_image.setImageBitmap((Bitmap) result);	        		
  			        	}
  			        	@Override public void starting() {}
- 			        	@Override public void failure(Throwable t) {}
+ 			        	@Override public void failure(Throwable t) {
+ 							Platform.getInstance().log(t.getMessage()); 			        		
+ 			        	}
  			        }, null, false);		
      			}
      		}

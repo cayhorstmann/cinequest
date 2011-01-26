@@ -21,6 +21,7 @@ import android.widget.Toast;
 import edu.sjsu.cinequest.comm.Action;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.CallbackException;
+import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
 
@@ -271,6 +272,8 @@ public class ScheduleActivity extends CinequestBottomBarActivity {
 				}
 				@Override
 				public void failure(Throwable t) {
+					if (!(t instanceof CallbackException) && ((CallbackException) t).getLevel() == CallbackException.IGNORE)
+						Platform.getInstance().log(t.getMessage());					
 				}
     		}, HomeActivity.getQueryManager());
     }

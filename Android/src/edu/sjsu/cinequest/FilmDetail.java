@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.HParser;
+import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.MobileItem;
@@ -182,7 +183,8 @@ public class FilmDetail extends CinequestActivity {
 			}
 			
 			@Override
-			public void failure(Throwable t) {			
+			public void failure(Throwable t) {	
+				Platform.getInstance().log(t.getMessage());
 			}   
 		}, R.drawable.fetching, true);					
   		((ImageView) findViewById(R.id.Image)).setImageBitmap(bmp);											  		
@@ -207,6 +209,7 @@ public class FilmDetail extends CinequestActivity {
 				}
 				@Override
 				public void failure(Throwable t) {		
+					Platform.getInstance().log(t.getMessage());					
 				}   
 			});					
 		}
