@@ -19,6 +19,7 @@ public class AndroidWebConnection extends WebConnection {
         Platform.getInstance().log("Opening connection to " + url);
         connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setUseCaches(false);        
+    	System.setProperty("http.keepAlive", "false");
         connection.setRequestProperty("connection", "close"); // http://stackoverflow.com/questions/3352424/httpurlconnection-openconnection-fails-second-time 
     }
     
@@ -30,9 +31,7 @@ public class AndroidWebConnection extends WebConnection {
     
     public InputStream getInputStream() throws IOException
     {
-    	InputStream in = connection.getInputStream(); 
-    	Platform.getInstance().log(in.getClass() + " " + (in instanceof BufferedInputStream));
-        return in;
+    	return new BufferedInputStream(connection.getInputStream()); 
     }
     
     public String getHeaderField(String name) throws IOException
