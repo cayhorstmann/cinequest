@@ -3,69 +3,80 @@ package edu.sjsu.cinequest.android;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.WebConnection;
 
 // TODO: Identical to JavaSEWebConnection
 public class AndroidWebConnection extends WebConnection {
-    private HttpURLConnection connection;
-    HttpGet request;
+	private String url;
+	private Hashtable postData;
+    private HttpResponse response;
+    
     
     public AndroidWebConnection(String url) throws IOException
     {
         Platform.getInstance().log("Opening connection to " + url);
-        /*
-        connection = (HttpURLConnection) new URL(url).openConnection();
-        connection.setUseCaches(false);        
-    	System.setProperty("http.keepAlive", "false");
-        connection.setRequestProperty("connection", "close"); // http://stackoverflow.com/questions/3352424/httpurlconnection-openconnection-fails-second-time
-        */
-        request = new HttpGet();
-        try {
-        request.setURI(new URI(url)); 
-        }
-        catch (URISyntaxException ex) {
-        	Platform.getInstance().log(ex.getMessage());
-        }
+        this.url = url;
     }
     
-    public OutputStream getOutputStream() throws IOException
+    
+    public void setPostParameters(Hashtable postData) throws IOException {
+    	this.postData = postData;
+    }
+    
+    private void execute() throws IOException
     {
-       connection.setDoOutput(true);
-       return connection.getOutputStream();
+    	if (response != null) return;
+        HttpClient client = new DefaultHttpClient();
+    	if (postData == null) 
+    	{
+            HttpGet request = new HttpGet(url);
+            response = client.execute(request);    		
+    	}
+    	else
+    	{
+    		HttpPost request = new HttpPost(url);
+            Enumeration keys = postData.keys();
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            while (keys.hasMoreElements()) 
+            {            	            	
+               String key = keys.nextElement().toString();
+               String value = postData.get(key).toString();
+               nameValuePairs.add(new BasicNameValuePair(key, value));  
+            }         
+            request.setEntity(new UrlEncodedFormEntity(nameValuePairs));                 
+            response = client.execute(request);    		            
+    	}
     }
-    
+        
     public InputStream getInputStream() throws IOException
     {
-        HttpClient client = new DefaultHttpClient();
-        HttpResponse response = client.execute(request);
+    	execute();
         return new BufferedInputStream(response.getEntity().getContent());
-        
-    	// return new BufferedInputStream(connection.getInputStream()); 
     }
     
     public String getHeaderField(String name) throws IOException
-    {   return "";
-        //return connection.getHeaderField(name);
+    {   
+    	execute();
+    	return response.getFirstHeader(name).getValue();
     }
 
     public void close() throws IOException
     {
-    	/*
-        connection.disconnect();
-        connection = null;
-        */
         Platform.getInstance().log("Closing connection");
     }
 }

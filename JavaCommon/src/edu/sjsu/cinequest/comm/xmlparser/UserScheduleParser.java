@@ -57,7 +57,8 @@ public class UserScheduleParser extends BasicHandler
    {
       UserScheduleParser handler = new UserScheduleParser();
       handler.result = null; // To indicate auth error
-      Platform.getInstance().parse(url, postData, handler, callback);
+      String doc = Platform.getInstance().parse(url, postData, handler, callback);
+      if (handler.result == null) Platform.getInstance().log("Schedule error: " + doc);
       return handler.result;
    }
 

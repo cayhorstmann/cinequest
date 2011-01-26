@@ -6,10 +6,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.URLEncoder;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -119,7 +116,7 @@ public class AndroidPlatform extends Platform {
     }
 
 	@Override
-	public void parse(String url, Hashtable postData, DefaultHandler handler,
+	public String parse(String url, Hashtable postData, DefaultHandler handler,
 			Callback callback) throws SAXException, IOException {
        SAXParserFactory spf = SAXParserFactory.newInstance();
        SAXParser sp;
@@ -131,28 +128,16 @@ public class AndroidPlatform extends Platform {
            throw new SAXException(e.toString());
        }
        WebConnection connection = createWebConnection(url);
-       
-       PrintWriter out = new PrintWriter(connection.getOutputStream());
-       boolean first = true;
-       Enumeration keys = postData.keys();
-       while (keys.hasMoreElements()) 
-       {
-          if (first) first = false;
-          else out.print('&');
-          String key = keys.nextElement().toString();
-          String value = postData.get(key).toString();
-          out.print(key);
-          out.print('=');
-          out.print(URLEncoder.encode(value, "UTF-8"));               
-       }         
-       out.close();
+       connection.setPostParameters(postData);
        byte[] response = connection.getBytes();
+       String doc = new String(response);
        if (response.length == 0) {
 		   Platform.getInstance().log("No data received from server");
     	   throw new IOException("No data received from server");
        }
        InputSource inputSource = new InputSource(new ByteArrayInputStream(response));
        sp.parse(inputSource, handler);       
+       return doc;
 	}
 
 	@Override

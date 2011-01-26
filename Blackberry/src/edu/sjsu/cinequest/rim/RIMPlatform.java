@@ -22,12 +22,9 @@ package edu.sjsu.cinequest.rim;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import net.rim.blackberry.api.browser.URLEncodedPostData;
 import net.rim.device.api.crypto.SHA1Digest;
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.EncodedImage;
@@ -135,10 +132,11 @@ public class RIMPlatform extends Platform {
 		}
 	}
 
-	public void parse(final String url, Hashtable postData,
+	public String parse(final String url, Hashtable postData,
 			DefaultHandler handler, Callback callback) throws SAXException,
 			IOException {
 		SAXParser parser = null;
+		String doc = null;
 		try {
 			parser = factory.newSAXParser();
 		} catch (ParserConfigurationException e) {
@@ -146,24 +144,16 @@ public class RIMPlatform extends Platform {
 		}
 		WebConnection connection = createWebConnection(url);
 		try {
-			URLEncodedPostData encodedPostData = new URLEncodedPostData(null,
-					null);
-			Enumeration keys = postData.keys();
-			while (keys.hasMoreElements()) {
-				String key = keys.nextElement().toString();
-				String value = postData.get(key).toString();
-				encodedPostData.append(key, value);
-			}
-			OutputStream out = connection.getOutputStream();
-			byte[] request = encodedPostData.getBytes();
-			out.write(new String(request).getBytes());
+			connection.setPostParameters(postData);
 			byte[] response = connection.getBytes();
+			doc = new String(response);
 			InputSource inputSource = new InputSource(new ByteArrayInputStream(
 					response));
 			parser.parse(inputSource, handler);
 		} finally {
 			connection.close();
 		}
+		return doc;
 	}
 
 	public void invoke(final Callback callback, final Object arg) {

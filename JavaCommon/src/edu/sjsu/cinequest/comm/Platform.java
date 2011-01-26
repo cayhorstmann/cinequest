@@ -81,7 +81,10 @@ public abstract class Platform
     public abstract void parse(final String url, DefaultHandler handler,
             Callback callback) throws SAXException, IOException;
     
-    public abstract void parse(final String url, Hashtable postData, DefaultHandler handler, Callback callback)
+    /**
+     * @return the retrieved document (for error reporting)
+     */
+    public abstract String parse(final String url, Hashtable postData, DefaultHandler handler, Callback callback)
        throws SAXException, IOException;    
     
     /**

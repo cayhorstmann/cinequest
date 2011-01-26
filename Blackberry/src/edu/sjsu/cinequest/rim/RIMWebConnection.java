@@ -22,9 +22,13 @@ package edu.sjsu.cinequest.rim;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
+
+import net.rim.blackberry.api.browser.URLEncodedPostData;
 
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.WebConnection;
@@ -49,6 +53,22 @@ public class RIMWebConnection extends WebConnection
     		connection = (HttpConnection) Connector.open(url);    		
     	}
     }
+    
+    public void setPostParameters(Hashtable postData) throws IOException {
+		URLEncodedPostData encodedPostData = new URLEncodedPostData(null,
+				null);
+		Enumeration keys = postData.keys();
+		while (keys.hasMoreElements()) {
+			String key = keys.nextElement().toString();
+			String value = postData.get(key).toString();
+			encodedPostData.append(key, value);
+		}
+        connection.setRequestMethod(HttpConnection.POST);
+        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+		OutputStream out = connection.openOutputStream();
+		byte[] request = encodedPostData.getBytes();
+		out.write(new String(request).getBytes());    	
+    }
 
     public InputStream getInputStream() throws IOException
     {        
@@ -61,8 +81,6 @@ public class RIMWebConnection extends WebConnection
     
     public OutputStream getOutputStream() throws IOException
     {
-       connection.setRequestMethod(HttpConnection.POST);
-       connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
        return connection.openOutputStream();
     }
     

@@ -22,6 +22,7 @@ package edu.sjsu.cinequest.comm;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Hashtable;
 
 /**
  * A class that describes how to get input from an URL
@@ -35,9 +36,15 @@ public abstract class WebConnection
      * @return the input stream
      * @throws IOException
      */
-    public abstract InputStream getInputStream() throws IOException;
+    protected abstract InputStream getInputStream() throws IOException;
     
-    public abstract OutputStream getOutputStream() throws IOException;
+    // public abstract OutputStream getOutputStream() throws IOException;
+
+    /**
+     * Call this method before calling getBytes or getHeaderField if you
+     * want to do a POST.
+     */
+    public abstract void setPostParameters(Hashtable params) throws IOException;
     
     /**
      * Closes this connection.
