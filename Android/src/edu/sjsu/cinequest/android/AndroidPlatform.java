@@ -102,6 +102,7 @@ public class AndroidPlatform extends Platform {
 		// Reading fails. Try to get XML from cache
         catch (IOException e)
         {
+           Platform.getInstance().log(e.getMessage());
            byte[] bytes = (byte[]) xmlRawBytesCache.get(url);
            // XML exists in cache
            if (bytes != null)
@@ -109,6 +110,7 @@ public class AndroidPlatform extends Platform {
               InputSource in  = new InputSource(new InputStreamReader(
                  new ByteArrayInputStream(bytes), "ISO-8859-1"));
               sp.parse(in, handler);
+			  Platform.getInstance().log("Returned cached response " + new String(bytes));              
               return;
            } else
               // XML not found on cache.
@@ -145,7 +147,10 @@ public class AndroidPlatform extends Platform {
        }         
        out.close();
        byte[] response = connection.getBytes();
-       if (response.length == 0) throw new IOException("No data received from server");
+       if (response.length == 0) {
+		   Platform.getInstance().log("No data received from server");
+    	   throw new IOException("No data received from server");
+       }
        InputSource inputSource = new InputSource(new ByteArrayInputStream(response));
        sp.parse(inputSource, handler);       
 	}

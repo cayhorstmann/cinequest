@@ -202,6 +202,7 @@ public class HomeActivity extends Activity {
      * Check for active internet connection
      */
     public static boolean isNetworkAvailable(Context context) {
+    	// TODO: In that case, don't we still want to retrieve data from cache?
     	ConnectivityManager cMgr 
   		= (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cMgr.getActiveNetworkInfo();
@@ -264,7 +265,6 @@ public class HomeActivity extends Activity {
                     LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     v = vi.inflate(view_resource_id, null);
                 }
-                //Log.d("MobileItemAdapter", "getView() called with Position=" + position);                                
                 MobileItem result = itemsList.get(position);
                 
                 if (result != null) {

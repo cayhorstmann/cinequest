@@ -20,7 +20,7 @@ import android.webkit.WebViewClient;
  *
  */
 public class RegistrationActivity extends Activity {
-	WebView webview;
+	private WebView webview;
 	
 	/** Called when the activity is first created. */
     @Override

@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import android.util.Log;
-
 public class DateUtils {
     public static final int NORMAL_MODE = 0;
     public static final int FESTIVAL_TEST_MODE = 1;
@@ -120,9 +118,7 @@ public class DateUtils {
     			SimpleDateFormat sdf = new SimpleDateFormat(fmt);
     			result = formatters[format].format(sdf.parse(d));
     			cache.put(key, result);
-    			Log.i("DateUtils", "cache miss: " + key);
     		}
-    		else Log.i("DateUtils", "cache hit: " + key);
         	return result;
         } 
         catch (ParseException ex)

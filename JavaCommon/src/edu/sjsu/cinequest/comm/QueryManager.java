@@ -72,9 +72,7 @@ public class QueryManager
     
     private String makeQuery(int type, String arg)
     {
-        String query = "http://" + queryBase + queries[type] + arg;
-        Platform.getInstance().log(query);
-        return query;
+        return "http://" + queryBase + queries[type] + arg;
     }
 
     private String makeQuery(int type, int arg)

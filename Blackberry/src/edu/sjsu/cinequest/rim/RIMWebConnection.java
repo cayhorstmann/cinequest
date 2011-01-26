@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
+import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.WebConnection;
 
 /**
@@ -43,8 +44,9 @@ public class RIMWebConnection extends WebConnection
        //doing this way otherwise it causes error w/ Blackberry OS 4.5
        //even if connection is never written to.
     	synchronized(this)
-    	{
-    		connection = (HttpConnection) Connector.open(url);
+    	{    		
+    		Platform.getInstance().log("Opening connection to " + url);
+    		connection = (HttpConnection) Connector.open(url);    		
     	}
     }
 
@@ -73,5 +75,6 @@ public class RIMWebConnection extends WebConnection
     {
         if (connection != null) connection.close();
         connection = null;
+        Platform.getInstance().log("Closing connection");
     }        
 }

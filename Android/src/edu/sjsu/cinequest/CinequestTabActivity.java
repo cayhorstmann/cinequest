@@ -23,9 +23,7 @@ import android.widget.TextView;
  */
 public abstract class CinequestTabActivity extends CinequestActivity{
 	private ListView listview;
-	private TextView mEmptyListViewMessage;
-	final static String LOGCAT_TAG = "CinequestTabActivity";
-	
+	private TextView mEmptyListViewMessage;	
 	
 	//menu options unique id
 	private static final int MOREINFO_CONTEXTMENU_ID = Menu.FIRST + 10;

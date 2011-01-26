@@ -3,7 +3,6 @@ package edu.sjsu.cinequest;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
@@ -23,7 +22,6 @@ public class CheckBoxMap {
 	private ArrayList<Integer> idList = new ArrayList<Integer>();	//key list
 	private ArrayList<CheckBox> cboxList = new ArrayList<CheckBox>();	//value list
 	
-	private final static String LOGCAT_TAG = "FilmActivity";
 	CompoundButton.OnCheckedChangeListener mCheckboxClickListener;
 	Context context;
 	
@@ -67,17 +65,8 @@ public class CheckBoxMap {
 	 *@return true if size is consistent, false otherwise 
 	 */
 	public boolean checkSizeConsistency(){
-		if(idList.size() == cboxList.size() 
-				&& idList.size() == schdList.size()
-				)
-			return true;
-		else{
-			Log.e(LOGCAT_TAG,"SizeConsistency Failed. IDList="+idList.size()
-					+", CBList="+cboxList.size() 
-					+", ScheduleList="+schdList.size()
-					);
-			return false;
-		}
+		return idList.size() == cboxList.size() 
+				&& idList.size() == schdList.size();
 	}
 	
 	/**
@@ -113,12 +102,7 @@ public class CheckBoxMap {
 	 * @return the arraylist containing all the keys
 	 */
 	public ArrayList<Integer> keySet(){
-		ArrayList<Integer> tlist = new ArrayList<Integer>();
-		for(int i=0; i < idList.size(); i++){
-			tlist.add( idList.get(i));
-		}
-		Log.d(LOGCAT_TAG,"Checkbox list keySet requested. Size="+tlist.size());
-		return tlist;
+		return new ArrayList<Integer>(idList);
 	}
 	
 	/**
@@ -126,12 +110,7 @@ public class CheckBoxMap {
 	 * @return the arraylist containing all the values
 	 */
 	public ArrayList<CheckBox> values(){
-		ArrayList<CheckBox> tlist = new ArrayList<CheckBox>();
-		for(int i=0; i < cboxList.size(); i++){
-			tlist.add( cboxList.get(i));
-		}
-		Log.d(LOGCAT_TAG,"Checkbox list values requested. Size="+tlist.size());
-		return tlist;
+		return new ArrayList<CheckBox>(cboxList);
 	}
 	
 	/**
@@ -139,12 +118,7 @@ public class CheckBoxMap {
 	 * @return the arraylist containing all the tags
 	 */
 	public ArrayList<Schedule> allTags(){
-		ArrayList<Schedule> tlist = new ArrayList<Schedule>();
-		for(int i=0; i < schdList.size(); i++){
-			tlist.add( schdList.get(i));
-		}
-		Log.d(LOGCAT_TAG,"Schedule list values requested. Size="+tlist.size());
-		return tlist;
+		return new ArrayList<Schedule>(schdList);
 	}
 	
 	/**
@@ -203,8 +177,6 @@ public class CheckBoxMap {
 			//only stick to keep pulling first item (i=0) of the list
 			CheckBox c = cboxList.get(0);
 							
-			Log.w(LOGCAT_TAG,"Going to uncheck: "+((Schedule)c.getTag()).getTitle());
-			
 			//Somehow calling setfalse on "c" is not working. No Idea WHY??
 			//But calling the oncheckedchanged listener manuall on "c" does the trick
 			//c.setChecked(false);		//not working
@@ -213,13 +185,9 @@ public class CheckBoxMap {
 		
 		//if size is still consistent, and it has come down to zero, return true
 		if(checkSizeConsistency() && idList.size() == 0){
-			Log.w(LOGCAT_TAG,"UncheckALL operation successful");
 			return true;
 		}
 		
-		Log.w(LOGCAT_TAG,"UncheckALL operation FAILED. SizeConsistency="+checkSizeConsistency());
 		return false;
 	}
-
-
 }

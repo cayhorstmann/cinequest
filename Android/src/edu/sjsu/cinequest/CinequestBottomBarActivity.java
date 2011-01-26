@@ -2,7 +2,6 @@ package edu.sjsu.cinequest;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
@@ -20,7 +19,6 @@ public abstract class CinequestBottomBarActivity extends CinequestTabActivity {
 	protected boolean IGNORE_NEXT_OnCheckChanged = false;
 	private boolean BOTTOM_BAR_ENABLED = false;
 	protected enum ButtonType {LELT, MIDDLE, RIGHT}
-	private final static String LOGCAT_TAG = "CinequestActionBarActivity";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -174,11 +172,9 @@ public abstract class CinequestBottomBarActivity extends CinequestTabActivity {
 			    			
 			Schedule schedule = (Schedule) ((CheckBox)buttonView).getTag();
 			String filmID = "" + schedule.getId();
-			String filmTitle = schedule.getTitle();
 			
 			if(IGNORE_NEXT_OnCheckChanged){
 				IGNORE_NEXT_OnCheckChanged = false;
-				Log.d(LOGCAT_TAG,"IGNORED checkchange for: " + filmTitle);
 				return;
 			}			
 						
@@ -192,24 +188,13 @@ public abstract class CinequestBottomBarActivity extends CinequestTabActivity {
 				//add this checkbox to the list of checked boxes
 				mCheckBoxMap.put( Integer.parseInt( filmID ), (CheckBox)buttonView );
 					
-				Log.d(LOGCAT_TAG,"Checkbox ENABLED on:"+ filmTitle
-						+"[ID="+filmID+"]. "
-						+". #Checked (increased): "+ mCheckBoxMap.size());				 				
-				
 				//Show the BottomActionBar
 				showBottomBar();
 				
 			} else {		//if checkbox was later unchecked
 				
 				//remove current checkbox from the list of checked-checkboxes
-				CheckBox c = mCheckBoxMap.remove( Integer.parseInt( filmID) );
-				if(c == null)
-					Log.e(LOGCAT_TAG,"Checkbox NOT removed from map");
-				else{
-					Log.d(LOGCAT_TAG,"Checkbox DISABLED on:"+ filmTitle 
-							+"[ID="+filmID+"]. "
-							+". #Checked (decreased): "+ mCheckBoxMap.size());				
-			}
+				mCheckBoxMap.remove( Integer.parseInt( filmID) );
 				
 				//if all the checkboxes have been unchecked, hide the bottom bar
 				if(mCheckBoxMap.size() == 0)

@@ -115,16 +115,19 @@ public class RIMPlatform extends Platform {
 			}
 			// Reading fails. Try to get XML from cache
 			catch (IOException e) {
+				Platform.getInstance().log(e.getMessage());
 				byte[] bytes = (byte[]) xmlRawBytesCache.get(url);
 				// XML exists in cache
 				if (bytes != null) {
 					inputSource = new InputSource(new InputStreamReader(
 							new ByteArrayInputStream(bytes), "ISO-8859-1"));
 					parser.parse(inputSource, handler);
+					Platform.getInstance().log("Returned cached response " + new String(bytes));
 					return;
-				} else
+				} else {
 					// XML not found on cache.
 					throw e;
+				}
 			}
 		} finally {
 			if (connection != null)
@@ -153,10 +156,8 @@ public class RIMPlatform extends Platform {
 			}
 			OutputStream out = connection.getOutputStream();
 			byte[] request = encodedPostData.getBytes();
-			log(new String(request));
 			out.write(new String(request).getBytes());
 			byte[] response = connection.getBytes();
-			log(new String(response));
 			InputSource inputSource = new InputSource(new ByteArrayInputStream(
 					response));
 			parser.parse(inputSource, handler);
