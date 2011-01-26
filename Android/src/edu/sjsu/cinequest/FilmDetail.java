@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.ImageSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.view.View;
@@ -170,7 +169,7 @@ public class FilmDetail extends CinequestActivity {
     	ssb.append("\n");
     }
 	
-	private void showImage(String imageURL, Vector urls) {
+	private void showImage(final String imageURL, Vector urls) {
 		Bitmap bmp = (Bitmap) HomeActivity.getImageManager().getImage(imageURL, new Callback() {
 			@Override
 			public void invoke(Object result) {
@@ -185,34 +184,26 @@ public class FilmDetail extends CinequestActivity {
 			@Override
 			public void failure(Throwable t) {	
 				Platform.getInstance().log(t.getMessage());
+				// Try once more
+				HomeActivity.getImageManager().getImage(imageURL, new Callback() {
+					@Override
+					public void invoke(Object result) {
+						Bitmap bmp = (Bitmap) result;
+				  		((ImageView) findViewById(R.id.Image)).setImageBitmap(bmp);											  		
+					}
+					
+					@Override
+					public void starting() {
+					}
+					
+					@Override
+					public void failure(Throwable t) {	
+						Platform.getInstance().log(t.getMessage());
+					}   
+				}, null, true);												
 			}   
 		}, R.drawable.fetching, true);					
   		((ImageView) findViewById(R.id.Image)).setImageBitmap(bmp);											  		
-
-		// TODO: Test this--can you really add multiple images?
-		if (urls.size() > 0) 
-		{
-			HomeActivity.getImageManager().getImages(urls, new Callback() {
-				@Override
-				public void invoke(Object value) {
-					SpannableString ss = new SpannableString(" "); 
-					Vector images = (Vector) value;
-					for (int i = 0; i < images.size(); i++) 
-					{
-						Bitmap bmp = (Bitmap) images.elementAt(i);
-						ss.setSpan(new ImageSpan(bmp), 0, 1, 0);
-					}
-					((TextView) findViewById(R.id.SmallImages)).setText(ss);
-				}
-				@Override
-				public void starting() {
-				}
-				@Override
-				public void failure(Throwable t) {		
-					Platform.getInstance().log(t.getMessage());					
-				}   
-			});					
-		}
 	}
 	
 	private SpannableString createSpannableString(HParser parser) 
