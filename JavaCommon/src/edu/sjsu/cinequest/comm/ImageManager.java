@@ -59,12 +59,14 @@ public class ImageManager
     {
         Object image = null;
         WebConnection connection = Platform.getInstance().createWebConnection(imageUrl);
-        byte[] response = connection.getBytes();        
+        /*
         if (!connection.getHeaderField("content-type").startsWith("image"))
         {
             connection.close();
             return null;
         }
+        */
+        byte[] response = connection.getBytes();        
         if (response.length > 0)
         {
             if (usePersistentCache)
