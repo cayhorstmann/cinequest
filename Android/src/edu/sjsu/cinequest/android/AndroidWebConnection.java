@@ -14,6 +14,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -66,13 +67,15 @@ public class AndroidWebConnection extends WebConnection {
     public InputStream getInputStream() throws IOException
     {
     	execute();
-        return new BufferedInputStream(response.getEntity().getContent());
+    	return new BufferedHttpEntity(response.getEntity()).getContent(); 
     }
     
     public String getHeaderField(String name) throws IOException
     {   
     	execute();
-    	return response.getFirstHeader(name).getValue();
+    	String value = response.getFirstHeader(name).getValue();
+    	Platform.getInstance().log("header for " + name + " is " + value);
+    	return value;
     }
 
     public void close() throws IOException
