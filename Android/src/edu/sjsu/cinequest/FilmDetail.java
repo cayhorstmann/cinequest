@@ -87,7 +87,7 @@ public class FilmDetail extends CinequestActivity {
 			String linkType = mobileItem.getLinkType();
 			if(linkType.equals("item") || linkType.equals("program_item"))
 			{
-	    		HomeActivity.getQueryManager().getProgramItem(id, 
+	    		HomeActivity.getQueryManager().getMobileItem(id, 
 	    				new ProgressMonitorCallback(this){
 	    			@Override
 	    			public void invoke(Object result) {
@@ -119,6 +119,10 @@ public class FilmDetail extends CinequestActivity {
 	
 	private void showSchedules(Vector<Schedule> schedules)
 	{
+		if (schedules.size() == 0) {
+			scheduleList.setAdapter(new ScheduleListAdapter(this, schedules));
+			return;
+		}
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
 		adapter.addSection("Schedules",
 		    new ScheduleListAdapter(this, schedules) {
@@ -143,9 +147,13 @@ public class FilmDetail extends CinequestActivity {
 
 	private void showFilms(Vector<? extends Filmlet> films)
 	{
+		FilmletListAdapter section = new FilmletListAdapter(this, (Vector<Filmlet>) films);
+		if (films.size() == 0) {
+			scheduleList.setAdapter(section);
+			return;
+		}
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
-		adapter.addSection("Films",
-		new FilmletListAdapter(this, (Vector<Filmlet>) films));
+		adapter.addSection("Films", section);				
         scheduleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -170,6 +178,7 @@ public class FilmDetail extends CinequestActivity {
     }
 	
 	private void showImage(final String imageURL, Vector urls) {
+		if (imageURL == null) return;
 		Bitmap bmp = (Bitmap) HomeActivity.getImageManager().getImage(imageURL, new Callback() {
 			@Override
 			public void invoke(Object result) {
@@ -280,12 +289,8 @@ public class FilmDetail extends CinequestActivity {
 			
 			tv.setText(createSpannableString(parser));
 
-			showImage(item.getImageURL(), parser.getImageURLs());
-			
-			if (films.size() > 0)
-			{
-				showFilms(films);
-			}
+			showImage(item.getImageURL(), parser.getImageURLs());			
+			showFilms(films);
 		}
     }
 }

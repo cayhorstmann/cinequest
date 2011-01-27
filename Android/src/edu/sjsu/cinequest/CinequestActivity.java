@@ -187,7 +187,7 @@ public class CinequestActivity extends Activity
 	        }
 	        
 	        Filmlet result = getItem(position);            
-        	TextView title = (TextView) v.findViewById(R.id.titletext);
+        	TextView title = (TextView) v.findViewById(R.id.listitem_titletext);
 	        title.setText(result.getTitle());	                 
 	        formatContents(v, title, result);		        
 	        return v;	        

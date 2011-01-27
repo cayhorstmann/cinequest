@@ -27,12 +27,11 @@ import java.util.Vector;
  * The first offset position in the list is the beginning of the field's text (always 0), and the last offset position marks 
  * the end of the field's text (always equal to the field's text length). 
  * Each region has an attribute, a bit set of flags LARGE, BOLD, ITALIC, RED.
- * @author Travis Griffiths
  * @author Cay Horstmann
  */
 public class HParser
 {
-    // This is the resultString, normally stripped of tags
+    // This is the result string, stripped of tags
     private String resultString;
     // This is the byte array of the attributes for the RichTextField
     // constructor
@@ -40,11 +39,9 @@ public class HParser
     // This is the RichTextField constructor argument of Font offsets
     private int[] offsets = null;
     // Tracks the font by the reference byte
-    private byte font;
-    // This holds the information about where in the string to be parsed
-    // the found tags start and stop
-    private TagIndex tagIndex;
-    private Vector images = new Vector();
+    
+    private Vector images;
+    
     public static final int RED = 8;
     public static final int LARGE = 4;
     public static final int BOLD = 2;
@@ -57,39 +54,74 @@ public class HParser
      */
     public void parse(String input)
     {
-        font = (byte) 0;
+    	Vector offs = new Vector();
+    	Vector attrs = new Vector();
+    	
         images = new Vector();
-        tagIndex = new TagIndex(input);
-        if (tagIndex.getStartTag(0) != -1 && tagIndex.getEndTag(0) != -1)
-        {
-            // Scan for img tags
-            for (int i = 0; i < tagIndex.getNumberOfTags(); i++)
-            {
-                String tagString = input.substring(tagIndex.getStartTag(i) + 1,
-                        tagIndex.getEndTag(i));
-                checkForImage(images, tagString);
-            }
-            // Get the value of the valid tags
-            attributes = new byte[tagIndex.getNumberOfTags() + 1];
-            attributes[0] = 0;
-            for (int i = 1; i < attributes.length; i++)
-            {
-                resolveTag(input.substring(tagIndex
-                        .getStartTag(i - 1) + 1, tagIndex.getEndTag(i - 1)));
-                attributes[i] = font;
-            }
-            // Get the offsets for RichTextFeild
-            buildOffsets(input);
-            verifyOffsets();
-        }
-        else
-        {
-            resultString = input;
-            attributes = new byte[1];
-            attributes[0] = 0;
-            buildOffsets(input);
-            verifyOffsets();
-        }
+        byte font = (byte) 0;
+    	
+    	boolean inTag = false;
+    	int start = 0; // The start of the last tag
+    	int end = -1; // The end of the last tag
+    	StringBuffer result = new StringBuffer();
+    	offs.addElement(new Integer(0));
+    	for (int i = 0; i < input.length(); i++)
+    	{	
+    		char ch = input.charAt(i);
+    		if (!inTag && ch == '<')
+    		{
+				start = i;    		
+    			inTag = true;
+    			
+    			// add everything before the tag
+    			result.append(input.substring(end + 1, start));  
+    			end = i - 1;
+    		}
+    		else if (inTag && ch == '>') // found a tag end 
+			{
+    			end = i;
+				inTag = false;
+    			String tag = input.substring(start + 1, end);
+
+    			if (isBreak(tag))
+    			{
+    				result.append('\n');
+    			}
+    			else if (!checkForImage(images, tag))
+    			{
+					byte newFont = resolveFontTag(font, tag);
+					if (newFont != -1)
+					{
+						if (result.length() > 0)
+						{
+			    			offs.addElement(new Integer(result.length()));
+			    			attrs.addElement(new Byte(font));
+						}
+		    			font = newFont;
+					}
+    			}
+			}    			
+    	}
+    	if (end < input.length() - 1)
+    	{
+			result.append(input.substring(end + 1, input.length()));
+			offs.addElement(new Integer(result.length()));
+			attrs.addElement(new Byte(font));
+    	}
+		
+    	attributes = new byte[attrs.size()];
+    	for (int i = 0; i < attrs.size(); i++)
+    	{
+    		attributes[i] = ((Byte) attrs.elementAt(i)).byteValue();
+    	}
+
+    	offsets = new int[offs.size()];
+    	for (int i = 0; i < offs.size(); i++)
+    	{
+    		offsets[i] = ((Integer) offs.elementAt(i)).intValue();
+    	}
+
+    	resultString = result.toString();
     }
 
     /**
@@ -131,10 +163,10 @@ public class HParser
     
     private static final String[] tagStrings =
     { 
-    	"B", "/B", "I", "/I", "EM", "/EM",
-		"FONT COLOR=\"RED\"", "/FONT",
-		"H1", "/H1", "H2", "/H2", "H3",
-        "/H3", "H4", "/H4" 
+    	"b", "/b", "i", "/i", "em", "/em",
+		"font color=\"red\"", "/font",
+		"h1", "/h1", "h2", "/h2", "h3",
+        "/h3", "h4", "/h4" 
     };
    
     /**
@@ -144,216 +176,74 @@ public class HParser
      * @param s the contents of a single tag
      * @return the index of the tag found, or -1 if illegal
      */
-    private void resolveTag(String s)
+    private byte resolveFontTag(byte font, String s)
     {
-        s = s.toUpperCase(); // <b> == <B>
         for (int i = 0; i < tagStrings.length; i++)
         {
             if (s.compareTo(tagStrings[i]) == 0)
             {
-                setFontFromTag(i);
+                return setFontFromTag(font, i);
             }
         }
+        return -1;
     }
 
-    private void setFontFromTag(int in)
+    private byte setFontFromTag(byte font, int in)
     {
         switch (in)
         {
         case 0:
-            setFont(BOLD, true);
-            break;
+            return setFont(font, BOLD, true);
         case 1:
-            setFont(BOLD, false);
-            break;
+        	return setFont(font, BOLD, false);
         case 2:
         case 4:
-        	setFont(ITALIC, true);
-            break;
+        	return setFont(font, ITALIC, true);
         case 3:
         case 5:
-        	setFont(ITALIC, false);
-            break;
+        	return setFont(font, ITALIC, false);
         case 6:
-        	setFont(RED, true);
-            break;
+        	return setFont(font, RED, true);
         case 7:
-        	setFont(RED, false);
-            break;
+        	return setFont(font, RED, false);
         default:
             if (in > 7)
-                setFont(LARGE, in % 2 == 0);
-            break;
+            	return setFont(font, LARGE, in % 2 == 0);
+            else
+            	return -1;
         }
+    }
+    
+    private byte setFont(byte font, int fontElement, boolean on) 
+    {
+    	if (on)
+    		return (byte) (font | fontElement);
+    	else
+    		return (byte) (font & ~fontElement);
     }
 
-    /**
-     * this builds the offsets array needed for the constructor of RichTextFeild
-     * there are some arbitrary -1 and +1 in order to make sure that the length
-     * of the characters starting or ending tags themselves are not included it
-     * is important to note that this DOES NOT put the last offset (the last
-     * char in the String being parsed) as it does not have the String itself.
-     */
-    private int[] buildOffsets(String s)
-    {
-        if (tagIndex.getNumberOfTags() > 0)
-        {
-            offsets = new int[tagIndex.getNumberOfTags() + 2]; // one for
-                                                                     // start
-                                                                     // one for
-                                                                     // end
-            offsets[0] = 0;
-            int taglength = 0;
-            for (int i = 0; i < tagIndex.numberOfTags; i++)
-            {
-                offsets[i + 1] = (tagIndex.getStartTag(i) - taglength);
-                taglength = tagIndex.getTagLength(i);
-            }
-            // offSets[offSets.length - 2] -= 1;
-            resultString = this.stripTags(s);
-            offsets[offsets.length - 1] = resultString.length();
-            return offsets;
-        }
-        else
-        {
-            offsets = new int[2];
-            offsets[0] = 0;
-            offsets[1] = s.length();
-            return offsets;
-        }
-    }
-
-    /**
-     * This is to verify that we have a couple of things: one that the offsets
-     * are monotonically increasing, next that any attribute tag is different
-     * than the one that preceeds it, and last to make sure that the offsets cap
-     * the beginning and end of the string in question correctly.
-     */
-    private void verifyOffsets() 
-    {
-        int tempOff[] = new int[offsets.length];
-        byte tempAtt[] = new byte[attributes.length];
-        int i = 1;
-        int count = 1;
-        int hits = 1; // Always 1 attribute in any set
-        int offset = 1;
-        // check for false start offsets
-        while (offsets[i] == 0)
-        {
-            i++;
-        }
-        tempOff[0] = 0;
-        tempAtt[0] = attributes[i - 1];
-        while (i < tempAtt.length)
-        {
-            // check for monotonic increase
-            if (offsets[i] > tempOff[count - offset])
-            {
-                if (attributes[i] != tempAtt[count - offset])
-                {
-                    int temp = offset - 1;
-                    tempOff[count - temp] = offsets[i];
-                    tempAtt[count - temp] = attributes[i];
-                    hits++;
-                }
-                else
-                {
-                    offset++;
-                }
-            }
-            else
-            {
-                offset++;
-            }
-            i++;
-            count++;
-        }
-        // Provided that we didn't just reverify the existing values
-        if (tempOff != offsets || tempAtt != attributes)
-        {
-            int[] resultOff;
-            byte[] resultAtt;
-            // Fix double ending
-            if (tempOff[hits - 1] == offsets[offsets.length - 1])
-            {
-                resultOff = new int[hits];
-                resultAtt = new byte[hits - 1];
-                hits--; // don't need the last set.
-            }
-            else
-            {
-                resultOff = new int[hits + 1];
-                resultAtt = new byte[hits];
-            }
-            for (int j = 0; j < hits; j++)
-            {
-                resultOff[j] = tempOff[j];
-                resultAtt[j] = tempAtt[j];
-            }
-            resultOff[hits] = offsets[offsets.length - 1];
-            // make sure we didn't have a closing tag at the end
-            offsets = resultOff;
-            attributes = resultAtt;
-        }
-    }
 
     /**
      * Scans a string for img tags and deposits the src attributes in a vector
      * @param images the vector to which the src attributes are added
      * @param tagString the string to be scanned
+     * @return true if an image has been found
      */
-    private static void checkForImage(Vector images, String tagString)
+    private static boolean checkForImage(Vector images, String tagString)
     {
         if (!tagString.startsWith("img"))
-            return;
+            return false;
         int i = tagString.indexOf("src");
         if (i == -1)
-            return;
+            return false;
         i = tagString.indexOf("\"", i);
         if (i == -1)
-            return;
+            return false;
         int j = tagString.indexOf("\"", i + 1);
         if (j == -1)
-            return;
+            return false;
         images.addElement(tagString.substring(i + 1, j));
-    }
-
-    /**
-     * This takes all the tags of any kind out of the String leaving just the
-     * text between tags, there are some awkward +1 and -1 here, mostly because
-     * the parsing is build to make it easy on the tag processors, ie the
-     * greater and less than of tags get left in the string if the substring
-     * uses the numbers in the tags[][] array as is, so in this method we need
-     * to bump everything one in order to cut these out of resulting string.
-     * @param s our original String
-     * @return a string with all tags stripped out
-     */
-    private String stripTags(String s)
-    {
-        if (tagIndex.getNumberOfTags() < 1)
-        {
-            return s;
-        }
-        String temp = s.substring(0, (tagIndex.getStartTag(0)));
-        if (isBreak(s.substring(tagIndex.getStartTag(0), tagIndex.getEndTag(0))))
-        {
-            temp = temp.concat("\n");
-        }
-        for (int i = 0; i < (tagIndex.getNumberOfTags() - 1); i++)
-        {
-            // System.out.println("Start index: " + tagIndex.getEndTag(i) +
-            // " End index: " + tagIndex.getStartTag(i + 1));
-            temp = temp.concat(s.substring((tagIndex.getEndTag(i) + 1),
-                    (tagIndex.getStartTag(i + 1))));
-            if (isBreak(s.substring(tagIndex.getStartTag(i), tagIndex
-                    .getEndTag(i))))
-            {
-                temp = temp.concat("\n");
-            }
-        }
-        temp = temp.concat(s.substring((tagIndex.getEndTag(tagIndex
-                .getNumberOfTags() - 1) + 1), s.length()));
-        return temp;
+        return true;
     }
 
     /**
@@ -363,14 +253,6 @@ public class HParser
      */
     private static boolean isBreak(String test)
     {
-        test = test.toUpperCase();
-        return test.equals("<BR") || test.equals("<BR/");
-    }
-
-    private void setFont(int fontElement, boolean on) {
-    	if (on)
-    		font = (byte) (font | fontElement);
-    	else
-    		font = (byte) (font & ~fontElement);
+        return test.equals("br") || test.equals("br/");
     }
 }

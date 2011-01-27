@@ -324,25 +324,6 @@ public class HParserTest extends TestCase
         }
     }
 
-    public void testTagStart()
-    {
-        try
-        {
-            TagIndex index = new TagIndex("base case, no tags");
-            assertEquals(index.getNumberOfTags(), 0);
-            index = new TagIndex("case <single> tag");
-            assertEquals(index.getNumberOfTags(), 1);
-            index = new TagIndex("<tags> starting and ending <string>");
-            assertEquals(index.getNumberOfTags(), 2);
-            index = new TagIndex("<<malformed> tag <<<string>");
-            assertEquals(index.getNumberOfTags(), -1);
-        }
-        catch (Exception e)
-        {
-            assertNull(e);
-        }
-    }
-
     public void testScanImages()
     {
         HParser testParser = new HParser();
@@ -396,6 +377,42 @@ public class HParserTest extends TestCase
         assertEquals(offsets.length - 1, attrs.length);
         assertEquals(0, attrs[0]);
     }
+    
+    public void testBRandTag()
+    {
+        String input = "line1<br/>line2 <b>and bold</b><br/>line3";
+        HParser parser = new HParser();
+        parser.parse(input);
+        String expectedResult = "line1\nline2 and bold\nline3";
+        assertEquals(expectedResult, parser.getResultString());
+        int[] offsets = parser.getOffsets();
+        assertEquals(4, offsets.length);
+        assertEquals(0, offsets[0]);
+        assertEquals(12, offsets[1]);
+        assertEquals(20, offsets[2]);        
+        assertEquals(expectedResult.length(), offsets[offsets.length - 1]);
+        byte[] attrs = parser.getAttributes();
+        assertEquals(offsets.length - 1, attrs.length);
+        assertEquals(0, attrs[0]);
+        assertEquals(HParser.BOLD, attrs[1]);
+        assertEquals(0, attrs[2]);
+    }
+    
+    public void testUnknownTag()
+    {
+        String input = "line1<foo>line2</foo>line3";
+        HParser parser = new HParser();
+        parser.parse(input);
+        String expectedResult = "line1line2line3";
+        assertEquals(expectedResult, parser.getResultString());
+        int[] offsets = parser.getOffsets();
+        assertEquals(2, offsets.length);
+        assertEquals(expectedResult.length(), offsets[offsets.length - 1]);
+        byte[] attrs = parser.getAttributes();
+        assertEquals(offsets.length - 1, attrs.length);
+        assertEquals(0, attrs[0]);
+    }    
+
     
     public void testBeaufort()
     {
