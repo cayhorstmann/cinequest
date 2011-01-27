@@ -31,6 +31,9 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.WebConnection;
 
@@ -48,6 +51,7 @@ public class AndroidWebConnection extends WebConnection {
     	HttpProtocolParams.setUseExpectContinue(params, true);
     	HttpConnectionParams.setConnectionTimeout(params, 1000);
     	HttpConnectionParams.setSoTimeout(params, 1000);
+    	HttpProtocolParams.setUserAgent(params, "Mozilla/5.0 (Linux; U; Android 1.0; en-us; generic)");
     	ConnManagerParams.setTimeout(params, 1000);
 
     	SchemeRegistry registry = new SchemeRegistry();
@@ -72,7 +76,9 @@ public class AndroidWebConnection extends WebConnection {
     {
     	if (response != null) return;
     	HttpClient client = new DefaultHttpClient(conman, params);
-        // HttpClient client = new DefaultHttpClient();
+    	Platform.getInstance().log("user-agent: " + client.getParams().getParameter("user-agent"));
+
+    	// HttpClient client = new DefaultHttpClient();
     	if (postData == null) 
     	{
             HttpGet request = new HttpGet(url);
@@ -110,7 +116,6 @@ public class AndroidWebConnection extends WebConnection {
     {   
     	execute();
     	String value = response.getFirstHeader(name).getValue();
-    	Platform.getInstance().log("header for " + name + " is " + value);
     	return value;
     }
 
