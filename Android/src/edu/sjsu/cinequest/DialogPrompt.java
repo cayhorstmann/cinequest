@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -125,6 +126,9 @@ public class DialogPrompt {
         //set up image view
         ImageView logo = (ImageView) dialog.findViewById(R.id.sjsu_logo);
         logo.setImageResource(R.drawable.sjsulogo_new_sjsu4);
+
+        TextView version = (TextView) dialog.findViewById(R.id.about_dialog_version);
+        version.setText("App version " + ctx.getString(R.string.versionName));
         
         //set up scrollview
         ScrollView scroller = (ScrollView) dialog.findViewById(R.id.about_dialog_scrollview);

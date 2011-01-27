@@ -22,8 +22,12 @@ package edu.sjsu.cinequest.javase;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 import edu.sjsu.cinequest.comm.WebConnection;
 
@@ -42,10 +46,34 @@ public class JavaSEWebConnection extends WebConnection
        return connection.getOutputStream();
     }
     
-    public InputStream getInputStream() throws IOException
-    {
-        return connection.getInputStream();
+    public byte[] getBytes() throws IOException {
+        InputStream inputStream = connection.getInputStream();
+        byte[] responseData = new byte[10000];
+        int length = 0;
+        try
+        {
+            int count;
+            while (-1 != (count = inputStream.read(responseData, length,
+                    responseData.length - length)))
+            {
+                length += count;
+                if (length == responseData.length)
+                {
+                    byte[] newData = new byte[2 * responseData.length];
+                    System.arraycopy(responseData, 0, newData, 0, length);
+                    responseData = newData;
+                }
+            }
+        }
+        finally
+        {
+            close();
+        }
+        byte[] response = new byte[length]; 
+        System.arraycopy(responseData, 0, response, 0, length);
+        return response;
     }
+    
     
     public String getHeaderField(String name) throws IOException
     {   
@@ -57,5 +85,23 @@ public class JavaSEWebConnection extends WebConnection
         connection.disconnect();
         connection = null;
     }
+
+	@Override
+	public void setPostParameters(Hashtable postData) throws IOException {
+       PrintWriter out = new PrintWriter(connection.getOutputStream());
+       boolean first = true;
+       Enumeration keys = postData.keys();
+       while (keys.hasMoreElements()) 
+       {
+          if (first) first = false;
+          else out.print('&');
+          String key = keys.nextElement().toString();
+          String value = postData.get(key).toString();
+          out.print(key);
+          out.print('=');
+          out.print(URLEncoder.encode(value, "UTF-8"));               
+       }         
+       out.close();
+	}
 
 }

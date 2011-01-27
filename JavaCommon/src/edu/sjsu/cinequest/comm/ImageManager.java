@@ -59,13 +59,11 @@ public class ImageManager
     {
         Object image = null;
         WebConnection connection = Platform.getInstance().createWebConnection(imageUrl);
-        /*
         if (!connection.getHeaderField("content-type").startsWith("image"))
         {
             connection.close();
             return null;
         }
-        */
         byte[] response = connection.getBytes();        
         if (response.length > 0)
         {
@@ -114,7 +112,7 @@ public class ImageManager
             {
                 try
                 {
-                    Object result = fetchImage(/*imageUrl*/ "http://horstmann.com/cay-tiny.gif", usePersistentCache);
+                    Object result = fetchImage(imageUrl, usePersistentCache);
                     Platform.getInstance().invoke(callback, result);
                 }
                 catch (Throwable e)

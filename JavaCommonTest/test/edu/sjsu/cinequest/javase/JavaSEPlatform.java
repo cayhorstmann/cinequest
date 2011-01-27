@@ -28,12 +28,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -84,7 +81,7 @@ public class JavaSEPlatform extends Platform
         sp.parse(in, handler);
     }
     
-    public void parse(final String url, Hashtable postData, DefaultHandler handler, Callback callback)
+    public String parse(final String url, Hashtable postData, DefaultHandler handler, Callback callback)
        throws SAXException, IOException
     {
        SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -97,23 +94,10 @@ public class JavaSEPlatform extends Platform
            throw new SAXException(e.toString());
        }
        WebConnection connection = createWebConnection(url);
-       
-       PrintWriter out = new PrintWriter(connection.getOutputStream());
-       boolean first = true;
-       Enumeration keys = postData.keys();
-       while (keys.hasMoreElements()) 
-       {
-          if (first) first = false;
-          else out.print('&');
-          String key = keys.nextElement().toString();
-          String value = postData.get(key).toString();
-          out.print(key);
-          out.print('=');
-          out.print(URLEncoder.encode(value, "UTF-8"));               
-       }         
-       out.close();
+       connection.setPostParameters(postData);
        byte[] response = connection.getBytes();
        sp.parse(new ByteArrayInputStream(response), handler);
+       return new String(response);
     }
     
 

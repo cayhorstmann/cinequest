@@ -20,7 +20,6 @@
 package edu.sjsu.cinequest.comm;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Hashtable;
 
 /**
@@ -30,15 +29,6 @@ import java.util.Hashtable;
  */
 public abstract class WebConnection
 {
-    /**
-     * Gets the input stream associated with this connection.
-     * @return the input stream
-     * @throws IOException
-     */
-    protected abstract InputStream getInputStream() throws IOException;
-    
-    // public abstract OutputStream getOutputStream() throws IOException;
-
     /**
      * Call this method before calling getBytes or getHeaderField if you
      * want to do a POST.
@@ -53,32 +43,5 @@ public abstract class WebConnection
     
     public abstract String getHeaderField(String name) throws IOException;
     
-    public byte[] getBytes() throws IOException
-    {        
-        InputStream inputStream = getInputStream();
-        byte[] responseData = new byte[10000];
-        int length = 0;
-        try
-        {
-            int count;
-            while (-1 != (count = inputStream.read(responseData, length,
-                    responseData.length - length)))
-            {
-                length += count;
-                if (length == responseData.length)
-                {
-                    byte[] newData = new byte[2 * responseData.length];
-                    System.arraycopy(responseData, 0, newData, 0, length);
-                    responseData = newData;
-                }
-            }
-        }
-        finally
-        {
-            close();
-        }
-        byte[] response = new byte[length]; 
-        System.arraycopy(responseData, 0, response, 0, length);
-        return response;
-    }
+    public abstract byte[] getBytes() throws IOException;
 }

@@ -285,6 +285,7 @@ public class ScheduleActivity extends CinequestBottomBarActivity {
     private void logOut(){
     	HomeActivity.getUser().logout();
     	refreshListContents(null);
+    	// TODO: String resource
     	Toast.makeText(this, "You have been logged out!", Toast.LENGTH_LONG).show();
     }
     

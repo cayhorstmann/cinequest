@@ -47,6 +47,33 @@
         classname="com.android.ant.SetupTask"
         classpathref="android.antlibs" />
 
+      <tstamp>
+         <format property="build.time" pattern="yyyy-MM-dd HH:mm" />
+         <format property="build.time.num" pattern="yyMMddHHmm" />
+      </tstamp>
+
+      <property name="string.resources" value="res/values/strings.xml"/>  
+
+      <replaceregexp file="${string.resources}" byline="true">
+         <regexp pattern="(&lt;string name=&quot;versionCode&quot;&gt;).*(&lt;/string&gt;)"/>
+         <substitution expression="\1${build.time.num}\2"/>
+      </replaceregexp>
+      <replaceregexp file="${string.resources}" byline="true">
+         <regexp pattern="(&lt;string name=&quot;versionName&quot;&gt;).*(&lt;/string&gt;)"/>
+         <substitution expression="\1${build.time}\2"/>
+      </replaceregexp>
+
+      <property name="android.manifest" value="AndroidManifest.xml"/>  
+
+      <replaceregexp file="${android.manifest}" byline="true">
+         <regexp pattern="(android:versionCode=&quot;).*(&quot;)"/>
+         <substitution expression="\1${build.time.num}\2"/>
+      </replaceregexp>
+      <replaceregexp file="${android.manifest}" byline="true">
+         <regexp pattern="(android:versionName=&quot;).*(&quot;)"/>
+         <substitution expression="\1${build.time}\2"/>
+      </replaceregexp>
+
 <!-- extension targets. Uncomment the ones where you want to do custom work
      in between standard targets -->
 <!--

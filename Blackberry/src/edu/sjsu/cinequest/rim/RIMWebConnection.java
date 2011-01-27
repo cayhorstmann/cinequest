@@ -79,9 +79,33 @@ public class RIMWebConnection extends WebConnection
        return connection.openInputStream();        
     }
     
-    public OutputStream getOutputStream() throws IOException
-    {
-       return connection.openOutputStream();
+    public byte[] getBytes() throws IOException 
+    {        
+        InputStream inputStream = getInputStream();
+        byte[] responseData = new byte[10000];
+        int length = 0;
+        try
+        {
+            int count;
+            while (-1 != (count = inputStream.read(responseData, length,
+                    responseData.length - length)))
+            {
+                length += count;
+                if (length == responseData.length)
+                {
+                    byte[] newData = new byte[2 * responseData.length];
+                    System.arraycopy(responseData, 0, newData, 0, length);
+                    responseData = newData;
+                }
+            }
+        }
+        finally
+        {
+            close();
+        }
+        byte[] response = new byte[length]; 
+        System.arraycopy(responseData, 0, response, 0, length);
+        return response;    
     }
     
     public String getHeaderField(String name) throws IOException
