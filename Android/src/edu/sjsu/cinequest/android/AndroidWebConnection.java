@@ -100,7 +100,8 @@ public class AndroidWebConnection extends WebConnection {
     	return new BufferedHttpEntity(response.getEntity()).getContent(); 
     }
     
-    public byte[] getBytes() throws IOException {
+    public byte[] getBytes() throws IOException 
+    {
     	execute();
     	return EntityUtils.toByteArray(response.getEntity());
     }

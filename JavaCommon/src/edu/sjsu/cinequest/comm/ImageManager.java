@@ -114,7 +114,7 @@ public class ImageManager
             {
                 try
                 {
-                    Object result = fetchImage(imageUrl, usePersistentCache);
+                    Object result = fetchImage(/*imageUrl*/ "http://horstmann.com/cay-tiny.gif", usePersistentCache);
                     Platform.getInstance().invoke(callback, result);
                 }
                 catch (Throwable e)
