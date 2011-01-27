@@ -29,6 +29,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.WebConnection;
@@ -93,10 +94,15 @@ public class AndroidWebConnection extends WebConnection {
     	}
     }
         
-    public InputStream getInputStream() throws IOException
+    protected InputStream getInputStream() throws IOException
     {
     	execute();
     	return new BufferedHttpEntity(response.getEntity()).getContent(); 
+    }
+    
+    public byte[] getBytes() throws IOException {
+    	execute();
+    	return EntityUtils.toByteArray(response.getEntity());
     }
     
     public String getHeaderField(String name) throws IOException
