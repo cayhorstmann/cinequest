@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
    <string name="app_name">Cinequest</string>
-   <string name="versionCode">1101271047</string>
-   <string name="versionName">2011-01-27 10:47</string>
+   <string name="versionCode">1101272115</string>
+   <string name="versionName">2011-01-27 21:15</string>
    <string name="login_prompt">This feature needs you to be logged in.\nWould you like to sign in now?</string>
    <string name="login_instruction">Login using your cinequest.org interactive scheduler account email and password.</string>
    <string name="register_instruction">Don\'t have a cinequest.org interactive scheduler account yet?</string>
