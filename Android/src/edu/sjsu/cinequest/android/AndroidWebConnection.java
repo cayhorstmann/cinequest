@@ -76,13 +76,12 @@ public class AndroidWebConnection extends WebConnection {
     {
     	if (response != null) return;
     	HttpClient client = new DefaultHttpClient(conman, params);
-    	client.getParams().setParameter("user-agent", "Mozilla/5.0 (Linux; U; Android 1.0; en-us; generic)");
-    	Platform.getInstance().log("user-agent: " + client.getParams().getParameter("user-agent"));
 
     	// HttpClient client = new DefaultHttpClient();
     	if (postData == null) 
     	{
             HttpGet request = new HttpGet(url);
+            request.setHeader("user-agent", "Mozilla/5.0 (Linux; U; Android 1.0; en-us; generic)");
             response = client.execute(request);    		
     	}
     	else
