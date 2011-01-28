@@ -20,8 +20,12 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
+import edu.sjsu.cinequest.R;
 import edu.sjsu.cinequest.comm.Cache;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.MessageDigest;
@@ -83,37 +87,49 @@ public class AndroidPlatform extends Platform {
 		 * The parser can't infer the character encoding from the xml encoding attribute, so 
 		 * we have to hardwire 8859-1 here. 
 		 */
-		// Reader in = new InputStreamReader(new URL(url).openStream(), "iso-8859-1");
-		WebConnection connection = null;
-		try {
-			connection = createWebConnection(url);
-			byte[] xmlSource = (byte[]) connection.getBytes();
-		    if (xmlSource.length == 0) throw new IOException("No data received from server");
-
-	        // Store the xml source
-	        xmlRawBytesCache.put(url, xmlSource);
-	        InputSource in = new InputSource(new InputStreamReader(
-	              new ByteArrayInputStream(xmlSource), "ISO-8859-1"));
-			sp.parse(in, handler);
-		} 
-		// Reading fails. Try to get XML from cache
-        catch (IOException e)
-        {
-           Platform.getInstance().log(e.getMessage());
-           byte[] bytes = (byte[]) xmlRawBytesCache.get(url);
-           // XML exists in cache
-           if (bytes != null)
-           {
-              InputSource in  = new InputSource(new InputStreamReader(
-                 new ByteArrayInputStream(bytes), "ISO-8859-1"));
-              sp.parse(in, handler);
-			  Platform.getInstance().log("Returned cached response " + new String(bytes));              
-              return;
-           } else
-              // XML not found on cache.
-           throw e;
-        }
+		if (isNetworkAvailable())
+		{
+			WebConnection connection = null;
+			try {
+				connection = createWebConnection(url);
+				byte[] xmlSource = (byte[]) connection.getBytes();
+			    if (xmlSource.length == 0) throw new IOException("No data received from server");
+	
+		        // Store the xml source
+		        xmlRawBytesCache.put(url, xmlSource);
+		        InputSource in = new InputSource(new InputStreamReader(
+		              new ByteArrayInputStream(xmlSource), "ISO-8859-1"));
+				sp.parse(in, handler);
+			} 
+			// Reading fails. Try to get XML from cache
+	        catch (IOException e)
+	        {
+	           Platform.getInstance().log(e.getMessage());
+	           if (!getFromCache(url, sp, handler))
+	        	   throw e;
+	        }
+		}
+		else
+		{
+			getFromCache(url, sp, handler);
+		}
     }
+
+	private boolean getFromCache(String url, SAXParser sp, DefaultHandler handler) 
+		throws SAXException, IOException
+	{
+        byte[] bytes = (byte[]) xmlRawBytesCache.get(url);
+        // XML exists in cache
+        if (bytes != null)
+        {
+           InputSource in  = new InputSource(new InputStreamReader(
+              new ByteArrayInputStream(bytes), "ISO-8859-1"));
+           sp.parse(in, handler);
+			  Platform.getInstance().log("Returned cached response " + new String(bytes));              
+           return true;
+        } else
+        	return false;
+	}
 
 	@Override
 	public String parse(String url, Hashtable postData, DefaultHandler handler,
@@ -221,7 +237,26 @@ public class AndroidPlatform extends Platform {
 		Log.i("Cinequest", message);
 	}
 
-	@Override
+    /**
+     * Check for active internet connection
+     */
+    public boolean isNetworkAvailable() {
+    	// TODO: In that case, don't we still want to retrieve data from cache?
+    	ConnectivityManager cMgr 
+  		= (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cMgr.getActiveNetworkInfo();
+
+        if (netInfo != null && netInfo.isAvailable()) {       
+     	   return true;
+        }
+        else {
+    		Toast.makeText(context, context.getResources().getString(R.string.no_network_msg), 
+    				Toast.LENGTH_LONG).show();
+     	   return false;
+        }
+    }    
+
+    @Override
 	public void close() {
 		storePersistentObject(PERSISTENCE_KEY, xmlRawBytesCache);
 	}

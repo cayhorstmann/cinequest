@@ -130,5 +130,7 @@ public abstract class Platform
 	
 	public abstract void log(String message);
 	
+	public boolean isNetworkAvailable() { return true; }
+	
 	public abstract void close();
 }

@@ -8,7 +8,6 @@ import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 public class ForumsActivity extends CinequestTabActivity {
 	@Override
 	protected void fetchServerData() {
-		if (!HomeActivity.isNetworkAvailable(this)) return;
 		HomeActivity.getQueryManager().getEventSchedules("forums", 
 				new ProgressMonitorCallback(this) {    		
 			public void invoke(Object result) {

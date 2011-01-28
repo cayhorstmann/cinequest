@@ -7,8 +7,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,7 +22,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import edu.sjsu.cinequest.android.AndroidPlatform;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.ImageManager;
@@ -109,12 +106,7 @@ public class HomeActivity extends Activity {
      */
     @Override
     public void onResume(){
-    	super.onResume();
-    	
-    	//check network connection
-    	if (!isNetworkAvailable(this)) return;
-    	
-    	//if network is available, get the event/news data
+    	super.onResume();    	
         queryManager.getSpecialScreen("ihome", new Callback(){
 			@Override
 			public void invoke(Object result) {
@@ -201,25 +193,6 @@ public class HomeActivity extends Activity {
     public static User getUser() {
 		return user;
 	}
-    
-    /**
-     * Check for active internet connection
-     */
-    public static boolean isNetworkAvailable(Context context) {
-    	// TODO: In that case, don't we still want to retrieve data from cache?
-    	ConnectivityManager cMgr 
-  		= (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cMgr.getActiveNetworkInfo();
-
-        if (netInfo != null && netInfo.isAvailable()) {       
-     	   return true;
-        }
-        else {
-    		Toast.makeText(context, context.getResources().getString(R.string.no_network_msg), 
-    				Toast.LENGTH_LONG).show();
-     	   return false;
-        }
-    }    
     
     /**
      * Create a menu to be displayed when user hits Menu key on device

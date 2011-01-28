@@ -49,7 +49,6 @@ public class FilmsActivity extends CinequestTabActivity {
 	
 	@Override
 	protected void fetchServerData() {
-		if (!HomeActivity.isNetworkAvailable(this)) return;
     	//if mode is "by-date"
         if(mListSortType == SortType.BYDATE)
         {

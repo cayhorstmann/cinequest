@@ -46,7 +46,6 @@ public class FilmDetail extends CinequestActivity {
 	}
 	
 	private void fetchServerData(Bundle b){
-		if (!HomeActivity.isNetworkAvailable(this)) return;
         Object target = b.getSerializable("target");
         
         if (target instanceof Film) {

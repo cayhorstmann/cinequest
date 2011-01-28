@@ -1,5 +1,6 @@
 package edu.sjsu.cinequest;
 
+import edu.sjsu.cinequest.comm.Platform;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -68,7 +69,7 @@ public class RegistrationActivity extends Activity {
                              activity.setTitle(R.string.app_name);
                 }
        });
-		if (!HomeActivity.isNetworkAvailable(this)) {
+		if (!Platform.getInstance().isNetworkAvailable()) {
     	   webview.setNetworkAvailable(false);
 		}else{
 			webview.setNetworkAvailable(true);

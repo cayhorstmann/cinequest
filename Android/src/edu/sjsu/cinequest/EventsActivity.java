@@ -9,7 +9,6 @@ public class EventsActivity extends CinequestTabActivity {
 
 	@Override
 	protected void fetchServerData() {
-		if (!HomeActivity.isNetworkAvailable(this)) return;
 		HomeActivity.getQueryManager().getEventSchedules("special_events", 
 				new ProgressMonitorCallback(this) {    		
 			public void invoke(Object result) {
