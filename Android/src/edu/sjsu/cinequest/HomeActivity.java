@@ -60,7 +60,21 @@ public class HomeActivity extends Activity {
         queryManager = new QueryManager();
         imageManager = new ImageManager();
         user = new User();
-        
+
+        queryManager.getFestivalDates(new Callback() {
+            public void starting() 
+            {
+            }          
+            public void failure(Throwable t)
+            {
+          	  Platform.getInstance().log(t.getMessage());
+            }
+            public void invoke(Object result)
+            {
+               DateUtils.setFestivalDates((String[]) result);            
+            }
+         });
+                 
         title_image = (ImageView) this.findViewById(R.id.homescreen_title_image);
         title_image.setImageDrawable(getResources().getDrawable(R.drawable.creative));
 

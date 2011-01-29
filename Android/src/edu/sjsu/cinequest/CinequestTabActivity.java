@@ -2,7 +2,6 @@ package edu.sjsu.cinequest;
 
 import java.util.List;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -27,8 +26,6 @@ public abstract class CinequestTabActivity extends CinequestActivity{
 	
 	//menu options unique id
 	private static final int MOREINFO_CONTEXTMENU_ID = Menu.FIRST + 10;
-	private static final int HOME_MENUOPTION_ID = Menu.FIRST + 11;
-	private static final int ABOUT_MENUOPTION_ID = Menu.FIRST + 12;
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) {    	
@@ -112,46 +109,6 @@ public abstract class CinequestTabActivity extends CinequestActivity{
 		return listview;
 	}
 
-    /**
-     * Take the user to home activity
-     */
-    private void goHome(){
-
-    	Intent i = new Intent();
-		setResult(RESULT_OK, i);
-        finish();
-    }
-        
-    /**
-     * Create a menu to be displayed when user hits Menu key on device
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        
-        menu.add(0, HOME_MENUOPTION_ID, 0,"Home").setIcon(R.drawable.home);
-        menu.add(0, ABOUT_MENUOPTION_ID, 0,"About").setIcon(R.drawable.about);
-        
-        return true;
-    }
-    
-    /** Menu Item Click Listener*/
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-        	
-	        case HOME_MENUOPTION_ID:
-	        	goHome();
-	            return true;
-	        case ABOUT_MENUOPTION_ID:
-	            DialogPrompt.showAppAboutDialog(this);
-	            return true;
-	        
-	        default:
-	            return super.onOptionsItemSelected(item);
-        }
-        
-    }
     
     /**
      * Called when creating the context menu (for our list items)

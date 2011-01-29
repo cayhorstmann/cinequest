@@ -1,6 +1,5 @@
 package edu.sjsu.cinequest;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,7 +10,7 @@ import android.widget.ListView;
 /**
  * Films tab of the app
  */
-public class FilmsActivity extends Activity {
+public class FilmsActivity extends CinequestActivity {
 	private ListView listview;
 	public static final String ALPHA = "A - Z";
 

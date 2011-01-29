@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -26,6 +28,9 @@ import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
  */
 public class CinequestActivity extends Activity
 {
+	private static final int HOME_MENUOPTION_ID = Menu.FIRST + 11;
+	private static final int ABOUT_MENUOPTION_ID = Menu.FIRST + 12;
+	
 	/**
 	 * Launches the FilmDetail activity for the given object.
 	 * @param result Object; Can be Schedule, Filmlet etc
@@ -200,4 +205,45 @@ public class CinequestActivity extends Activity
 	    }
 	}	
 
+    /**
+     * Take the user to home activity
+     */
+    private void goHome(){
+
+    	Intent i = new Intent();
+		setResult(RESULT_OK, i);
+        finish();
+    }
+        
+    /**
+     * Create a menu to be displayed when user hits Menu key on device
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        
+        menu.add(0, HOME_MENUOPTION_ID, 0,"Home").setIcon(R.drawable.home);
+        menu.add(0, ABOUT_MENUOPTION_ID, 0,"About").setIcon(R.drawable.about);
+        
+        return true;
+    }
+    
+    /** Menu Item Click Listener*/
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+        	
+	        case HOME_MENUOPTION_ID:
+	        	goHome();
+	            return true;
+	        case ABOUT_MENUOPTION_ID:
+	            DialogPrompt.showAppAboutDialog(this);
+	            return true;
+	        
+	        default:
+	            return super.onOptionsItemSelected(item);
+        }
+        
+    }
+	
 }

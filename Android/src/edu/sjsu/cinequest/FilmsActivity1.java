@@ -24,7 +24,7 @@ public class FilmsActivity1 extends CinequestTabActivity {
 	private static Vector<Schedule> mSchedule_byDate;
 	
 	//unique id's for menu options
-	private static final int SORT_MENUOPTION_ID = Menu.FIRST;
+	// private static final int SORT_MENUOPTION_ID = Menu.FIRST;
 	private static final int ADD_CONTEXTMENU_ID = Menu.FIRST + 1;
 	
 	private boolean isByDate() { return !target.equals(FilmsActivity.ALPHA); }
@@ -86,11 +86,9 @@ public class FilmsActivity1 extends CinequestTabActivity {
 	   	}
 	}
 
-    /**
-     * Toggle the Sort mode and redisplay the list with new mode
-     */
-    private void toggleSortAndRedisplayList(){
-    	/*
+	/*
+    
+	private void toggleSortAndRedisplayList(){
     	if(mListSortType == SortType.BYDATE){
     		mListSortType = SortType.BYTITLE;
     		
@@ -106,12 +104,8 @@ public class FilmsActivity1 extends CinequestTabActivity {
     		else
     			refreshListContents(mSchedule_byDate);
     	} 
-    	*/   	
     }
     
-    /**
-     * Create a menu to be displayed when user hits Menu key on device
-     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {        
         
@@ -124,7 +118,6 @@ public class FilmsActivity1 extends CinequestTabActivity {
         return true;
     }
     
-    /** Menu Item Click Listener*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -139,6 +132,7 @@ public class FilmsActivity1 extends CinequestTabActivity {
         }
         
     }
+    	*/   	
     
     /**
      * Called when creating the context menu (for our list items)
