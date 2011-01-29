@@ -20,6 +20,8 @@
                 android:configChanges="orientation" />
       <activity android:name=".FilmsActivity" 
                 android:configChanges="orientation" />
+      <activity android:name=".FilmsActivity1" 
+                android:configChanges="orientation" />
       <activity android:name=".FilmDetail" 
                 android:configChanges="orientation" />
       <activity android:name=".ForumsActivity" 

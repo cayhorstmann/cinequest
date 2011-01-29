@@ -26,6 +26,8 @@ public class DateUtils {
     
     public static final int DATE_DEFAULT = 1;
     public static final int DAY_ONLY = 2;
+    public static final int DATE_LONG = 3;
+    
     
     /*
      * If you need more date or date/time formats, add a constant here. 
@@ -36,7 +38,8 @@ public class DateUtils {
     private DateFormat[] formatters = {
     	DateFormat.getTimeInstance(DateFormat.SHORT),
     	DateFormat.getDateInstance(),
-    	new SimpleDateFormat("d")
+    	new SimpleDateFormat("d"),
+    	DateFormat.getDateInstance(DateFormat.LONG)
     };
     
     private static String[] festivalDates =
