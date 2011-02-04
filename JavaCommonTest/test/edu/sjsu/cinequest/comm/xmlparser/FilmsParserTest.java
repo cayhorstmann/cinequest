@@ -37,7 +37,7 @@ public class FilmsParserTest extends TestCase
     {
         Vector result = FilmsParser
                 .parse("http://mobile.cinequest.org/mobileCQ.php?type=films", null);
-        assertEquals(((Filmlet) result.elementAt(0)).getId(), 2897);
+        assertEquals(((Filmlet) result.elementAt(0)).getId(), 3066);
     }
     
     public void testDVDs() throws Exception

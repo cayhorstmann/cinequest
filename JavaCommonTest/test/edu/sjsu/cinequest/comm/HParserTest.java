@@ -427,7 +427,7 @@ public class HParserTest extends TestCase
     public void testWriter()
     {
         TestCallback callback = new TestCallback();
-        mgr.getProgramItem(1461, callback);
+        mgr.getProgramItem(1482, callback);
         ProgramItem item = (ProgramItem) callback.getResult();
         String input = item.getDescription();
         HParser parser = new HParser();
@@ -438,7 +438,7 @@ public class HParserTest extends TestCase
     public void testFilms()
     {
         TestCallback callback = new TestCallback();
-        mgr.getProgramItem(1461, callback);
+        mgr.getProgramItem(1482, callback);
         ProgramItem item = (ProgramItem) callback.getResult();
         String input = item.getDescription();
         HParser parser = new HParser();

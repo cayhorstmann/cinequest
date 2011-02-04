@@ -28,20 +28,20 @@ public class ProgramItemParserTest extends TestCase {
 		Platform.setInstance(new JavaSEPlatform());
 	}
 
-	public void testProgramItem1406() throws Exception {
+	public void testProgramItem1516() throws Exception {
 		ProgramItem result = ProgramItemParser
 				.parseProgramItem(
-						"http://mobile.cinequest.org/mobileCQ.php?type=program_item&id=1406",
+						"http://mobile.cinequest.org/mobileCQ.php?type=program_item&id=1516",
 						null);
-		assertEquals("Anyone You Want", result.getTitle());
-		assertEquals(1406, result.getId());
+		assertEquals("Make a Movie Like Spike", result.getTitle());
+		assertEquals(1516, result.getId());
 	}
 
 	public void testImage() throws Exception {
 		ProgramItem result = ProgramItemParser
 				.parseProgramItem(
-						"http://mobile.cinequest.org/mobileCQ.php?type=program_item&id=1437",
+						"http://mobile.cinequest.org/mobileCQ.php?type=program_item&id=1484",
 						null);
-		assertNotNull(result.getImageURL());
+		assertTrue(result.getImageURL().endsWith("m3068.gif"));
 	}
 }

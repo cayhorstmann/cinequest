@@ -23,7 +23,6 @@ import java.util.Vector;
 
 import junit.framework.TestCase;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
-import edu.sjsu.cinequest.comm.cinequestitem.ProgramItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.javase.JavaSEPlatform;
 
@@ -42,17 +41,17 @@ public class QueryManagerTest extends TestCase
     public void testFilmSchedules()
     {
         TestCallback callback = new TestCallback();
-        mgr.getFilm(2973, callback);
+        mgr.getFilm(3084, callback);
         assertTrue(callback.getResult() instanceof Film);
         Film film = (Film) callback.getResult();
         Vector sched = film.getSchedules();
-        assertTrue(((Schedule) sched.elementAt(0)).getStartTime().startsWith("2010-02-25 21:30:00"));
+        assertTrue(((Schedule) sched.elementAt(0)).getStartTime().startsWith("2011-03-02 21:15"));
     }
 
     public void testSchedulesDay()
     {
         TestCallback callback = new TestCallback();
-        mgr.getSchedulesDay("2010-03-02", callback);
+        mgr.getSchedulesDay("2011-03-03", callback);
         assertTrue(callback.getResult() instanceof Vector);
         Vector schedules = (Vector) callback.getResult();
         for (int i = 0; i < schedules.size(); i++)
@@ -61,39 +60,39 @@ public class QueryManagerTest extends TestCase
         }
     }
 
-    public void testBeaufort()
+    public void testAKissAndAPromise()
     {
         TestCallback callback = new TestCallback();
-        mgr.getSchedulesDay("2010-03-02", callback);
+        mgr.getSchedulesDay("2011-03-03", callback);
         Vector schedules = (Vector) callback.getResult();
         
         boolean found = false;
         for (int i = 0; !found && i < schedules.size(); i++)
         {
             Schedule sched = (Schedule) schedules.elementAt(i);
-            if (sched.getItemId() == 1441)
+            if (sched.getItemId() == 1485)
             {
-                assertEquals("Starring Maja (Prinsessa)", sched.getTitle());
+                assertEquals("A Kiss and A Promise", sched.getTitle());
                 found = true;
             }
         }
         assertTrue(found);
         callback = new TestCallback();
-        mgr.getSchedulesDay("2010-02-25", callback);
+        mgr.getSchedulesDay("2011-03-06", callback);
         schedules = (Vector) callback.getResult();
         found = false;
         for (int i = 0; !found && i < schedules.size(); i++)
         {
             Schedule sched = (Schedule) schedules.elementAt(i);
-            if (sched.getItemId() == 1441)
+            if (sched.getItemId() == 1485)
             {
-                assertEquals("Starring Maja (Prinsessa)", sched.getTitle());
+                assertEquals("A Kiss and A Promise", sched.getTitle());
                 found = true;
             }
         }
         assertTrue(found);
     }
-
+    /*
     public void testAmpersand()
     {
         TestCallback callback = new TestCallback();
@@ -103,11 +102,11 @@ public class QueryManagerTest extends TestCase
         System.out.println(title);
         assertTrue(title.contains("&"));
     }
-    
+    */
     public void testSpecialItem()
     {
         TestCallback callback = new TestCallback();
-        mgr.getSchedulesDay("2010-02-26", callback);
+        mgr.getSchedulesDay("2011-03-04", callback);
         Vector result = (Vector) callback.getResult();
         boolean found = false;
         for (int i = 0; !found && i < result.size(); i++)
@@ -118,13 +117,13 @@ public class QueryManagerTest extends TestCase
     public void testSpecialEvent450()
     {
         TestCallback callback = new TestCallback();
-        mgr.getEventSchedules("special_events", callback);
+        mgr.getEventSchedules("forums", callback);
         Vector result = (Vector) callback.getResult();
         boolean found = false;
         for (int i = 0; !found && i < result.size(); i++)
         {
             Schedule sched = (Schedule) result.elementAt(i);
-            if (sched.getItemId() == 1460)
+            if (sched.getItemId() == 1588)
             {
                 found = true;
                 assertTrue(sched.isMobileItem());

@@ -36,8 +36,8 @@ public class SchedulesParserTest extends TestCase
 
     public void testSchedules2010_03_01() throws Exception
     {
-        Vector result = SchedulesParser.parseSchedule("http://mobile.cinequest.org/mobileCQ.php?type=schedules&day=2010-03-01", new TestCallback());
-        assertEquals(((Schedule) result.elementAt(0)).getItemId(), 1387);
-        assertEquals(((Schedule) result.elementAt(14)).getItemId(), 1383);
+        Vector result = SchedulesParser.parseSchedule("http://mobile.cinequest.org/mobileCQ.php?type=schedules&day=2011-03-03", new TestCallback());
+        assertEquals(((Schedule) result.elementAt(0)).getItemId(), 1548);
+        assertEquals(((Schedule) result.elementAt(14)).getItemId(), 1565);
     }
 }

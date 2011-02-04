@@ -37,7 +37,7 @@ public class ProgramItemsParserTest extends TestCase
     {
         Vector result = ProgramItemsParser
                 .parse("http://mobile.cinequest.org/mobileCQ.php?type=programs", null);
-        assertEquals(((ProgramItem) result.elementAt(3)).getId(), 1406);
-        assertEquals(((ProgramItem) result.elementAt(3)).getTitle(), "Anyone You Want");
+        assertEquals(((ProgramItem) result.elementAt(3)).getId(), 1491);
+        assertEquals(((ProgramItem) result.elementAt(3)).getTitle(), "All That Remains");
     }
 }

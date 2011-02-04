@@ -21,7 +21,6 @@ package edu.sjsu.cinequest.javase;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -38,12 +37,6 @@ public class JavaSEWebConnection extends WebConnection
     public JavaSEWebConnection(String url) throws IOException
     {
         connection = (HttpURLConnection) new URL(url).openConnection();
-    }
-    
-    public OutputStream getOutputStream() throws IOException
-    {
-       connection.setDoOutput(true);
-       return connection.getOutputStream();
     }
     
     public byte[] getBytes() throws IOException {
@@ -88,6 +81,7 @@ public class JavaSEWebConnection extends WebConnection
 
 	@Override
 	public void setPostParameters(Hashtable postData) throws IOException {
+       connection.setDoOutput(true);
        PrintWriter out = new PrintWriter(connection.getOutputStream());
        boolean first = true;
        Enumeration keys = postData.keys();

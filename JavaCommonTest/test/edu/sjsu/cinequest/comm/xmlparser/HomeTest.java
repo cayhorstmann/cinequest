@@ -21,6 +21,6 @@ public class HomeTest extends TestCase {
                 .parse("http://mobile.cinequest.org/mobileCQ.php?type=xml&name=home", null);
         Section sec = (Section) result.elementAt(0);
         CinequestItem it = (CinequestItem) sec.getItems().get(0);
-        assertEquals(it.getTitle(), "Cinequest 20 Awards");
+        assertEquals(it.getTitle(), "John Turturro - Maverick Spirit Event");
     }
 }
