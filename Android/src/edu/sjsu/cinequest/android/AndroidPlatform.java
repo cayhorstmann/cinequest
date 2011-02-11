@@ -28,6 +28,7 @@ import android.widget.Toast;
 import edu.sjsu.cinequest.R;
 import edu.sjsu.cinequest.comm.Cache;
 import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.CallbackException;
 import edu.sjsu.cinequest.comm.MessageDigest;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.WebConnection;
@@ -111,7 +112,8 @@ public class AndroidPlatform extends Platform {
 		}
 		else
 		{
-			getFromCache(url, sp, handler);
+			if (!getFromCache(url, sp, handler))
+				throw new CallbackException("No network connection", CallbackException.ERROR);
 		}
     }
 

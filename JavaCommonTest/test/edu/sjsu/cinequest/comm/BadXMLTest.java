@@ -42,13 +42,12 @@ public class BadXMLTest extends TestCase {
         	for (MobileItem item : items)
         	{
         		int id = item.getLinkId();
-        		if (id != 0) {
-		        	TestCallback callback2 = new TestCallback();
-		        	mgr.getMobileItem(id, callback2);
-		        	ProgramItem pi = (ProgramItem) callback2.getResult();
-		        	assertNotNull(pi.getTitle());
-		        	assertNotNull(pi.getDescription());
-        		}
+        		if (id != 0) break;
+	        	TestCallback callback2 = new TestCallback();
+	        	mgr.getMobileItem(id, callback2);
+	        	ProgramItem pi = (ProgramItem) callback2.getResult();
+	        	assertNotNull(pi.getTitle());
+	        	assertNotNull(pi.getDescription());
         	}
         }
     }

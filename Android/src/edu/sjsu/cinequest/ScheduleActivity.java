@@ -272,7 +272,7 @@ public class ScheduleActivity extends CinequestBottomBarActivity {
 				}
 				@Override
 				public void failure(Throwable t) {
-					if (!(t instanceof CallbackException) && ((CallbackException) t).getLevel() == CallbackException.IGNORE)
+					if (t instanceof CallbackException && ((CallbackException) t).getLevel() == CallbackException.IGNORE)
 						Platform.getInstance().log(t.getMessage());					
 				}
     		}, HomeActivity.getQueryManager());
