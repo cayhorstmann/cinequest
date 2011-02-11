@@ -248,14 +248,7 @@ public class AndroidPlatform extends Platform {
   		= (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cMgr.getActiveNetworkInfo();
 
-        if (netInfo != null && netInfo.isAvailable()) {       
-     	   return true;
-        }
-        else {
-    		Toast.makeText(context, context.getResources().getString(R.string.no_network_msg), 
-    				Toast.LENGTH_LONG).show();
-     	   return false;
-        }
+        return netInfo != null && netInfo.isAvailable();       
     }    
 
     @Override

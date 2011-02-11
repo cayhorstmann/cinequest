@@ -211,7 +211,11 @@ public class ScheduleActivity extends CinequestBottomBarActivity {
     
     /** When user clicks SYNC, do this*/
     private void performSync(){
-		if (!Platform.getInstance().isNetworkAvailable()) return;
+		if (!Platform.getInstance().isNetworkAvailable()) {
+    		Toast.makeText(this, getResources().getString(R.string.no_network_msg), 
+    				Toast.LENGTH_LONG).show();
+    		return;
+		}
 
     	final User user = HomeActivity.getUser();
     	

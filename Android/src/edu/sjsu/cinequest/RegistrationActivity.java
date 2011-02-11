@@ -12,6 +12,7 @@ import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 
 /**
@@ -70,6 +71,8 @@ public class RegistrationActivity extends Activity {
                 }
        });
 		if (!Platform.getInstance().isNetworkAvailable()) {
+    		Toast.makeText(this, this.getResources().getString(R.string.no_network_msg), 
+    				Toast.LENGTH_LONG).show();			
     	   webview.setNetworkAvailable(false);
 		}else{
 			webview.setNetworkAvailable(true);
