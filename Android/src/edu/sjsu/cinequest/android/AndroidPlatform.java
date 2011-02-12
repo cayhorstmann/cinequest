@@ -24,8 +24,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
-import edu.sjsu.cinequest.R;
 import edu.sjsu.cinequest.comm.Cache;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.CallbackException;
@@ -236,6 +234,7 @@ public class AndroidPlatform extends Platform {
 
 	@Override
 	public void log(String message) {
+		if (message == null) message = "null";
 		Log.i("Cinequest", message);
 	}
 

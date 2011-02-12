@@ -72,14 +72,17 @@ public class FilmDetail extends CinequestActivity {
         } else if (target instanceof Schedule) {
         	Schedule schedule = (Schedule) target;
         	final int id = schedule.getItemId();
-    		HomeActivity.getQueryManager().getProgramItem(id, 
-    				new ProgressMonitorCallback(this){
+        	Callback callback = new ProgressMonitorCallback(this){
     			@Override
     			public void invoke(Object result) {
 					super.invoke(result);
     				showProgramItem((ProgramItem) result);
     			}
-    		});        	
+    		}; 
+        	if (schedule.isMobileItem())
+        		HomeActivity.getQueryManager().getMobileItem(id, callback);
+        	else
+        		HomeActivity.getQueryManager().getProgramItem(id, callback);        	
         } else if (target instanceof MobileItem) {
         	MobileItem mobileItem = (MobileItem) target;
         	final int id = mobileItem.getLinkId();
@@ -191,7 +194,9 @@ public class FilmDetail extends CinequestActivity {
 			
 			@Override
 			public void failure(Throwable t) {	
-				Platform.getInstance().log(t.getMessage());
+				String message = t.getMessage();
+				if (message == null) message = "Cannot retrieve " + imageURL;
+				Platform.getInstance().log(message);
 				// Try once more
 				HomeActivity.getImageManager().getImage(imageURL, new Callback() {
 					@Override
