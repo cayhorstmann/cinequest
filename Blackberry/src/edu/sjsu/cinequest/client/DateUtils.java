@@ -39,15 +39,14 @@ public class DateUtils
     public static final int NORMAL_MODE = 0;
     public static final int FESTIVAL_TEST_MODE = 1;
     public static final int OFFSEASON_TEST_MODE = 2;
-    // TODO: Set to NORMAL_MODE before release
-    private static int mode = FESTIVAL_TEST_MODE;
+    private static int mode = NORMAL_MODE;
     
     private static String[] festivalDates =
     { 
-    "2010-02-23", "2010-02-24", "2010-02-25", "2010-02-26", 
-    "2010-02-27", "2010-02-28", "2010-03-01", "2010-03-02",
-    "2010-03-03", "2010-03-04", "2010-03-05", "2010-03-06",
-    "2010-03-07"
+    "2011-03-01", "2011-03-02", "2011-03-03", "2011-03-04", 
+    "2011-03-05", "2011-03-06", "2011-03-07", "2011-03-08",
+    "2011-03-09", "2011-03-10", "2011-03-11", "2011-03-12",
+    "2011-03-13"
     };
 
     
