@@ -155,7 +155,6 @@ public class CinequestActivity extends Activity
 		protected void configureCheckBox(View v, CheckBox checkbox, final Schedule result) {
 			checkbox.setVisibility(View.VISIBLE);
 			checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
-				@Override
 				public void onCheckedChanged(CompoundButton buttonView,
 						boolean isChecked) {
 					Schedule s = (Schedule) buttonView.getTag();
