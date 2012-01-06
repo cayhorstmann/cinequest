@@ -166,7 +166,6 @@ public abstract class CinequestBottomBarActivity extends CinequestTabActivity {
     private CompoundButton.OnCheckedChangeListener mCheckboxClickListener 
     							= new CompoundButton.OnCheckedChangeListener(){    	
     	
-		@Override
 		public void onCheckedChanged(CompoundButton buttonView,
 				boolean isChecked) {
 			    			

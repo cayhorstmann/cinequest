@@ -52,7 +52,7 @@ public class SchedulesParser extends BasicHandler
     {
         SchedulesParser handler = new SchedulesParser();
         handler.result = new Vector();
-        Platform.getInstance().parse(url, handler, callback);
+        Platform.getInstance().parse(url, handler, callback);   
         return handler.result;
     }
     

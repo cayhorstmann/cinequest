@@ -38,6 +38,7 @@ import edu.sjsu.cinequest.comm.xmlparser.SeasonParser;
 import edu.sjsu.cinequest.comm.xmlparser.SectionsParser;
 import edu.sjsu.cinequest.comm.xmlparser.UserScheduleParser;
 import edu.sjsu.cinequest.comm.xmlparser.VenuesParser;
+import edu.sjsu.cinequest.comm.xmlparser.FestivalParser;
 
 /**
  * @author Kevin Ross (cs160_109)
@@ -64,7 +65,8 @@ public class QueryManager
                 "?type=xml&name=", // 14
                 "?type=xml&name=items&id=", // 15, TODO: obsolete--use type 0
                 "?type=schedules", //16 schedules by date
-                "?type=programs" //17 program items by title
+                "?type=programs", //17 program items by title
+                "?type=festival&lastChanged=" //18 complete festival information
         };
     private static final String imageBase = "http://mobile.cinequest.org/";
     private static final String mainImageURL = "imgs/mobile/creative.gif";
@@ -272,7 +274,6 @@ public class QueryManager
             }
         });
     }
-
            
     /**
      * Gets a special screen as a vector of Section objects  
@@ -427,4 +428,19 @@ public class QueryManager
     {
         return resolveRelativeImageURL(mainImageURL);
     }
+    
+    /**
+     * Gets the complete data of the Festival
+     * @author Snigdha Mokkapati
+     */
+    public void getFestival(final Callback callback)
+    {
+    	getWebData(callback, new Callable()
+        {
+            public Object run() throws Throwable
+            {
+                return FestivalParser.parseFestival(makeQuery(18, ""), callback);
+            }
+        });
+    } 
 }
