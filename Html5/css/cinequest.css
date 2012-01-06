@@ -1,0 +1,29 @@
+.view-screen {
+    width:560px;
+}
+
+#logo {
+    font-size:16pt;
+    font-family: sans-serif;
+    color:red;
+    f
+}
+
+#side-menu {
+    width: 2in;
+    font-size:10pt;
+    float:left
+}
+
+#films {
+    height: 4.5in;
+}
+
+.film {
+    margin:0;
+    padding: 0;
+    width:100%;
+    border-bottom-width: 1px;
+    border-bottom-style:solid;
+    border-bottom-color:gray;
+}
