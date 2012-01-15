@@ -19,9 +19,13 @@
 
 package edu.sjsu.cinequest.comm;
 
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.xml.sax.SAXException;
+
+import edu.sjsu.cinequest.comm.cinequestitem.Festival;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
@@ -66,11 +70,19 @@ public class QueryManager
                 "?type=xml&name=items&id=", // 15, TODO: obsolete--use type 0
                 "?type=schedules", //16 schedules by date
                 "?type=programs", //17 program items by title
-                "?type=festival&lastChanged=" //18 complete festival information
+                "?type=festival&lastChanged=" //18 complete festival information                
         };
     private static final String imageBase = "http://mobile.cinequest.org/";
     private static final String mainImageURL = "imgs/mobile/creative.gif";
     public static final String registrationURL = "http://mobile.cinequest.org/isch_reg.php";
+    private Festival festival;
+    
+    // key produced by: echo -n "edu.sjsu.cs160.comm.QueryManager" | md5sum | cut -c1-16
+    private static final long PERSISTENCE_KEY = 0x98f2f5ba32d39187L;    
+    
+    public QueryManager() {
+        festival = (Festival) Platform.getInstance().loadPersistentObject(PERSISTENCE_KEY);
+    }
     
     private String makeQuery(int type, String arg)
     {
@@ -134,7 +146,7 @@ public class QueryManager
         });
     }
 
-    public void getGenres(final Callback callback)
+    public void getGenres(final Callback callback) 
     {
         getWebData(callback, new Callable()
         {
@@ -151,7 +163,8 @@ public class QueryManager
         {
             public Object run() throws Throwable
             {
-                return FilmParser.parseFilm(makeQuery(2, id), callback);
+                // return FilmParser.parseFilm(makeQuery(2, id), callback);
+            	return getFestival(callback).getFilmForId(id);
             }
         });
     }
@@ -178,15 +191,15 @@ public class QueryManager
         {
             public Object run() throws Throwable
             {
-                Vector result = SchedulesParser.parseSchedule(makeQuery(9, date), callback);
-                Vector events = EventsParser.parseEvents(makeQuery(14, "events"), null, callback);
-                add(result, events, date);
+                // Vector result = SchedulesParser.parseSchedule(makeQuery(9, date), callback);
+            	Vector result = getFestival(callback).getSchedulesForDay(date); 
+                add(result, festival.getEvents(), date);
                 return result;
             }
         });
     }
     
-    private static void add(Vector schedules, Vector events, String date)
+    private static void add(Vector schedules, Vector events, String date) // TODO: Move to Festival
     {
         for (int i = events.size() - 1; i >= 0; i--)
         {
@@ -226,7 +239,8 @@ public class QueryManager
         {
             public Object run() throws Throwable
             {
-                return VenuesParser.parse(makeQuery(7, ""), callback);
+            	return getFestival(callback).getVenueLocations();
+                // return VenuesParser.parse(makeQuery(7, ""), callback);
             }
         });
     }
@@ -237,11 +251,13 @@ public class QueryManager
         {
             public Object run() throws Throwable
             {
-                return FilmsParser.parse(makeQuery(3, ""), callback);
+            	return getFestival(callback).getFilms();
+                // return FilmsParser.parse(makeQuery(3, ""), callback);
             }
         });
     }
     
+    // TODO
     public void getFilmsByGenre(final String genre, final Callback callback)
     {
         getWebData(callback, new Callable()
@@ -259,18 +275,20 @@ public class QueryManager
         {
             public Object run() throws Throwable
             {
-                return ProgramItemsParser.parse(makeQuery(17, ""), callback);
+            	return getFestival(callback).getProgramItems();
+                // return ProgramItemsParser.parse(makeQuery(17, ""), callback);
             }
         });
     }
 
-    public void getSchedules(final Callback callback)
+    public void getSchedules(final Callback callback) 
     {
     	getWebData(callback, new Callable()
         {
             public Object run() throws Throwable
             {
-                return SchedulesParser.parseSchedule(makeQuery(16, ""), callback);
+            	return getFestival(callback).getSchedules();
+                // return SchedulesParser.parseSchedule(makeQuery(16, ""), callback);
             }
         });
     }
@@ -332,7 +350,8 @@ public class QueryManager
         {
             public Object run() throws Throwable
             {
-                return ProgramItemParser.parseProgramItem(makeQuery(0, "" + id), callback);                
+            	return getFestival(callback).getProgramItemForId(id);
+                // return ProgramItemParser.parseProgramItem(makeQuery(0, "" + id), callback);                
             }
         });             
     }
@@ -430,17 +449,35 @@ public class QueryManager
     }
     
     /**
-     * Gets the complete data of the Festival
-     * @author Snigdha Mokkapati
+     * Gets the complete data of the Festival. Call only inside run method of getWebData.
      */
-    public void getFestival(final Callback callback)
+    private Festival getFestival(final Callback callback) throws SAXException, IOException
     {
-    	getWebData(callback, new Callable()
-        {
-            public Object run() throws Throwable
-            {
-                return FestivalParser.parseFestival(makeQuery(18, ""), callback);
+    	String lastChanged = festival == null ? "" : festival.getLastChanged();
+    	try {    		    		
+            Festival result;
+            if (festival != null && lastChanged.equals("")) result = festival; else // TODO: Workaround for bug--currently don't get timestamp 
+            result = FestivalParser.parseFestival(makeQuery(18, lastChanged), callback);
+            if (result.getSchedules().size() > 0) {
+            	festival = result;
+            	// TODO: When are events invalidated? For now, we read them when the festival changes
+            	if (festival.getEvents() == null)
+            		festival.setEvents(EventsParser.parseEvents(makeQuery(14, "events"), null, callback));
             }
-        });
+            else 
+            	festival.setLastChanged(result.getLastChanged());
+
+    	} catch (IOException ex) {
+    		Platform.getInstance().log(ex.getMessage());
+    		if (festival == null) festival = new Festival();
+    	}            
+    	return festival;
     } 
+    
+    /**
+     * Persists the festival.
+     */
+    public void close() {
+    	 Platform.getInstance().storePersistentObject(PERSISTENCE_KEY, festival);
+    }
 }

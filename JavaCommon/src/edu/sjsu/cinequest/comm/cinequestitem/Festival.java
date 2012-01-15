@@ -38,6 +38,16 @@ public class Festival implements Persistable {
 	private Vector schedules;
 	private Vector venueLocations;
 	private String lastChanged;
+	private Vector events;
+	
+	public Festival()
+	{
+		programItems = new Vector();
+		films = new Vector();
+		schedules = new Vector();
+		venueLocations = new Vector();
+		lastChanged = "";
+	}
 	
 	/**
 	 * @return vector of ProgramItems
@@ -97,7 +107,75 @@ public class Festival implements Persistable {
 	 * @param lastChanged the lastUpdated timestamp 
 	 */
 	public void setLastChanged(String lastChanged) {
-		this.lastChanged = lastChanged;
+		this.lastChanged = lastChanged == null ? "" : lastChanged;
+	}	
+	
+	public Vector getSchedulesForDay(String date) {
+		Vector result = new Vector();
+		for (int i = 0; i < schedules.size(); i++) {
+			Schedule schedule = (Schedule) schedules.elementAt(i);
+			if (schedule.getStartTime().startsWith(date)) result.addElement(schedule);
+		}
+		return result;
 	}
 	
+	public Film getFilmForId(int id) {
+		for (int i = 0; i < films.size(); i++) {
+			Film film = (Film) films.elementAt(i);
+			if (film.getId() == id) return film;
+		}
+		return null;
+	}
+
+	public ProgramItem getProgramItemForId(int id) {
+		for (int i = 0; i < programItems.size(); i++) {
+			ProgramItem item = (ProgramItem) programItems.elementAt(i);
+			if (item.getId() == id) return item;
+		}
+		return null;
+	}
+	
+	public Vector getEvents() {
+		return events;
+	}
+	
+	public void setEvents(Vector events) {
+		this.events = events;
+	}
+
+	/**
+	 * Cleans up after parsing.
+	 * @return this cleaned-up Festival
+	 */
+	public Festival cleanup() {
+		for (int i = 0; i < programItems.size(); i++) {
+			ProgramItem item = (ProgramItem) programItems.elementAt(i);
+			Vector films = item.getFilms(); 
+			for (int j = 0; j < films.size(); j++) {
+				Film film = (Film) films.elementAt(j);
+				Film replacement = getFilmForId(film.getId());
+				if (replacement == null) // TODO: That should never happen
+				{
+					films.remove(j);
+					j--;
+				}
+				else
+					films.setElementAt(replacement, j);
+			}
+		}
+		for (int i = 0; i < schedules.size(); i++) {
+			Schedule schedule = (Schedule) schedules.elementAt(i);
+			ProgramItem item = getProgramItemForId(schedule.getItemId());
+			if (item != null) { // TODO: Could it be a mobile item otherwise?
+				schedule.setTitle(item.getTitle());
+				Vector films = item.getFilms(); 
+				for (int j = 0; j < films.size(); j++) {
+					Film film = (Film) films.elementAt(j);
+					film.getSchedules().add(schedule);
+				}
+			}
+		}
+					
+		return this;
+	}	
 }

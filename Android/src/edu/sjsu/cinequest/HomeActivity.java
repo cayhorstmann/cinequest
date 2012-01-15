@@ -54,7 +54,7 @@ public class HomeActivity extends Activity {
         setContentView(R.layout.home_layout);
         
         // TODO: What about this??? Remove this to turn on test mode
-        // DateUtils.setMode(DateUtils.FESTIVAL_TEST_MODE);
+        DateUtils.setMode(DateUtils.FESTIVAL_TEST_MODE);
         
         Platform.setInstance(new AndroidPlatform(getApplicationContext()));
         queryManager = new QueryManager();
@@ -135,6 +135,7 @@ public class HomeActivity extends Activity {
     
     protected void onStop(){
         user.persistSchedule();
+        queryManager.close();
         imageManager.close();
         Platform.getInstance().close();
         super.onStop();

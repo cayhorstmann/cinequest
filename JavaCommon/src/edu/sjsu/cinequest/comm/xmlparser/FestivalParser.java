@@ -20,7 +20,6 @@
 package edu.sjsu.cinequest.comm.xmlparser;
 
 import java.io.IOException;
-import java.util.Vector;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -44,11 +43,10 @@ import edu.sjsu.cinequest.comm.cinequestitem.VenueLocation;
 public class FestivalParser extends BasicHandler {
 	
 	private Festival festival;
-	private String currentBlock = null; //variable to keep track of which block of xml the parser is currently working on 
+	private String currentBlock = ""; //variable to keep track of which block of xml the parser is currently working on 
 	private ProgramItem programItem;
 	private Film film;
 	private VenueLocation venueLocation;
-	private Vector schedules;
 	
 	/**
 	 * Parses the complete Festival information
@@ -62,7 +60,7 @@ public class FestivalParser extends BasicHandler {
 		FestivalParser handler = new FestivalParser();
 		handler.setFestival(new Festival());
 		Platform.getInstance().parse(url, handler, callback);
-		return handler.getFestival();
+		return handler.getFestival().cleanup();
 	}
 
 	public Festival getFestival() {
@@ -74,39 +72,35 @@ public class FestivalParser extends BasicHandler {
 	}
 	
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-		super.startElement(uri, localName, qName, attributes);
-		
+		super.startElement(uri, localName, qName, attributes);		
 		if (lastTagName().equals("program_items")) {
 			currentBlock = "program_items";
 		} else if (lastTagName().equals("films")) {
 			currentBlock = "films";
-		} else if (!(currentBlock.equals("program_items")) && lastTagName().equals("schedules")) {
+		} else if (lastTagName().equals("schedules") && !currentBlock.equals("program_items")) {
 			currentBlock = "schedules"; 
 		} else if (lastTagName().equals("venue_locations")) {
 			currentBlock = "venue_locations";
-		}
-		
-		if (lastTagName().equals("festival")) {
+		} else if (lastTagName().equals("festival")) {
 			festival.setLastChanged(attributes.getValue("lastChanged"));
-			
 		} else if (lastTagName().equals("program_item")) {
 			programItem = new ProgramItem();
 			programItem.setId(Integer.parseInt(attributes.getValue("id")));
-			schedules = new Vector();
-	       		
+			festival.getProgramItems().add(programItem);	       		
 		} else if (lastTagName().equals("film") && programItem != null) {
 			film = new Film();
 			String id = attributes.getValue("id");
 		    if (id != null)
 		    	film.setId(Integer.parseInt(id));
 		    if (currentBlock.equals("films")) {
-		    	getFestival().getFilms().addElement(film);
+		    	festival.getFilms().addElement(film);
 		    } else if (currentBlock.equals("program_items")) {
 		    	programItem.getFilms().addElement(film);
-		    }
-		    
-		} else if (lastTagName().equals("schedule") && programItem != null) {
+		    }		    
+		} else if (lastTagName().equals("schedule") && currentBlock.equals("schedules")) { 
+			// TODO: && currentBlock can be removed when schedules are removed from program items
 			Schedule schedule = new Schedule();
+			festival.getSchedules().addElement(schedule);
 			String id = attributes.getValue("id");
 		    if (id != null)
 		       schedule.setId(Integer.parseInt(id));
@@ -124,108 +118,61 @@ public class FestivalParser extends BasicHandler {
 	        schedule.setStartTime(attributes.getValue("start_time"));
 			schedule.setEndTime(attributes.getValue("end_time"));
 			schedule.setVenue(attributes.getValue("venue"));
-			schedule.setTitle(CharUtils.fixWin1252AndEntities(attributes.getValue("title")));
-			if (currentBlock.equals("schedules")) {
-				getFestival().getSchedules().addElement(schedule);
-			} else if (currentBlock.equals("program_items")) {
-				schedules.addElement(schedule);
-			}
-			
 		} else if (lastTagName().equals("venue_location")) {
 			venueLocation = new VenueLocation();
-			getFestival().getVenueLocations().addElement(venueLocation);
-			venueLocation.setVenueAbbreviation(attributes.getValue("venue"));
-			
+			festival.getVenueLocations().addElement(venueLocation);
+			venueLocation.setVenueAbbreviation(attributes.getValue("venue"));			
 		}
 	}
 	
 	public void endElement(String uri, String localName, String qName) throws SAXException {
-		super.endElement(uri, localName, qName);
-		
-		if (lastTagName().equals("title")) {
-			
+		super.endElement(uri, localName, qName);		
+		if (lastTagName().equals("title")) {			
 			if (currentBlock.equals("program_items")) {
 				programItem.setTitle(lastString());
 			} else if (currentBlock.equals("films")) {
 				film.setTitle(lastString());
-			} 
-			
-		} else if (lastTagName().equals("description")) {
-			
+			} 			
+		} else if (lastTagName().equals("description")) {			
 			if (currentBlock.equals("program_items")) {
 				programItem.setDescription(lastString());
 			} else if (currentBlock.equals("films")) {
 				film.setDescription(lastString());
 			} else if (currentBlock.equals("venue_location")) {
 				venueLocation.setDescription(lastString());
-			}
-			
-		} else if (lastTagName().equals("tagline")) {
-			
-			film.setTagline(lastString());
-			
-		} else if (lastTagName().equals("genre")) {
-			
-			film.setGenre(lastString());
-			
-		} else if (lastTagName().equals("imageURL")) {
-			
+			}			
+		} else if (lastTagName().equals("tagline")) {			
+			film.setTagline(lastString());			
+		} else if (lastTagName().equals("genre")) {			
+			film.setGenre(lastString());			
+		} else if (lastTagName().equals("imageURL")) {			
 			if (currentBlock.equals("films")) {
 				film.setImageURL(lastString());
 			} else if (currentBlock.equals("venue_location")) {
 				venueLocation.setImageURL(lastString());
-			}
-			
-		} else if (lastTagName().equals("director")) {
-			
-			film.setDirector(lastString());
-			
-		} else if (lastTagName().equals("producer")) {
-			
-			film.setProducer(lastString());
-			
-		} else if (lastTagName().equals("writer")) {
-			
-			film.setWriter(lastString());
-			
-		} else if (lastTagName().equals("cinematographer")) {
-			
-			film.setCinematographer(lastString());
-			
-		} else if (lastTagName().equals("editor")) {
-			
-			film.setEditor(lastString());
-			
-		} else if (lastTagName().equals("cast")) {
-			
-			film.setCast(lastString());
-			
-		} else if (lastTagName().equals("country")) {
-			
-			film.setCountry(lastString());
-			
-		} else if (lastTagName().equals("language")) {
-			
-			film.setLanguage(lastString());
-			
-		} else if (lastTagName().equals("film_info")){
-			
-			film.setFilmInfo(lastString());
-			
-		} else if (lastTagName().equals("location")) {
-			
+			}			
+		} else if (lastTagName().equals("director")) {			
+			film.setDirector(lastString());			
+		} else if (lastTagName().equals("producer")) {			
+			film.setProducer(lastString());		
+		} else if (lastTagName().equals("writer")) {			
+			film.setWriter(lastString());			
+		} else if (lastTagName().equals("cinematographer")) {			
+			film.setCinematographer(lastString());			
+		} else if (lastTagName().equals("editor")) {			
+			film.setEditor(lastString());			
+		} else if (lastTagName().equals("cast")) {			
+			film.setCast(lastString());		
+		} else if (lastTagName().equals("country")) {			
+			film.setCountry(lastString());			
+		} else if (lastTagName().equals("language")) {			
+			film.setLanguage(lastString());			
+		} else if (lastTagName().equals("film_info")){			
+			film.setFilmInfo(lastString());			
+		} else if (lastTagName().equals("location")) {			
 			venueLocation.setLocation(lastString());
-		
-		} else if (lastTagName().equals("directionsURL")){
-			
-			venueLocation.setLocation(lastString());
-		
-		} else if (lastTagName().equals("program_item")) {
-			
-			for (int i = 0; i < programItem.getFilms().size(); i++) {
-				((Film) programItem.getFilms().elementAt(i)).setSchedules(schedules);
-			}
-		}
-		
+		} else if (lastTagName().equals("directionsURL")){			
+			venueLocation.setLocation(lastString());	
+		} 
 	}
 }

@@ -67,6 +67,8 @@ public class Schedule implements Persistable {
 	}
 
 	public String getEndTime() {
+		// TODO: Remove
+		if (endTime == null) return startTime;
 		return endTime;
 	}
 

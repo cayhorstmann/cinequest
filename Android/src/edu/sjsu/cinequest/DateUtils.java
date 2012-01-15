@@ -44,10 +44,9 @@ public class DateUtils {
     
     private static String[] festivalDates =
     { 
-    "2010-02-23", "2010-02-24", "2010-02-25", "2010-02-26", 
-    "2010-02-27", "2010-02-28", "2010-03-01", "2010-03-02",
-    "2010-03-03", "2010-03-04", "2010-03-05", "2010-03-06",
-    "2010-03-07"
+    "2011-03-02", "2011-03-03", "2011-03-04", "2011-03-05", 
+    "2011-03-06", "2011-03-07", "2011-03-08", "2011-03-09",
+    "2011-03-10", "2011-03-11", "2011-03-12"
     };
     
     private static Map<String, String> cache = new ConcurrentHashMap<String, String>();
@@ -67,7 +66,8 @@ public class DateUtils {
      */
     public static void setFestivalDates(String[] fdates)
     {
-    	festivalDates = fdates;
+    	if (mode != FESTIVAL_TEST_MODE)
+    		festivalDates = fdates;
     }
  
     /**
