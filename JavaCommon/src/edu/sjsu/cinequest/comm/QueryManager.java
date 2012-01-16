@@ -462,8 +462,7 @@ public class QueryManager
             if (!result.isEmpty()) {
             	festival = result;
             	// TODO: When are events invalidated? For now, we read them when the festival changes
-            	if (festival.getEvents() == null)
-            		festival.setEvents(EventsParser.parseEvents(makeQuery(14, "events"), null, callback));
+          		festival.setEvents(EventsParser.parseEvents(makeQuery(14, "events"), null, callback));
             }
             else 
             	festival.setLastChanged(result.getLastChanged());

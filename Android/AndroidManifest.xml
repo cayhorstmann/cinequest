@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="edu.sjsu.cinequest"
-          android:versionCode="1102020707"
-          android:versionName="2011-02-02 07:07">
+          android:versionCode="1201161053"
+          android:versionName="2012-01-16 10:53">
    
    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />

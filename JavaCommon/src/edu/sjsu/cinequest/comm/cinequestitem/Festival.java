@@ -46,6 +46,7 @@ public class Festival implements Persistable {
 		films = new Vector();
 		schedules = new Vector();
 		venueLocations = new Vector();
+		events = new Vector();
 		lastChanged = "";
 	}
 	
