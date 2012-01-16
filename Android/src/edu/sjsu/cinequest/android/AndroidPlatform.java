@@ -35,10 +35,11 @@ import edu.sjsu.cinequest.comm.WebConnection;
 
 // Must be created on UI thread
 public class AndroidPlatform extends Platform {
-	// echo -n "edu.sjsu.cinequest.rim.RIMPlatform" | md5sum | cut -c1-16
-	private static final long PERSISTENCE_KEY = 0xcfbd786faca62011L;
+	// echo -n "edu.sjsu.cinequest.android.AndroidPlatform" | md5sum | cut -c1-16
+	private static final long PERSISTENCE_KEY = 0x6a42ed61f192d055L;
 	private Cache xmlRawBytesCache;
 	private static final int MAX_CACHE_SIZE = 50;
+	private static final long MAX_CACHE_AGE = 1000L * 60 * 60 * 3; // 3 hours 
 
 	private Handler handler;
 	private Context context;
@@ -128,18 +129,17 @@ public class AndroidPlatform extends Platform {
 		}
     }
 
-	// TODO: Do we still want this?
 	private boolean getFromCache(String url, SAXParser sp, DefaultHandler handler) 
 		throws SAXException, IOException
 	{
-        byte[] bytes = (byte[]) xmlRawBytesCache.get(url);
-        // XML exists in cache
+        byte[] bytes = (byte[]) xmlRawBytesCache.get(url, MAX_CACHE_AGE);
+        // XML exists in cache and isn't too old
         if (bytes != null)
         {
            InputSource in  = new InputSource(new InputStreamReader(
               new ByteArrayInputStream(bytes), "ISO-8859-1"));
-           sp.parse(in, handler);
-			  Platform.getInstance().log("AndroidPlatform.getFromCache: Returned cached response " + new String(bytes));              
+           sp.parse(in, handler);           
+           Platform.getInstance().log("AndroidPlatform.getFromCache: Returned cached response for " + url);              
            return true;
         } else
         	return false;

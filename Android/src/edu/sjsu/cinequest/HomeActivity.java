@@ -135,7 +135,6 @@ public class HomeActivity extends Activity {
     
     protected void onStop(){
         user.persistSchedule();
-        queryManager.close();
         imageManager.close();
         Platform.getInstance().close();
         super.onStop();

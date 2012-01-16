@@ -31,8 +31,6 @@ import net.rim.device.api.util.Persistable;
  */
 
 public class Festival implements Persistable {
-	
-	
 	private Vector programItems;
 	private Vector films;
 	private Vector schedules;

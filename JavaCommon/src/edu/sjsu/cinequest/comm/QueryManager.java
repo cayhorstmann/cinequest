@@ -75,14 +75,10 @@ public class QueryManager
     private static final String imageBase = "http://mobile.cinequest.org/";
     private static final String mainImageURL = "imgs/mobile/creative.gif";
     public static final String registrationURL = "http://mobile.cinequest.org/isch_reg.php";
-    private Festival festival;
+    private Festival festival = new Festival();
     
     // key produced by: echo -n "edu.sjsu.cs160.comm.QueryManager" | md5sum | cut -c1-16
     private static final long PERSISTENCE_KEY = 0x98f2f5ba32d39187L;    
-    
-    public QueryManager() {
-        festival = (Festival) Platform.getInstance().loadPersistentObject(PERSISTENCE_KEY);
-    }
     
     private String makeQuery(int type, String arg)
     {
@@ -453,31 +449,18 @@ public class QueryManager
      */
     private Festival getFestival(final Callback callback) throws SAXException, IOException
     {
-    	if (festival == null) festival = new Festival();
     	String lastChanged = festival.getLastChanged();
     	try {    		    		
-            Festival result;
-            if (!festival.isEmpty() && lastChanged.equals("")) result = festival; else // TODO: Workaround for bug--currently don't get timestamp 
-            result = FestivalParser.parseFestival(makeQuery(18, lastChanged), callback);
+            Festival result = FestivalParser.parseFestival(makeQuery(18, lastChanged), callback);
             if (!result.isEmpty()) {
             	festival = result;
-            	// TODO: When are events invalidated? For now, we read them when the festival changes
-          		festival.setEvents(EventsParser.parseEvents(makeQuery(14, "events"), null, callback));
             }
             else 
             	festival.setLastChanged(result.getLastChanged());
-
+            festival.setEvents(EventsParser.parseEvents(makeQuery(14, "events"), null, callback));
     	} catch (Exception ex) {
     		Platform.getInstance().log("QueryManager.getFestival: " + ex.getMessage());
-    		if (festival == null) festival = new Festival();
     	}            
     	return festival;
     } 
-    
-    /**
-     * Persists the festival.
-     */
-    public void close() {
-    	 Platform.getInstance().storePersistentObject(PERSISTENCE_KEY, festival);
-    }
 }

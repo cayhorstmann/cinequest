@@ -19,6 +19,7 @@
 
 package edu.sjsu.cinequest.comm;
 
+import java.util.Date;
 import java.util.Hashtable;
 
 import net.rim.device.api.util.Persistable;
@@ -51,6 +52,28 @@ public class Cache implements Persistable
         return entry.value;
     }
     
+    /**
+     * Gets a cached value for a given key, provided it is not too old
+     * @param key the key for the object
+     * @return the cached value, or null if it is not present or too old
+     */
+    public Object get(String key, long maxMillisec)
+    {
+        CacheEntry entry = (CacheEntry) table.get(key);
+        if (entry == null) return null;
+        Date now = new Date();
+        if (now.getTime() - entry.timestamp.getTime() > maxMillisec) 
+        {
+        	unlink(entry);
+        	return null;
+        }
+        else
+        {
+        	relink(entry);
+        	return entry.value;
+        }
+    }
+
     /**
      * Puts a cached value for a given key. 
      * @param key the key for the object
@@ -94,6 +117,7 @@ public class Cache implements Persistable
     
     private void relink(CacheEntry entry)
     {
+    	entry.timestamp = new Date();
         if (entry == newest) return;
         unlink(entry);
         link(entry);
@@ -114,6 +138,12 @@ public class Cache implements Persistable
         CacheEntry next;
         CacheEntry previous;
         String key;
+        Date timestamp;
+        
+        CacheEntry()
+        {
+        	timestamp = new Date();
+        }
     }    
     
     public String toString()
@@ -122,7 +152,7 @@ public class Cache implements Persistable
         CacheEntry entry = oldest;
         while (entry != null)
         {
-            ret += entry.key + "->" + entry.value;
+            ret += entry.key + "->" + entry.value + " @" + entry.timestamp;
             if (entry.next != null) ret += ",";
             entry = entry.next;
         }
