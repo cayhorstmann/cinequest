@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.CallbackException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class ProgressMonitorCallback implements Callback {
    private ProgressDialog dialog;
@@ -47,8 +49,15 @@ public class ProgressMonitorCallback implements Callback {
 				DialogPrompt.showToast(context, t.getMessage());
 		}
 		else {
-			DialogPrompt.showDialog(context, 
-					"Application Error: " + t.getMessage());			
+                   String message = "Application Error";
+                   if (t.getMessage() != null) message +=  ": " + t.getMessage();
+			DialogPrompt.showDialog(context, message);			
+                        StringWriter sw = new StringWriter();
+                        PrintWriter pw = new PrintWriter(sw);
+                        ex.printStackTrace(pw);
+                        pw.close();				
+                        log("Uncaught exception: " + sw.toString());			  
+               
 		}
 	}
 }
