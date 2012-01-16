@@ -100,7 +100,7 @@ public class AndroidPlatform extends Platform {
 		 * The parser can't infer the character encoding from the xml encoding attribute, so 
 		 * we have to hardwire 8859-1 here. 
 		 */
-		if (isNetworkAvailable())
+		if (!getFromCache(url, sp, handler))
 		{
 			WebConnection connection = null;
 			try {
@@ -114,18 +114,11 @@ public class AndroidPlatform extends Platform {
 		              new ByteArrayInputStream(xmlSource), "ISO-8859-1"));
 				sp.parse(in, handler);
 			} 
-			// Reading fails. Try to get XML from cache
 	        catch (IOException e)
 	        {
-	           Platform.getInstance().log("AndroidPlatform.parse: " + e.getMessage());
-	           if (!getFromCache(url, sp, handler))
-	        	   throw e;
+	            Platform.getInstance().log("AndroidPlatform.parse: " + e.getMessage());
+    			throw new CallbackException("No network connection", CallbackException.ERROR);
 	        }
-		}
-		else
-		{
-			if (!getFromCache(url, sp, handler))
-				throw new CallbackException("No network connection", CallbackException.ERROR);
 		}
     }
 
