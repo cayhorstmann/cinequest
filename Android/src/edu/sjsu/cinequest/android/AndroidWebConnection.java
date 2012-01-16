@@ -60,7 +60,6 @@ public class AndroidWebConnection extends WebConnection {
     
     public AndroidWebConnection(String url) throws IOException
     {
-        Platform.getInstance().log("Opening connection to " + url);
         this.url = url;
     }
     
@@ -71,6 +70,7 @@ public class AndroidWebConnection extends WebConnection {
     
     private void execute() throws IOException
     {
+        Platform.getInstance().log("AndroidWebConnection.execute: Opening connection to " + url);
     	if (response != null) return;
     	HttpClient client = new DefaultHttpClient(conman, params);
 
@@ -119,6 +119,6 @@ public class AndroidWebConnection extends WebConnection {
     public void close() throws IOException
     {
     	if (response != null) response.getEntity().consumeContent();
-        Platform.getInstance().log("Closing connection");
+        Platform.getInstance().log("AndroidWebConnection.close: Closing connection");
     }
 }

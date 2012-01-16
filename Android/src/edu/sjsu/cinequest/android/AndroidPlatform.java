@@ -53,8 +53,7 @@ public class AndroidPlatform extends Platform {
 			xmlRawBytesCache = new Cache(MAX_CACHE_SIZE);
 		}	
 		
-		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-			
+		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {		
 			@Override
 			public void uncaughtException(Thread thread, Throwable ex) {
 				StringWriter sw = new StringWriter();

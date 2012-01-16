@@ -67,7 +67,7 @@ public class HomeActivity extends Activity {
             }          
             public void failure(Throwable t)
             {
-          	  Platform.getInstance().log(t.getMessage());
+          	  Platform.getInstance().log("HomeActivity.onCreate: " + t.getMessage());
             }
             public void invoke(Object result)
             {
@@ -128,7 +128,7 @@ public class HomeActivity extends Activity {
 			}
 			@Override public void starting() {}			
 			@Override public void failure(Throwable t) {
-				Platform.getInstance().log(t.getMessage());				
+				Platform.getInstance().log("HomeActivity.onResume: " + t.getMessage());				
 			}        	
         });
     }
@@ -173,7 +173,7 @@ public class HomeActivity extends Activity {
  			        	}
  			        	@Override public void starting() {}
  			        	@Override public void failure(Throwable t) {
- 							Platform.getInstance().log(t.getMessage()); 			        		
+ 							Platform.getInstance().log("HomeActivity.populateNewsEventsList: " + t.getMessage()); 			        		
  			        	}
  			        }, null, false);		
      			}

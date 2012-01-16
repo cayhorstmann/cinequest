@@ -195,7 +195,7 @@ public class FilmDetail extends CinequestActivity {
 			@Override
 			public void failure(Throwable t) {	
 				String message = t.getMessage();
-				if (message == null) message = "Cannot retrieve " + imageURL;
+				if (message == null) message = "FilmDetail.showImage: Cannot retrieve " + imageURL;
 				Platform.getInstance().log(message);
 				// Try once more
 				HomeActivity.getImageManager().getImage(imageURL, new Callback() {
@@ -211,7 +211,7 @@ public class FilmDetail extends CinequestActivity {
 					
 					@Override
 					public void failure(Throwable t) {	
-						Platform.getInstance().log(t.getMessage());
+						Platform.getInstance().log("FilmDetail.showImage: " + t.getMessage());
 					}   
 				}, null, true);												
 			}   
