@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.CallbackException;
+import edu.sjsu.cinequest.comm.Platform;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -54,9 +56,9 @@ public class ProgressMonitorCallback implements Callback {
 			DialogPrompt.showDialog(context, message);			
                         StringWriter sw = new StringWriter();
                         PrintWriter pw = new PrintWriter(sw);
-                        ex.printStackTrace(pw);
+                        t.printStackTrace(pw);
                         pw.close();				
-                        log("Uncaught exception: " + sw.toString());			  
+                        Platform.getInstance().log("Uncaught exception: " + sw.toString());			  
                
 		}
 	}
