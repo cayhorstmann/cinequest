@@ -49,6 +49,8 @@ public class Festival implements Persistable {
 		lastChanged = "";
 	}
 	
+	public boolean isEmpty() { return schedules.size() == 0; }
+	
 	/**
 	 * @return vector of ProgramItems
 	 */

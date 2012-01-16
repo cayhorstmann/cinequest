@@ -453,12 +453,13 @@ public class QueryManager
      */
     private Festival getFestival(final Callback callback) throws SAXException, IOException
     {
-    	String lastChanged = festival == null ? "" : festival.getLastChanged();
+    	if (festival == null) festival = new Festival();
+    	String lastChanged = festival.getLastChanged();
     	try {    		    		
             Festival result;
-            if (festival != null && lastChanged.equals("")) result = festival; else // TODO: Workaround for bug--currently don't get timestamp 
+            if (!festival.isEmpty() && lastChanged.equals("")) result = festival; else // TODO: Workaround for bug--currently don't get timestamp 
             result = FestivalParser.parseFestival(makeQuery(18, lastChanged), callback);
-            if (result.getSchedules().size() > 0) {
+            if (!result.isEmpty()) {
             	festival = result;
             	// TODO: When are events invalidated? For now, we read them when the festival changes
             	if (festival.getEvents() == null)
@@ -467,8 +468,8 @@ public class QueryManager
             else 
             	festival.setLastChanged(result.getLastChanged());
 
-    	} catch (IOException ex) {
-    		Platform.getInstance().log(ex.getMessage());
+    	} catch (Exception ex) {
+    		Platform.getInstance().log("QueryManager.getFestival: " + ex.getMessage());
     		if (festival == null) festival = new Festival();
     	}            
     	return festival;

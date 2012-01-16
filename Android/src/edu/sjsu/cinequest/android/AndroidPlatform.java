@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -50,6 +52,18 @@ public class AndroidPlatform extends Platform {
 		{
 			xmlRawBytesCache = new Cache(MAX_CACHE_SIZE);
 		}	
+		
+		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+			
+			@Override
+			public void uncaughtException(Thread thread, Throwable ex) {
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				ex.printStackTrace(pw);
+				pw.close();				
+				log("Uncaught exception: " + sw.toString());				
+			}
+		});
 	}
 
 	public WebConnection createWebConnection(String url) throws IOException {
@@ -103,7 +117,7 @@ public class AndroidPlatform extends Platform {
 			// Reading fails. Try to get XML from cache
 	        catch (IOException e)
 	        {
-	           Platform.getInstance().log(e.getMessage());
+	           Platform.getInstance().log("AndroidPlatform.parse: " + e.getMessage());
 	           if (!getFromCache(url, sp, handler))
 	        	   throw e;
 	        }
@@ -115,6 +129,7 @@ public class AndroidPlatform extends Platform {
 		}
     }
 
+	// TODO: Do we still want this?
 	private boolean getFromCache(String url, SAXParser sp, DefaultHandler handler) 
 		throws SAXException, IOException
 	{
@@ -125,7 +140,7 @@ public class AndroidPlatform extends Platform {
            InputSource in  = new InputSource(new InputStreamReader(
               new ByteArrayInputStream(bytes), "ISO-8859-1"));
            sp.parse(in, handler);
-			  Platform.getInstance().log("Returned cached response " + new String(bytes));              
+			  Platform.getInstance().log("AndroidPlatform.getFromCache: Returned cached response " + new String(bytes));              
            return true;
         } else
         	return false;
@@ -148,7 +163,7 @@ public class AndroidPlatform extends Platform {
        byte[] response = connection.getBytes();
        String doc = new String(response);
        if (response.length == 0) {
-		   Platform.getInstance().log("No data received from server");
+		   Platform.getInstance().log("AndroidPlatform.parse: No data received from server");
     	   throw new IOException("No data received from server");
        }
        InputSource inputSource = new InputSource(new ByteArrayInputStream(response));
@@ -170,7 +185,7 @@ public class AndroidPlatform extends Platform {
 					if(t.getMessage() != null)
 						error += ", Message=" + t.getMessage();
 					
-					log(error);					
+					log("AndroidPlatform.invoke: " + error);					
 				}
 			}
 		});
@@ -196,7 +211,7 @@ public class AndroidPlatform extends Platform {
 			oout.writeObject(object);
 			oout.close();
 		} catch (Exception e) {
-			log(e.getMessage());
+			log("AndroidPlatform.storePersistentObject: " + e.getMessage());
 		}
 	}
 
@@ -209,7 +224,7 @@ public class AndroidPlatform extends Platform {
 			oin.close();
 			return ret;
 		} catch (Exception e) {
-			log(e.getMessage());
+			log("AndroidPlatform.loadPersistentObject: " + e.getMessage());
 			return null;
 		}
 	}
