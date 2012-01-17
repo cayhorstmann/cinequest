@@ -31,18 +31,15 @@ import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
 import edu.sjsu.cinequest.comm.xmlparser.DatesParser;
 import edu.sjsu.cinequest.comm.xmlparser.EventsParser;
+import edu.sjsu.cinequest.comm.xmlparser.FestivalParser;
 import edu.sjsu.cinequest.comm.xmlparser.FilmParser;
 import edu.sjsu.cinequest.comm.xmlparser.FilmsParser;
 import edu.sjsu.cinequest.comm.xmlparser.GenresParser;
 import edu.sjsu.cinequest.comm.xmlparser.LinkParser;
 import edu.sjsu.cinequest.comm.xmlparser.ProgramItemParser;
-import edu.sjsu.cinequest.comm.xmlparser.ProgramItemsParser;
-import edu.sjsu.cinequest.comm.xmlparser.SchedulesParser;
 import edu.sjsu.cinequest.comm.xmlparser.SeasonParser;
 import edu.sjsu.cinequest.comm.xmlparser.SectionsParser;
 import edu.sjsu.cinequest.comm.xmlparser.UserScheduleParser;
-import edu.sjsu.cinequest.comm.xmlparser.VenuesParser;
-import edu.sjsu.cinequest.comm.xmlparser.FestivalParser;
 
 /**
  * @author Kevin Ross (cs160_109)
@@ -76,9 +73,6 @@ public class QueryManager
     private static final String mainImageURL = "imgs/mobile/creative.gif";
     public static final String registrationURL = "http://mobile.cinequest.org/isch_reg.php";
     private Festival festival = new Festival();
-    
-    // key produced by: echo -n "edu.sjsu.cs160.comm.QueryManager" | md5sum | cut -c1-16
-    private static final long PERSISTENCE_KEY = 0x98f2f5ba32d39187L;    
     
     private String makeQuery(int type, String arg)
     {
@@ -459,7 +453,7 @@ public class QueryManager
             	festival.setLastChanged(result.getLastChanged());
             festival.setEvents(EventsParser.parseEvents(makeQuery(14, "events"), null, callback));
     	} catch (Exception ex) {
-    		Platform.getInstance().log("QueryManager.getFestival: " + ex.getMessage());
+    		Platform.getInstance().log(ex);
     	}            
     	return festival;
     } 

@@ -6,6 +6,8 @@ import java.util.Vector;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -53,21 +55,30 @@ public class HomeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_layout);
         
-        // TODO: What about this??? Remove this to turn on test mode
+        // TODO: Remove this to turn on test mode
         DateUtils.setMode(DateUtils.FESTIVAL_TEST_MODE);
+        Context context = getApplicationContext();
+        try {
+            PackageInfo pi = context.getPackageManager().getPackageInfo(getPackageName(), 0);
+            String version = pi.versionName;
+            setTitle("Cinequest" + (version == null ? "" : " " + version));
+        } catch (NameNotFoundException ex) {
+        	// We tried...
+        }
         
         Platform.setInstance(new AndroidPlatform(getApplicationContext()));
         queryManager = new QueryManager();
         imageManager = new ImageManager();
         user = new User();
-
+        
+        
         queryManager.getFestivalDates(new Callback() {
             public void starting() 
             {
             }          
             public void failure(Throwable t)
             {
-          	  Platform.getInstance().log("HomeActivity.onCreate: " + t.getMessage());
+          	  Platform.getInstance().log(t);
             }
             public void invoke(Object result)
             {
@@ -128,7 +139,7 @@ public class HomeActivity extends Activity {
 			}
 			@Override public void starting() {}			
 			@Override public void failure(Throwable t) {
-				Platform.getInstance().log("HomeActivity.onResume: " + t.getMessage());				
+				Platform.getInstance().log(t);				
 			}        	
         });
     }
@@ -172,7 +183,7 @@ public class HomeActivity extends Activity {
  			        	}
  			        	@Override public void starting() {}
  			        	@Override public void failure(Throwable t) {
- 							Platform.getInstance().log("HomeActivity.populateNewsEventsList: " + t.getMessage()); 			        		
+ 							Platform.getInstance().log(t); 			        		
  			        	}
  			        }, null, false);		
      			}

@@ -6,9 +6,6 @@ import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.CallbackException;
 import edu.sjsu.cinequest.comm.Platform;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 public class ProgressMonitorCallback implements Callback {
 	private ProgressDialog dialog;
 	private Context context;
@@ -55,11 +52,7 @@ public class ProgressMonitorCallback implements Callback {
 			if (t.getMessage() != null && !t.getMessage().equals("null"))
 				message += ": " + t.getMessage();
 			DialogPrompt.showDialog(context, message);
-			StringWriter sw = new StringWriter();
-			PrintWriter pw = new PrintWriter(sw);
-			t.printStackTrace(pw);
-			pw.close();
-			Platform.getInstance().log("Uncaught exception: " + sw.toString());
+			Platform.getInstance().log(t);
 		}
 	}
 }

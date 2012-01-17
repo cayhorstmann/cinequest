@@ -25,7 +25,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import edu.sjsu.cinequest.comm.Callback;
-import edu.sjsu.cinequest.comm.CharUtils;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.cinequestitem.Festival;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;

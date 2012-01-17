@@ -6,8 +6,6 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -57,11 +55,7 @@ public class AndroidPlatform extends Platform {
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {		
 			@Override
 			public void uncaughtException(Thread thread, Throwable ex) {
-				StringWriter sw = new StringWriter();
-				PrintWriter pw = new PrintWriter(sw);
-				ex.printStackTrace(pw);
-				pw.close();				
-				log("Uncaught exception: " + sw.toString());				
+				log(ex);				
 			}
 		});
 	}
@@ -116,7 +110,7 @@ public class AndroidPlatform extends Platform {
 			} 
 	        catch (IOException e)
 	        {
-	            Platform.getInstance().log("AndroidPlatform.parse: " + e.getMessage());
+	            Platform.getInstance().log(e);
     			throw new CallbackException("No network connection", CallbackException.ERROR);
 	        }
 		}
