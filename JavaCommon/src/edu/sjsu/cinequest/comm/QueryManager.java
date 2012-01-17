@@ -93,7 +93,6 @@ public class QueryManager
     {
         if (callback == null || task == null)
             throw new NullPointerException();
-        callback.starting();
         Thread t = new Thread(new Runnable()
         {
             public void run()
@@ -294,8 +293,8 @@ public class QueryManager
         {
             public Object run() throws Throwable
             {
-                return SectionsParser.parse("http://horstmann.com/private/ihome.html", callback);
-                // return SectionsParser.parse(makeQuery(14, type), callback);
+                // return SectionsParser.parse("http://horstmann.com/private/ihome.html", callback);
+                return SectionsParser.parse(makeQuery(14, type), callback);
             }
         });
     }
@@ -446,8 +445,8 @@ public class QueryManager
     {
     	String lastChanged = festival.getLastChanged();
     	try {    		    		
-            // Festival result = FestivalParser.parseFestival(makeQuery(18, lastChanged), callback);
-    		Festival result = FestivalParser.parseFestival("http://horstmann.com/private/festival.html", callback);
+            Festival result = FestivalParser.parseFestival(makeQuery(18, lastChanged), callback);
+    		// Festival result = FestivalParser.parseFestival("http://horstmann.com/private/festival.html", callback);
             if (!result.isEmpty()) {
             	festival = result;
             }

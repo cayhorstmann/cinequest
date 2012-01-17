@@ -88,6 +88,12 @@ public abstract class Platform
        throws SAXException, IOException;    
     
     /**
+     * Calls the Callback's starting method
+     * @param callback the callback whose method is being called
+     */
+    public abstract void starting(Callback callback);
+
+    /**
      * Calls the Callback's invoke method
      * @param callback the callback whose method is being called
      * @param arg the argument to be provided

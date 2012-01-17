@@ -63,6 +63,7 @@ public class RIMPlatform extends Platform {
 	private static final int MAX_CACHE_SIZE = 50;
 	// echo -n "edu.sjsu.cinequest.rim.RIMPlatform" | md5sum | cut -c1-16
 	private static final long PERSISTENCE_KEY = 0xcfbd786faca62011L;
+	private static final long MAX_CACHE_AGE = 1000L * 60 * 60 * 3; // 3 hours
 
 	public RIMPlatform() {
 		xmlRawBytesCache = (Cache) loadPersistentObject(PERSISTENCE_KEY);
@@ -100,6 +101,8 @@ public class RIMPlatform extends Platform {
 		} catch (ParserConfigurationException e) {
 			throw new SAXException(e.toString());
 		}
+		if (getFromCache(url, parser, handler, MAX_CACHE_AGE)) return;  
+		starting(callback);
 		try {
 			try {
 				connection = createWebConnection(url);
@@ -110,21 +113,12 @@ public class RIMPlatform extends Platform {
 						new ByteArrayInputStream(xmlSource), "ISO-8859-1"));
 				parser.parse(inputSource, handler);
 			}
-			// Reading fails. Try to get XML from cache
+			// Reading fails. 
 			catch (IOException e) {
 				Platform.getInstance().log(e.getMessage());
-				byte[] bytes = (byte[]) xmlRawBytesCache.get(url);
-				// XML exists in cache
-				if (bytes != null) {
-					inputSource = new InputSource(new InputStreamReader(
-							new ByteArrayInputStream(bytes), "ISO-8859-1"));
-					parser.parse(inputSource, handler);
-					Platform.getInstance().log("Returned cached response " + new String(bytes));
-					return;
-				} else {
-					// XML not found on cache.
-					throw e;
-				}
+				// Try to get XML from cache, no matter how old
+				if (getFromCache(url, parser, handler, 0)) return;				
+				throw e; // XML not found on cache.				
 			}
 		} finally {
 			if (connection != null)
@@ -132,9 +126,28 @@ public class RIMPlatform extends Platform {
 		}
 	}
 
+	private boolean getFromCache(String url, SAXParser sp,
+			DefaultHandler handler, long maxage) throws SAXException, IOException {
+		byte[] bytes = (byte[]) xmlRawBytesCache.get(url, maxage);
+		// XML exists in cache and isn't too old
+		if (bytes != null) {
+			InputSource in = new InputSource(new InputStreamReader(
+					new ByteArrayInputStream(bytes), "ISO-8859-1"));
+			sp.parse(in, handler);
+			Platform.getInstance().log(
+					"RIMPlatform.getFromCache: Returned cached response for "
+							+ url);
+			return true;
+		} else
+			return false;
+	}
+
+	
+	
 	public String parse(final String url, Hashtable postData,
 			DefaultHandler handler, Callback callback) throws SAXException,
 			IOException {
+		starting(callback);
 		SAXParser parser = null;
 		String doc = null;
 		try {
@@ -154,6 +167,16 @@ public class RIMPlatform extends Platform {
 			connection.close();
 		}
 		return doc;
+	}
+
+	public void starting(final Callback callback) {
+		if (callback == null)
+			return;
+		UiApplication.getUiApplication().invokeLater(new Runnable() {
+			public void run() {
+				callback.starting();
+			}
+		});
 	}
 
 	public void invoke(final Callback callback, final Object arg) {
@@ -185,7 +208,7 @@ public class RIMPlatform extends Platform {
 		try {
 			PersistentObject pers = PersistentStore.getPersistentObject(key);
 			if (pers == null)
-				return null;
+				return null;	
 			return pers.getContents();
 		} catch (Throwable t) {
 			log(t.getMessage());

@@ -55,10 +55,12 @@ public class Cache implements Persistable
     /**
      * Gets a cached value for a given key, provided it is not too old
      * @param key the key for the object
+     * @param maxMillisec the maximum age of the object, or 0 to take anything
      * @return the cached value, or null if it is not present or too old
      */
     public Object get(String key, long maxMillisec)
     {
+    	if (maxMillisec == 0) return get(key);
         CacheEntry entry = (CacheEntry) table.get(key);
         if (entry == null) return null;
         long now = new Date().getTime();

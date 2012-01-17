@@ -89,7 +89,6 @@ public class AndroidPlatform extends Platform {
 	@Override
 	public void parse(String url, DefaultHandler handler, Callback callback)
 			throws SAXException, IOException {
-		// TODO Same as Java SE
 		SAXParserFactory spf = SAXParserFactory.newInstance();
 		SAXParser sp;
 		try {
@@ -103,30 +102,34 @@ public class AndroidPlatform extends Platform {
 		 * can't infer the character encoding from the xml encoding attribute,
 		 * so we have to hardwire 8859-1 here.
 		 */
-		if (!getFromCache(url, sp, handler)) {
-			WebConnection connection = null;
-			try {
-				connection = createWebConnection(url);
-				byte[] xmlSource = (byte[]) connection.getBytes();
-				if (xmlSource.length == 0)
-					throw new IOException("No data received from server");
+		if (getFromCache(url, sp, handler, MAX_CACHE_AGE))
+			return;
+		starting(callback);		
+		WebConnection connection = null;
+		try {
+			connection = createWebConnection(url);
+			byte[] xmlSource = (byte[]) connection.getBytes();
+			if (xmlSource.length == 0)
+				throw new IOException("No data received from server");
 
-				// Store the xml source
-				xmlRawBytesCache.put(url, xmlSource);
-				InputSource in = new InputSource(new InputStreamReader(
-						new ByteArrayInputStream(xmlSource), "ISO-8859-1"));
-				sp.parse(in, handler);
-			} catch (IOException e) {
-				Platform.getInstance().log(e);
-				throw new CallbackException("No network connection",
-						CallbackException.ERROR);
-			}
+			// Store the xml source
+			xmlRawBytesCache.put(url, xmlSource);
+			InputSource in = new InputSource(new InputStreamReader(
+					new ByteArrayInputStream(xmlSource), "ISO-8859-1"));
+			sp.parse(in, handler);
+		} catch (IOException e) {
+			Platform.getInstance().log(e);
+			// Try to get XML from cache, no matter how old
+			if (getFromCache(url, sp, handler, 0)) return;				
+			throw new CallbackException("No network connection",
+					CallbackException.ERROR);
 		}
 	}
 
 	private boolean getFromCache(String url, SAXParser sp,
-			DefaultHandler handler) throws SAXException, IOException {
-		byte[] bytes = (byte[]) xmlRawBytesCache.get(url, MAX_CACHE_AGE);
+			DefaultHandler handler, long maxage) throws SAXException,
+			IOException {
+		byte[] bytes = (byte[]) xmlRawBytesCache.get(url, maxage);
 		// XML exists in cache and isn't too old
 		if (bytes != null) {
 			InputSource in = new InputSource(new InputStreamReader(
@@ -143,6 +146,7 @@ public class AndroidPlatform extends Platform {
 	@Override
 	public String parse(String url, Hashtable postData, DefaultHandler handler,
 			Callback callback) throws SAXException, IOException {
+		starting(callback);
 		SAXParserFactory spf = SAXParserFactory.newInstance();
 		SAXParser sp;
 		try {
@@ -163,6 +167,17 @@ public class AndroidPlatform extends Platform {
 				response));
 		sp.parse(inputSource, handler);
 		return doc;
+	}
+
+	@Override
+	public void starting(final Callback callback) {
+		if (callback == null)
+			return;
+		handler.post(new Runnable() {
+			public void run() {
+				callback.starting();
+			}
+		});
 	}
 
 	@Override
