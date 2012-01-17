@@ -7,7 +7,7 @@
     <property file="local.properties" />
       <tstamp>
          <format property="version.name" pattern="yyyy-MM-dd HH:mm" />
-         <format property="version.code" pattern="MMddHHmm" />
+         <format property="version.code" pattern="yyMMddHHmm" />
       </tstamp>
 
     <!-- The ant.properties file can be created by you. It is only edited by the

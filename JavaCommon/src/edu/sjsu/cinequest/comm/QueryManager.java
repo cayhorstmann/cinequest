@@ -53,7 +53,6 @@ public class QueryManager
                 "?type=film&id=", // 2
                 "?type=films", // 3
                 "?type=schedule&id=", // 4 -- unused
-                //"?type=venue&id=", // -- unused
                 "?type=blink&b=prg", // 5
                 "?type=blink&b=dvd", // 6
                 "?type=venues", // 7
@@ -71,6 +70,7 @@ public class QueryManager
         };
     private static final String imageBase = "http://mobile.cinequest.org/";
     private static final String mainImageURL = "imgs/mobile/creative.gif";
+    
     public static final String registrationURL = "http://mobile.cinequest.org/isch_reg.php";
     private Festival festival = new Festival();
     
@@ -294,7 +294,8 @@ public class QueryManager
         {
             public Object run() throws Throwable
             {
-                return SectionsParser.parse(makeQuery(14, type), callback);
+                return SectionsParser.parse("http://horstmann.com/private/ihome.html", callback);
+                // return SectionsParser.parse(makeQuery(14, type), callback);
             }
         });
     }
@@ -445,7 +446,8 @@ public class QueryManager
     {
     	String lastChanged = festival.getLastChanged();
     	try {    		    		
-            Festival result = FestivalParser.parseFestival(makeQuery(18, lastChanged), callback);
+            // Festival result = FestivalParser.parseFestival(makeQuery(18, lastChanged), callback);
+    		Festival result = FestivalParser.parseFestival("http://horstmann.com/private/festival.html", callback);
             if (!result.isEmpty()) {
             	festival = result;
             }

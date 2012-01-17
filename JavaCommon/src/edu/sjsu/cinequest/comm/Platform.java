@@ -20,8 +20,6 @@
 package edu.sjsu.cinequest.comm;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -132,13 +130,7 @@ public abstract class Platform
 	
 	public abstract void log(String message);
 	
-	public void log(Throwable ex) {
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		ex.printStackTrace(pw);
-		pw.close();				
-		log(sw.toString());
-	}
+	public abstract void log(Throwable ex);
 	
 	public boolean isNetworkAvailable() { return true; }
 	

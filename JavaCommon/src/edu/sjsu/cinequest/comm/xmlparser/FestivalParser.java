@@ -59,7 +59,8 @@ public class FestivalParser extends BasicHandler {
 		FestivalParser handler = new FestivalParser();
 		handler.setFestival(new Festival());
 		Platform.getInstance().parse(url, handler, callback);
-		return handler.getFestival().cleanup();
+		Festival result = handler.getFestival().cleanup();
+		return result;
 	}
 
 	public Festival getFestival() {
@@ -85,7 +86,7 @@ public class FestivalParser extends BasicHandler {
 		} else if (lastTagName().equals("program_item")) {
 			programItem = new ProgramItem();
 			programItem.setId(Integer.parseInt(attributes.getValue("id")));
-			festival.getProgramItems().add(programItem);	       		
+			festival.getProgramItems().addElement(programItem);	       		
 		} else if (lastTagName().equals("film") && programItem != null) {
 			film = new Film();
 			String id = attributes.getValue("id");

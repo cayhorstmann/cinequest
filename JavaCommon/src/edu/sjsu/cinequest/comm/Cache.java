@@ -61,8 +61,8 @@ public class Cache implements Persistable
     {
         CacheEntry entry = (CacheEntry) table.get(key);
         if (entry == null) return null;
-        Date now = new Date();
-        if (now.getTime() - entry.timestamp.getTime() > maxMillisec) 
+        long now = new Date().getTime();
+        if (now - entry.timestamp > maxMillisec) 
         {
         	unlink(entry);
         	return null;
@@ -117,7 +117,7 @@ public class Cache implements Persistable
     
     private void relink(CacheEntry entry)
     {
-    	entry.timestamp = new Date();
+    	entry.timestamp = new Date().getTime();
         if (entry == newest) return;
         unlink(entry);
         link(entry);
@@ -138,11 +138,11 @@ public class Cache implements Persistable
         CacheEntry next;
         CacheEntry previous;
         String key;
-        Date timestamp;
+        long timestamp;
         
         CacheEntry()
         {
-        	timestamp = new Date();
+        	timestamp = new Date().getTime();
         }
     }    
     

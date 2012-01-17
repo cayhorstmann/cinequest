@@ -247,6 +247,10 @@ public class RIMPlatform extends Platform {
 		EventLogger.logEvent(APP_ID, message.getBytes());
 	}
 
+	public void log(Throwable ex) {
+		log(ex.toString());
+	}	
+	
 	public Vector sort(Vector vec, final Platform.Comparator comp) {
 		SimpleSortingVector svec = new SimpleSortingVector();
 		svec.setSortComparator(new net.rim.device.api.util.Comparator() {

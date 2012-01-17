@@ -157,7 +157,7 @@ public class Festival implements Persistable {
 				Film replacement = getFilmForId(film.getId());
 				if (replacement == null) // TODO: That should never happen
 				{
-					films.remove(j);
+					films.removeElementAt(j);
 					j--;
 				}
 				else
@@ -172,7 +172,7 @@ public class Festival implements Persistable {
 				Vector films = item.getFilms(); 
 				for (int j = 0; j < films.size(); j++) {
 					Film film = (Film) films.elementAt(j);
-					film.getSchedules().add(schedule);
+					film.getSchedules().addElement(schedule);
 				}
 			}
 		}

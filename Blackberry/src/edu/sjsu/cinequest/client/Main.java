@@ -47,8 +47,8 @@ public class Main extends UiApplication
         imageManager = new ImageManager();
         queryManager = new QueryManager();
         user = new User();
-        // Remove this to turn on test mode
-        // DateUtils.setMode(DateUtils.FESTIVAL_TEST_MODE);
+        // TODO: Remove this to turn on test mode
+        DateUtils.setMode(DateUtils.FESTIVAL_TEST_MODE);
                 
         Main app = new Main();
         app.enterEventDispatcher();
@@ -116,14 +116,4 @@ public class Main extends UiApplication
     {
        return user;
     }    
-    
-    public static void saveUser()
-    {
-       
-    }
-    
-    public static void switchUser()
-    {
-       
-    }
 }

@@ -45,14 +45,14 @@ public class AndroidWebConnection extends WebConnection {
     
     static {
     	params = new BasicHttpParams();
-    	HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-    	HttpProtocolParams.setContentCharset(params, HTTP.DEFAULT_CONTENT_CHARSET);
-    	HttpProtocolParams.setUseExpectContinue(params, true);
-    	HttpConnectionParams.setConnectionTimeout(params, 100000);
-    	HttpConnectionParams.setSoTimeout(params, 100000);
+    	// HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+    	// HttpProtocolParams.setContentCharset(params, HTTP.DEFAULT_CONTENT_CHARSET);
+    	// HttpProtocolParams.setUseExpectContinue(params, true);
+    	HttpConnectionParams.setConnectionTimeout(params, 10 * 1000);
+    	HttpConnectionParams.setSoTimeout(params, 10 * 1000);
     	HttpProtocolParams.setUserAgent(params, "Mozilla/5.0 (Linux; U; Android 1.0; en-us; generic)");
-    	ConnManagerParams.setTimeout(params, 100000);
-    	HttpConnectionParams.setTcpNoDelay(params, true); // http://stackoverflow.com/questions/4470457/java-net-socketexception-the-operation-timed-out-problem-in-android
+    	ConnManagerParams.setTimeout(params, 10 * 1000);
+    	// HttpConnectionParams.setTcpNoDelay(params, true); // http://stackoverflow.com/questions/4470457/java-net-socketexception-the-operation-timed-out-problem-in-android
 
     	SchemeRegistry registry = new SchemeRegistry();
     	registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
@@ -108,8 +108,15 @@ public class AndroidWebConnection extends WebConnection {
     
     public byte[] getBytes() throws IOException 
     {
-    	execute();
-    	return EntityUtils.toByteArray(response.getEntity());
+    	try
+    	{
+    		execute();
+    		return EntityUtils.toByteArray(response.getEntity());
+    	}
+    	finally
+    	{
+    		close();
+    	}
     }
     
     public String getHeaderField(String name) throws IOException
