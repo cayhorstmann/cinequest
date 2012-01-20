@@ -44,7 +44,7 @@ public class Cache implements Persistable
      * @param key the key for the object
      * @return the cached value, or null if it is not present (either never entered or not recently used)
      */
-    public Object get(String key)
+    public synchronized Object get(String key)
     {
         CacheEntry entry = (CacheEntry) table.get(key);
         if (entry == null) return null;
@@ -58,7 +58,7 @@ public class Cache implements Persistable
      * @param maxMillisec the maximum age of the object, or 0 to take anything
      * @return the cached value, or null if it is not present or too old
      */
-    public Object get(String key, long maxMillisec)
+    public synchronized Object get(String key, long maxMillisec)
     {
     	if (maxMillisec == 0) return get(key);
         CacheEntry entry = (CacheEntry) table.get(key);
@@ -81,7 +81,7 @@ public class Cache implements Persistable
      * @param key the key for the object
      * @param value the associated object
      */
-    public void put(String key, Object value)
+    public synchronized void put(String key, Object value)
     {
         CacheEntry entry = (CacheEntry) table.get(key);
         if (entry == null) 
@@ -103,7 +103,7 @@ public class Cache implements Persistable
      * Removes a cached value
      * @param key the key for the value to be removed
      */
-    public void remove(String key)
+    public synchronized void remove(String key)
     {
         CacheEntry entry = (CacheEntry) table.remove(key);
         if (entry != null) unlink(entry);         
@@ -148,7 +148,7 @@ public class Cache implements Persistable
         }
     }    
     
-    public String toString()
+    public synchronized String toString()
     {
         String ret = getClass().getName() + "[";
         CacheEntry entry = oldest;

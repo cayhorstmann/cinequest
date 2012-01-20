@@ -84,7 +84,7 @@ public class HomeActivity extends Activity {
             {
                DateUtils.setFestivalDates((String[]) result);            
             }
-         });
+         });        
                  
         title_image = (ImageView) this.findViewById(R.id.homescreen_title_image);
         title_image.setImageDrawable(getResources().getDrawable(R.drawable.creative));

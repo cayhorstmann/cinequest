@@ -19,6 +19,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
@@ -86,21 +87,31 @@ public class CinequestActivity extends Activity
 		SeparatedListIndexedAdapter adapter = new SeparatedListIndexedAdapter(this);
    		TreeMap<String, ArrayList<Filmlet>> filmsTitleMap 
    							= new TreeMap<String, ArrayList<Filmlet>>();
+   		String titleInitial = "";
    		for (Filmlet f : listItems) {
- 			String titleInitial = f.getTitle().substring(0,1).toUpperCase();
+ 			titleInitial = getTitleInitial(f.getTitle(), titleInitial);
  			
  			if (!filmsTitleMap.containsKey(titleInitial))
  				filmsTitleMap.put(titleInitial, new ArrayList<Filmlet>());
 			filmsTitleMap.get(titleInitial).add(f);
  		}
    		
- 		for (String title : filmsTitleMap.keySet()) { 
+ 		for (String titleInit : filmsTitleMap.keySet()) { 
  			adapter.addSection(
-				title, title.substring(0, 1),	
-				new FilmletListAdapter(this, filmsTitleMap.get(title)));
+				titleInit, titleInit,	
+				new FilmletListAdapter(this, filmsTitleMap.get(titleInit)));
  		}
  		return adapter;
     }
+	
+	private static String getTitleInitial(String title, String previousInitial) {
+		String ucTitle = title.toUpperCase();
+		if (ucTitle.startsWith("A ") || ucTitle.startsWith("AN ") || ucTitle.startsWith("THE "))
+			ucTitle = ucTitle.substring(ucTitle.indexOf(' ') + 1);
+		String initial = ucTitle.substring(0,1);
+		if (initial.compareTo(previousInitial) < 0) Platform.getInstance().log("Didn't expect " + title + " after section " + previousInitial);
+		return initial;
+	}
 	
 	/**
 	 * An adapter for a list of schedule items. These lists occur (1) in the Films tab 
