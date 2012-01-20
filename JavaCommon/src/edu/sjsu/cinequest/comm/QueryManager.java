@@ -76,7 +76,7 @@ public class QueryManager
     
     private String makeQuery(int type, String arg)
     {
-        return "http://" + queryBase + queries[type] + arg;
+        return "http://" + queryBase + queries[type] + arg; // TODO: Change back to http
     }
 
     private String makeQuery(int type, int arg)
@@ -446,7 +446,8 @@ public class QueryManager
     	String lastChanged = festival.getLastChanged();
     	try {    		    		
             Festival result = FestivalParser.parseFestival(makeQuery(18, lastChanged), callback);
-    		// Festival result = FestivalParser.parseFestival("http://horstmann.com/private/festival.html", callback);
+    		// Festival result = FestivalParser.parseFestival("http://horstmann.com/private/festival.html", callback); 
+            // TODO Remove
             if (!result.isEmpty()) {
             	festival = result;
             }

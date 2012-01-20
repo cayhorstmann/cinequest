@@ -48,10 +48,10 @@ public class AndroidWebConnection extends WebConnection {
     	// HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
     	// HttpProtocolParams.setContentCharset(params, HTTP.DEFAULT_CONTENT_CHARSET);
     	// HttpProtocolParams.setUseExpectContinue(params, true);
-    	HttpConnectionParams.setConnectionTimeout(params, 10 * 1000);
-    	HttpConnectionParams.setSoTimeout(params, 100 * 1000);
+    	HttpConnectionParams.setConnectionTimeout(params, 120 * 1000); // TODO: Reduce timeouts
+    	HttpConnectionParams.setSoTimeout(params, 120 * 1000);
     	HttpProtocolParams.setUserAgent(params, "Mozilla/5.0 (Linux; U; Android 1.0; en-us; generic)");
-    	ConnManagerParams.setTimeout(params, 10 * 1000);
+    	ConnManagerParams.setTimeout(params, 120 * 1000);
     	// HttpConnectionParams.setTcpNoDelay(params, true); // http://stackoverflow.com/questions/4470457/java-net-socketexception-the-operation-timed-out-problem-in-android
 
     	SchemeRegistry registry = new SchemeRegistry();

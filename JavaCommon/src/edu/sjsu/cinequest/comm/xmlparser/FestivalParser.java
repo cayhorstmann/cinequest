@@ -56,10 +56,13 @@ public class FestivalParser extends BasicHandler {
 	 * @throws IOException
 	 */
 	public static Festival parseFestival(String url, Callback callback) throws SAXException, IOException {
+		Platform.getInstance().log("Festival.getFestival: start " + new java.util.Date());
 		FestivalParser handler = new FestivalParser();
 		handler.setFestival(new Festival());
 		Platform.getInstance().parse(url, handler, callback);
+		Platform.getInstance().log("Festival.getFestival: parsed " + new java.util.Date());
 		Festival result = handler.getFestival().cleanup();
+		Platform.getInstance().log("Festival.getFestival: cleaned up " + new java.util.Date());
 		return result;
 	}
 

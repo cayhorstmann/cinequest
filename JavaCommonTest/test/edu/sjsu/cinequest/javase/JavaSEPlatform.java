@@ -101,6 +101,11 @@ public class JavaSEPlatform extends Platform
     }
     
 
+    public void starting(Callback callback)
+    {
+        callback.starting();
+    }
+
     public void invoke(Callback callback, Object arg)
     {
         if (callback == null)
@@ -198,6 +203,11 @@ public class JavaSEPlatform extends Platform
    public void log(String message)
    {
        Logger.getLogger("global").info(message);
+   }
+   
+   public void log(Throwable t)
+   {
+       Logger.getLogger("global").info(t.getMessage());
    }
    
    public void close()
