@@ -104,7 +104,7 @@ public class QueryManager {
 		t.start();
 	}
 	
-	public QueryManager() {
+	public void prefetchFestival() {
 		// Prefetch the Festival
 		try {
 			getFestival(new Callback() {

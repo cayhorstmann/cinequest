@@ -136,6 +136,7 @@ public class HomeActivity extends Activity {
 			@Override
 			public void invoke(Object result) {
 				populateNewsEventsList((Vector<Section>) result);
+				queryManager.prefetchFestival();
 			}
 			@Override public void starting() {}			
 			@Override public void failure(Throwable t) {
