@@ -240,8 +240,9 @@ public class QueryManager
         {
             public Object run() throws Throwable
             {
-            	return getFestival(callback).getFilms();
-                // return FilmsParser.parse(makeQuery(3, ""), callback);
+            	// return getFestival(callback).getFilms();
+            	// TODO: Compute this query locally
+                return FilmsParser.parse(makeQuery(3, ""), callback);
             }
         });
     }
