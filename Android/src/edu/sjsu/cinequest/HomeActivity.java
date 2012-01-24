@@ -122,8 +122,7 @@ public class HomeActivity extends Activity {
 				i.putExtra("open_tab", MainTab.DVDS_TAB);
 				startActivityForResult(i, 0);
 			}
-		});        
-      
+		});              
     }
     
     /**

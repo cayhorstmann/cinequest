@@ -103,19 +103,22 @@ public class QueryManager {
 		});
 		t.start();
 	}
-	
+
 	public void prefetchFestival() {
-		// Prefetch the Festival
 		try {
+			Platform.getInstance().log("Prefetching festival");
 			getFestival(new Callback() {
 				public void failure(Throwable t) {
 					Platform.getInstance().log(t);
 				}
+
 				public void invoke(Object result) {
 				}
+
 				public void starting() {
 				}
 			});
+			Platform.getInstance().log("Done prefetching festival");
 		} catch (Exception e) {
 			Platform.getInstance().log(e);
 		}
@@ -427,23 +430,20 @@ public class QueryManager {
 				Platform.getInstance().starting(callback);
 		}
 		synchronized (festivalLock) {
+			// if (!festival.isEmpty()) return festival; // TODO: Comment out to check performance				
 			synchronized (progressLock) {
 				festivalQueryInProgress = true;
 			}
 			try {
 				String lastChanged = festival.getLastChanged();
-				try {
-					Festival result = FestivalParser.parseFestival(
-							makeQuery(18, lastChanged), callback);
-					if (!result.isEmpty()) {
-						festival = result;
-					} else
-						festival.setLastChanged(result.getLastChanged());
-					festival.setEvents(EventsParser.parseEvents(
-							makeQuery(14, "events"), null, callback));
-				} catch (Exception ex) {
-					Platform.getInstance().log(ex);
-				}
+				Festival result = FestivalParser.parseFestival(
+						makeQuery(18, lastChanged.replace(" ", "%20")), callback);
+				if (!result.isEmpty()) {
+					festival = result;
+				} else
+					festival.setLastChanged(result.getLastChanged());
+				festival.setEvents(EventsParser.parseEvents(
+						makeQuery(14, "events"), null, callback));
 			} finally {
 				synchronized (progressLock) {
 					festivalQueryInProgress = false;
