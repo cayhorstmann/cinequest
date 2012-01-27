@@ -56,7 +56,7 @@ public class HomeActivity extends Activity {
         setContentView(R.layout.home_layout);
         
         // TODO: Remove this to turn on test mode
-        DateUtils.setMode(DateUtils.FESTIVAL_TEST_MODE);
+        // DateUtils.setMode(DateUtils.FESTIVAL_TEST_MODE);
         Context context = getApplicationContext();
         try {
             PackageInfo pi = context.getPackageManager().getPackageInfo(getPackageName(), 0);
