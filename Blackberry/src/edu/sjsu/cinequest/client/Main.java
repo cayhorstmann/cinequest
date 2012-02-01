@@ -48,7 +48,7 @@ public class Main extends UiApplication
         queryManager = new QueryManager();
         user = new User();
         // TODO: Remove this to turn on test mode
-        DateUtils.setMode(DateUtils.FESTIVAL_TEST_MODE);
+        // DateUtils.setMode(DateUtils.FESTIVAL_TEST_MODE);
                 
         Main app = new Main();
         app.enterEventDispatcher();

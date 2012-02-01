@@ -422,6 +422,27 @@ public class HParserTest extends TestCase
         int[] offsets = parser.getOffsets();
         for (int i = 0; i < offsets.length - 1; i++)
             assertTrue(offsets[i] < offsets[i + 1]);
+        assertTrue(offsets[offsets.length - 1] == parser.getResultString().length());
+    }
+    
+    public void testEndsInJunk()
+    {
+    	String input = "<p>Fred<b>Wilma</b>Barney</p>";
+    	HParser parser = new HParser();
+        parser.parse(input);
+        int[] offsets = parser.getOffsets();
+        assertTrue(offsets[offsets.length - 1] == parser.getResultString().length());
+    }
+    
+    public void testShorts()
+    {
+    	String input = "<p>Not your average student films.<br><br>Students may be the most passionate of all filmmakers, filled with raw ideas that manifest themselves through intensely personal subjects and unique approaches to filmmaking. The Student Shorts program showcases this passion at its best, with inspired films in familiar genres - from a charming animation (Bloom) to an array of documentaries (Mexican Cuisine, The Other Side, Sick as a Dog); from a hilarious comedy (Elder Anderson) to unsettling dramas (Rest Stop, Say Goodnight, Teardrop); and three wildly different coming-of-age stories (First Match, The Homecoming Queen, Nani) giving us a glimpse at some of the many challenges that young people face today.<br><br>– Nathan Zanon</p><ul><li>Rest Stop - De Anza College - dir. Nader Carun</li>		<li>Nani - AFI - dir. Justin Tipping</li><li>The Other Side - Academy of Art University - dir. Sangmi Eom</li><li>Elder Anderson - San Jose State - dir. Daniel Maggio</li><li>Teardrop - University of Television and Film, Munich - dir. Damian John Harper</li> <li>Mexican Cuisine - Academy of Art University - dir. Francisco Guijarro</li><li>Say Goodnight - UCLA - dir. Brad LaBriola	</li><li>Bloom - San Jose State University - dir. Brian Kistler</li>	<li>Sick as a Dog - Stanford University - dir. Rebekah Meredith</li><li>First Match - Columbia University - dir. Olivia Newman</li><li>The Homecoming Queen - Columbia University - dir. Rammy Lee Park</li></ul>";
+        HParser parser = new HParser();
+        parser.parse(input);
+        int[] offsets = parser.getOffsets();
+        for (int i = 0; i < offsets.length - 1; i++)
+            assertTrue(offsets[i] < offsets[i + 1]);
+        assertTrue(offsets[offsets.length - 1] == parser.getResultString().length());
     }
     
     public void testWriter()

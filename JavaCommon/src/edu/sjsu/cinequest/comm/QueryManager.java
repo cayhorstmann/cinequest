@@ -436,8 +436,12 @@ public class QueryManager {
 			}
 			try {
 				String lastChanged = festival.getLastChanged();
+				int i = lastChanged.indexOf(' ');
+				if (i >= 0) {
+					lastChanged = lastChanged.substring(0, i) + "%20" + lastChanged.substring(i + 1);
+				}
 				Festival result = FestivalParser.parseFestival(
-						makeQuery(18, lastChanged.replace(" ", "%20")), callback);
+						makeQuery(18, lastChanged), callback);
 				if (!result.isEmpty()) {
 					festival = result;
 				} else

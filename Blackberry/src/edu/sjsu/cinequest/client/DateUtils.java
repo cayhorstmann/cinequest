@@ -32,14 +32,13 @@ import net.rim.device.api.util.DateTimeUtilities;
  */
 public class DateUtils
 {
-	
-	
-    private int[] fields = new int[7];
+	private int[] fields = new int[7];
     private Calendar cal = Calendar.getInstance();
     public static final int NORMAL_MODE = 0;
     public static final int FESTIVAL_TEST_MODE = 1;
     public static final int OFFSEASON_TEST_MODE = 2;
-    private static int mode = NORMAL_MODE;
+    public static final int UNINITIALIZED_MODE = -1;
+    private static int mode = UNINITIALIZED_MODE;
     
     private static String[] festivalDates =
     { 
@@ -56,6 +55,7 @@ public class DateUtils
      */
     public static String[] getFestivalDates()
     {
+    	if (mode == UNINITIALIZED_MODE) return new String[0];
         return festivalDates;
     }
     
@@ -65,6 +65,7 @@ public class DateUtils
      */
     public static void setFestivalDates(String[] fdates)
     {
+    	if (mode == UNINITIALIZED_MODE) mode = NORMAL_MODE;
     	if (mode == NORMAL_MODE) 
     		festivalDates = fdates;
     }
@@ -77,6 +78,7 @@ public class DateUtils
     public static boolean isOffSeason()
     {
     	//return season.equalsIgnoreCase("off-season");
+    	if (mode == UNINITIALIZED_MODE) return false;
         return today().compareTo(festivalDates[festivalDates.length - 1]) > 0;
     }
     

@@ -90,7 +90,7 @@ public class HParser
     			else if (!checkForImage(images, tag))
     			{
 					byte newFont = resolveFontTag(font, tag);
-					if (newFont != -1)
+					if (newFont != -1 || end == input.length() - 1)
 					{
 						if (result.length() > 0)
 						{
