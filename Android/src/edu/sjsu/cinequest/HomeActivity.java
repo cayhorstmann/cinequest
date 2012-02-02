@@ -72,16 +72,10 @@ public class HomeActivity extends Activity {
         user = new User();
         
         
-        queryManager.getFestivalDates(new Callback() {
-            public void starting() 
-            {
-            }          
-            public void failure(Throwable t)
-            {
-          	  Platform.getInstance().log(t);
-            }
+        queryManager.getFestivalDates(new ProgressMonitorCallback(this) {
             public void invoke(Object result)
             {
+            	super.invoke(result);
                DateUtils.setFestivalDates((String[]) result);            
             }
          });        
@@ -135,6 +129,7 @@ public class HomeActivity extends Activity {
 			@Override
 			public void invoke(Object result) {
 				populateNewsEventsList((Vector<Section>) result);
+				// TODO: Why doesn't this work???
 				queryManager.prefetchFestival();
 			}
 			@Override public void starting() {}			

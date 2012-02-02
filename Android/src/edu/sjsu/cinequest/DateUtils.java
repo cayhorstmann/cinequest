@@ -11,8 +11,8 @@ public class DateUtils {
     public static final int NORMAL_MODE = 0;
     public static final int FESTIVAL_TEST_MODE = 1;
     public static final int OFFSEASON_TEST_MODE = 2;
-    // TODO: Set to NORMAL_MODE before release
-    private static int mode = FESTIVAL_TEST_MODE;
+    public static final int UNINITIALIZED_MODE = -1;
+    private static int mode = UNINITIALIZED_MODE;
 
     /*
      * If you need more time formats, add a constant here, and be sure to
@@ -57,6 +57,7 @@ public class DateUtils {
      */
     public static String[] getFestivalDates()
     {
+    	if (mode == UNINITIALIZED_MODE) return new String[0];
         return festivalDates;
     }
     
@@ -67,7 +68,10 @@ public class DateUtils {
     public static void setFestivalDates(String[] fdates)
     {
     	if (mode != FESTIVAL_TEST_MODE)
+    	{
     		festivalDates = fdates;
+    		if (mode == UNINITIALIZED_MODE) mode = NORMAL_MODE; 
+    	}
     }
  
     /**
