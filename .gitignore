@@ -1,0 +1,13 @@
+workspace
+Android/local
+Blackberry/local
+JavaCommon/local
+JavaCommonTest/local
+*/local.properties
+*/.project
+*/.classpath
+*/.settings
+*/bin
+*/gen
+*.tgz
+todo.*
