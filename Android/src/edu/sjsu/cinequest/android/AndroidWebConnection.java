@@ -129,6 +129,6 @@ public class AndroidWebConnection extends WebConnection {
     public void close() throws IOException
     {
     	if (response != null) response.getEntity().consumeContent();
-        Platform.getInstance().log("AndroidWebConnection.close: Closing connection");
+        Platform.getInstance().log("AndroidWebConnection.close: Closing connection to " + url);
     }
 }

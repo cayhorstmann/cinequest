@@ -75,7 +75,7 @@ public class HomeActivity extends Activity {
         queryManager.getFestivalDates(new ProgressMonitorCallback(this) {
             public void invoke(Object result)
             {
-            	super.invoke(result);
+               super.invoke(result);
                DateUtils.setFestivalDates((String[]) result);            
             }
          });        

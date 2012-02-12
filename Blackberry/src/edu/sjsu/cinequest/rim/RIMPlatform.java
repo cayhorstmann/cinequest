@@ -63,7 +63,7 @@ public class RIMPlatform extends Platform {
 	private static final int MAX_CACHE_SIZE = 50;
 	// echo -n "edu.sjsu.cinequest.rim.RIMPlatform" | md5sum | cut -c1-16
 	private static final long PERSISTENCE_KEY = 0xcfbd786faca62011L;
-	private static final long MAX_CACHE_AGE = 1000L * 60 * 60 * 3; // 3 hours
+	private static final long MAX_CACHE_AGE = 1000L * 60 * 60 * 6; // 6 hours
 
 	public RIMPlatform() {
 		xmlRawBytesCache = (Cache) loadPersistentObject(PERSISTENCE_KEY);
