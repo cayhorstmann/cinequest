@@ -45,7 +45,7 @@ import edu.sjsu.cinequest.comm.xmlparser.UserScheduleParser;
  * @author Kevin Ross (cs160_109)
  */
 public class QueryManager {
-	private static final String queryBase = "mobile.cinequest.org/mobileCQ.php"; 
+	private static final String queryBase = "mobile.cinequest.org/mobileCQ.php";
 	private static final String[] queries = { "?type=program_item&id=", // 0
 			"?type=mode", // 1
 			"?type=film&id=", // 2
@@ -66,17 +66,17 @@ public class QueryManager {
 			"?type=programs", // 17 program items by title
 			"?type=festival&lastChanged=" // 18 complete festival information
 	};
-	private static final String imageBase = "http://mobile.cinequest.org/"; 
+	private static final String imageBase = "http://mobile.cinequest.org/";
 	private static final String mainImageURL = "imgs/mobile/creative.gif";
 
-	public static final String registrationURL = "http://mobile.cinequest.org/isch_reg.php"; 
+	public static final String registrationURL = "http://mobile.cinequest.org/isch_reg.php";
 	private Festival festival = new Festival();
 	private Object festivalLock = new Object();
 	private boolean festivalQueryInProgress = false;
 	private Object progressLock = new Object();
 
 	private String makeQuery(int type, String arg) {
-		return "http://" + queryBase + queries[type] + arg; 
+		return "http://" + queryBase + queries[type] + arg;
 	}
 
 	private String makeQuery(int type, int arg) {
@@ -104,23 +104,28 @@ public class QueryManager {
 	}
 
 	public void prefetchFestival() {
-		try {
-			Platform.getInstance().log("Prefetching festival");
-			getFestival(new Callback() {
-				public void failure(Throwable t) {
-					Platform.getInstance().log(t);
-				}
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+				try {
+					Platform.getInstance().log("Prefetching festival");
+					getFestival(new Callback() {
+						public void failure(Throwable t) {
+							Platform.getInstance().log(t);
+						}
 
-				public void invoke(Object result) {
-				}
+						public void invoke(Object result) {
+						}
 
-				public void starting() {
+						public void starting() {
+						}
+					});
+					Platform.getInstance().log("Done prefetching festival");
+				} catch (Exception e) {
+					Platform.getInstance().log(e);
 				}
-			});
-			Platform.getInstance().log("Done prefetching festival");
-		} catch (Exception e) {
-			Platform.getInstance().log(e);
-		}
+			}
+		});
+		t.start();
 	}
 
 	public void getDVDs(final Callback callback) {
@@ -423,10 +428,13 @@ public class QueryManager {
 			IOException {
 		synchronized (progressLock) {
 			if (festivalQueryInProgress)
-				Platform.getInstance().starting(callback);
+				Platform.getInstance()
+						.log("Festival query called while another query in progress.");
+			Platform.getInstance().starting(callback);
 		}
 		synchronized (festivalLock) {
-			if (!festival.isEmpty()) return festival; 				
+			if (!festival.isEmpty())
+				return festival;
 			synchronized (progressLock) {
 				festivalQueryInProgress = true;
 			}
@@ -434,7 +442,8 @@ public class QueryManager {
 				String lastChanged = festival.getLastChanged();
 				int i = lastChanged.indexOf(' ');
 				if (i >= 0) {
-					lastChanged = lastChanged.substring(0, i) + "%20" + lastChanged.substring(i + 1);
+					lastChanged = lastChanged.substring(0, i) + "%20"
+							+ lastChanged.substring(i + 1);
 				}
 				Festival result = FestivalParser.parseFestival(
 						makeQuery(18, lastChanged), callback);
