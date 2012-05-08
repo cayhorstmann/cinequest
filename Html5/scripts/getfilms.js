@@ -62,7 +62,7 @@ $('#list-content').click(function(event) {
              $('#scheduleslist').append($('<li data-role="list-divider">Schedules</li>')); 
              $('#scheduleslist').listview('refresh');
 
-	     $schedules.find('schedule').each(function() {
+         $schedules.find('schedule').each(function() {
                  s_id = $(this).attr('id');
                  s_program_item_id = $(this).attr('program_item_id');
                  s_start_time = $(this).attr('start_time');
@@ -75,7 +75,7 @@ $('#list-content').click(function(event) {
                  //var ss = dateFormat(now, "dddd, mmmm d, yyyy, h:MM:ss TT");
                  //var dd = $.datepicker.formatDate('yy-mm-dd', new Date(2007, 1 - 1, 26));
 
-                  $('<li id="'+id+'"></li>').html('Date: ' + d.toDateString() +'<br>Time: ').appendTo('#scheduleslist');
+                  $('<li id="'+id+'"></li>').html('Date: ' + d.toDateString() +'<br />Time: ').appendTo('#scheduleslist');
                   $('#scheduleslist').listview('refresh');
                });
              }
