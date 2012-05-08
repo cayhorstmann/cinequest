@@ -27,3 +27,18 @@
     border-bottom-style:solid;
     border-bottom-color:gray;
 }
+
+.checkbox {
+	position: relative;
+	height: 30px;
+	width: 30px;
+    left: 0px;
+    top: 0px;
+}
+
+.forum_name {
+    position: absolute;
+    top: 0px;
+    left: 40px;
+    width: 520px;
+}
