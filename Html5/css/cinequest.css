@@ -42,3 +42,12 @@
     left: 40px;
     width: 520px;
 }
+
+a {
+    text-decoration:none;
+    color:black;
+}
+
+a:hover {
+    color:grey;
+}
