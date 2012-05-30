@@ -70,7 +70,7 @@ var forumsIndex = 0;
 /*used for different categories: 
 *films = 0, events=1, forums=2, DVDs=3
 */
-var mode = -1;
+var mode = 1;
 
 /*
  * Call the php file to fetch the xml of events and forums from the Cinquest 
@@ -231,10 +231,49 @@ $(document).bind('pageinit', function(event) {
 $('#film_bar').click(function(event) {
     event.stopImmediatePropagation();
     event.preventDefault();
+    $('#wrapper').empty();
     mode = 0;
-    $('#swipe_content').empty();
     filmIndex = 0;
-    $('#swipe_content').html(generateContent(filmIndex));
+    $('#index').empty();
+    $('<a>1/158</a>').appendTo('#index');
+    var	carousel,
+		el,
+		i,
+		page,
+		slides;
+		slides = new Array();
+		for(var j = 0; j < films_counter; j++) {
+			slides[j] = generateContent(j);
+		}
+	
+	carousel = new SwipeView('#wrapper', {
+		numberOfPages: slides.length,
+		hastyPageFlip: true
+	});
+	
+	// Load initial data
+	for (i=0; i<3; i++) {
+		page = i==0 ? slides.length-1 : i-1;
+	
+		el = document.createElement('span');
+		el.innerHTML = slides[page];
+		carousel.masterPages[i].appendChild(el)
+	}
+	
+	carousel.onFlip(function () {
+		var el,
+			upcoming,
+			i;
+	
+		for (i=0; i<3; i++) {
+			upcoming = carousel.masterPages[i].dataset.upcomingPageIndex;
+	
+			if (upcoming != carousel.masterPages[i].dataset.pageIndex) {
+				el = carousel.masterPages[i].querySelector('span');
+				el.innerHTML = slides[upcoming];
+			}
+		}
+	});
 });
 
 /*
@@ -244,10 +283,48 @@ $('#film_bar').click(function(event) {
 $('#event_bar').click(function(event) {
     event.stopImmediatePropagation();
     event.preventDefault();
+    $('#wrapper').empty();
     mode = 1;
-    $('#swipe_content').empty();
-    eventIndex = 0;
-    $('#swipe_content').html(generateContent(eventIndex));
+    $('#index').empty();
+    $('<a>1/9</a>').appendTo('#index');
+    var	carousel,
+		el,
+		i,
+		page,
+		slides;
+		slides = new Array();
+		for(var j = 0; j < events_counter; j++) {
+			slides[j] = generateContent(j);
+		}
+	
+	carousel = new SwipeView('#wrapper', {
+		numberOfPages: slides.length,
+		hastyPageFlip: true
+	});
+	
+	// Load initial data
+	for (i=0; i<3; i++) {
+		page = i==0 ? slides.length-1 : i-1;
+	
+		el = document.createElement('span');
+		el.innerHTML = slides[page];
+		carousel.masterPages[i].appendChild(el)
+	}
+	
+	carousel.onFlip(function () {
+		var el,
+			upcoming,
+			i;
+	
+		for (i=0; i<3; i++) {
+			upcoming = carousel.masterPages[i].dataset.upcomingPageIndex;
+	
+			if (upcoming != carousel.masterPages[i].dataset.pageIndex) {
+				el = carousel.masterPages[i].querySelector('span');
+				el.innerHTML = slides[upcoming];
+			}
+		}
+	});
 });
 
 /*
@@ -257,102 +334,49 @@ $('#event_bar').click(function(event) {
 $('#forums_bar').click(function(event){
     event.stopImmediatePropagation();
     event.preventDefault();
+    $('#wrapper').empty();
     mode = 2;
-    $('#swipe_content').empty();
-    forumsIndex = 0;
-    $('#swipe_content').html(generateContent(forumsIndex));
+    $('#index').empty();
+    $('<a>1/2</a>').appendTo('#index');
+    var	carousel,
+		el,
+		i,
+		page,
+		slides;
+		slides = new Array();
+		for(var j = 0; j < forums_counter; j++) {
+			slides[j] = generateContent(j);
+		}
+	
+	carousel = new SwipeView('#wrapper', {
+		numberOfPages: slides.length,
+		hastyPageFlip: true
+	});
+	
+	// Load initial data
+	for (i=0; i<3; i++) {
+		page = i==0 ? slides.length-1 : i-1;
+	
+		el = document.createElement('span');
+		el.innerHTML = slides[page];
+		carousel.masterPages[i].appendChild(el)
+	}
+	
+	carousel.onFlip(function () {
+		var el,
+			upcoming,
+			i;
+	
+		for (i=0; i<3; i++) {
+			upcoming = carousel.masterPages[i].dataset.upcomingPageIndex;
+	
+			if (upcoming != carousel.masterPages[i].dataset.pageIndex) {
+				el = carousel.masterPages[i].querySelector('span');
+				el.innerHTML = slides[upcoming];
+			}
+		}
+	});
 });
-
-/*Swipe right function. Show the next item*/
-$(document).bind('swiperight', function(event) {
-    event.stopImmediatePropagation();
-    event.preventDefault();
-    if(mode == 0) {
-        if(filmIndex < films_counter - 1) {
-            fillContent(++filmIndex);
-        } else {
-            filmIndex = 0;
-            fillContent(filmIndex);
-        }
-    } else if(mode == 1) {
-        if(eventIndex < events_counter - 1)
-            fillContent(++eventIndex);
-        else {
-            eventIndex = 0;
-            fillContent(eventIndex);
-        }
-    } else if(mode == 2) {
-        if(forumsIndex < forums_counter - 1)
-            fillContent(++forumsIndex);
-        else {
-            forumsIndex = 0;
-            fillContent(forumsIndex);
-        }
-    }
-});
-
-/*Swipe left function. Show the last item*/
-$(document).bind('swipeleft', function(event) {
-    event.stopImmediatePropagation();
-    event.preventDefault();
-    if(mode == 0) {
-        if(filmIndex > 0)
-            fillContent(--filmIndex);
-        else {
-            filmIndex = films_counter - 1;
-            fillContent(filmIndex);
-        }
-    } else if(mode == 1) {
-        if(eventIndex > 0)
-            fillContent(--eventIndex);
-        else {
-            eventIndex = events_counter - 1;
-            fillContent(eventIndex);
-        }
-    } else if(mode == 2) {
-        if(forumsIndex > 0)
-            fillContent(--forumsIndex);
-        else {
-            forumsIndex = forums_counter - 1;
-            fillContent(forumsIndex);
-        }
-    }
-});
-
-/*
- * Fill the content div in the swipe.html with specific film, event, or forums
- * according to mode and index. Index is the position of the node in the array
- */
-function fillContent(index){
-    $('#swipe_content').empty();
-    $('#swipe_content').hide();
-    var content;
-    if(mode == 0) {
-        if(index < films_counter && index >= 0) {
-            content = generateContent(index);
-        } else if(index >= films_counter) {
-            alert("This is the last film");
-        } else {
-            alert("This is the first film");
-        }
-    } else if(mode == 1) {
-        if(index < events_counter && index >= 0) {
-            content = generateContent(index);
-        } else if(index >= events_counter) {
-            alert("this is the end of the page");
-        } else
-            alert("this is the beginning of the page");
-    } else if(mode == 2) {
-        if(index < forums_counter && index >= 0) {
-            content = generateContent(index);
-        } else if(index >= forums_counter) {
-            alert("This is the last forum");
-        } else
-            alert("This is the first forum");
-    }
-    $('#swipe_content').html(content);
-    $('#swipe_content').slideDown();
-}
 
 /*
  * Generate a string involves the title, description, time of films, events,
@@ -388,3 +412,112 @@ function generateContent(index) {
     }
     return content;
 }
+
+/*
+ * show the position
+ */
+$('#wrapper').bind('swiperight', function(event) {
+	event.stopImmediatePropagation();
+	if(mode == 0) {
+		$('#index').empty();
+		var text = document.createElement('a');
+		text.style.textAlign = 'center';
+		
+		var show_num;
+		if(filmIndex == 0) {
+			filmIndex = films_counter - 1;
+			show_num = films_counter;
+		} else {
+			filmIndex--;
+			show_num = filmIndex + 1;
+		}
+		text.innerHTML = show_num + '/' + films_counter
+		
+		$(text).appendTo('#index');
+	} else if(mode == 1) {
+		$('#index').empty();
+		var text = document.createElement('a');
+		text.style.textAlign = 'center';
+		
+		var show_num;
+		if(eventIndex == 0) {
+			eventIndex = events_counter - 1;
+			show_num = events_counter;
+		} else {
+			eventIndex--;
+			show_num = eventIndex + 1;
+		}
+		text.innerHTML = show_num + '/' + events_counter
+		
+		$(text).appendTo('#index');
+	} else if(mode == 2) {
+		$('#index').empty();
+		var text = document.createElement('a');
+		text.style.textAlign = 'center';
+		
+		var show_num;
+		if(forumsIndex == 0) {
+			forumsIndex = forums_counter - 1;
+			show_num = forums_counter;
+		} else {
+			forumsIndex--;
+			show_num = forumsIndex + 1;
+		}
+		text.innerHTML = show_num + '/' + forums_counter
+		
+		$(text).appendTo('#index');
+	}
+});
+
+$('#wrapper').bind('swipeleft', function(event) {
+	event.stopImmediatePropagation();
+	if(mode == 0) {
+		$('#index').empty();
+		var text = document.createElement('a');
+		text.style.textAlign = 'center';
+		
+		var show_num;
+		if(filmIndex == films_counter - 1) {
+			filmIndex = 0;
+			show_num = 1;
+		} else {
+			filmIndex++;
+			show_num = filmIndex + 1;
+		}
+		text.innerHTML = show_num + '/' + films_counter
+		
+		$(text).appendTo('#index');
+	} else if(mode == 1) {
+		$('#index').empty();
+		var text = document.createElement('a');
+		text.style.textAlign = 'center';
+		
+		var show_num;
+		if(eventIndex == events_counter - 1) {
+			eventIndex = 0;
+			show_num = 1;
+		} else {
+			eventIndex++;
+			show_num = eventIndex + 1;
+		}
+		text.innerHTML = show_num + '/' + events_counter
+		
+		$(text).appendTo('#index');
+	} else if(mode == 2) {
+		$('#index').empty();
+		var text = document.createElement('a');
+		text.style.textAlign = 'center';
+		
+		var show_num;
+		if(forumsIndex == forums_counter - 1) {
+			forumsIndex = 0;
+			show_num = 1;
+		} else {
+			forumsIndex++;
+			show_num = forumsIndex + 1;
+		}
+		text.innerHTML = show_num + '/' + forums_counter
+		
+		$(text).appendTo('#index');
+	}
+});

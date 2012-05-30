@@ -9,8 +9,10 @@
         <link 
             rel="stylesheet" 
             href="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.css" />
+        <link rel="stylesheet" href="css/swipe.css" />
         <script src="http://code.jquery.com/jquery-1.7.1.js" type="text/javascript"></script>
         <script src="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.js" type="text/javascript"></script>
+        <script src="scripts/swipeview.js" type="text/javascript"></script>
         <meta name = "viewport" content = "width = 560" />
     </head>
     <body>
@@ -29,7 +31,12 @@
                 </div>
                 
             </div>
-            <div id="swipe_content" data-role="content" data-transition='slide'></div>
+            <div id="sub_head">
+            	<div id="prev"><b id="prevb">previous</b></div>
+            	<div id="index"></div>
+            	<div id="next" id="nextb"><b>next</b></div>
+            </div>
+            <div id="wrapper"></div>
 
     </body>
 <script src="scripts/config.js" type="text/javascript"></script>
