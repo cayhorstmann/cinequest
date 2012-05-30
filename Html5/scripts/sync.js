@@ -5,20 +5,23 @@ Author: Animesh Dutta
 
 
 
-//function for synchronizing the schedule
+/*function for synchronizing the schedule
+* it is called by the login dialog/page
+* we get the username and password from the login dialog
+* and set it into local storage
+*/
 function sync(){
-var user = localStorage.getItem("user");
-var pass = localStorage.getItem("pass");
 
-var name=prompt("Please enter your Username","");
+var name = document.getElementById('name').value;
+var password = document.getElementById('password').value;
+//alert(password);
 if (name!=null && name!="")
   {
-  localStorage.setItem("user",name);;
+  localStorage.setItem("user",name);
   }
-var pass=prompt("Please enter your Password","");
-if (pass!=null && pass!="")
+if (password!=null && password!="")
   {
-  localStorage.setItem("pass",pass);;
+  localStorage.setItem("pass",password);
   }
 
 
@@ -52,8 +55,11 @@ var str="";
         });
         var timeStamp = get_timeStamp();
         var items = get_idString();
-
-        put_url = proxy+"type=SLPUT&username="+user+"&password="+pass+"&lastChanged="+timeStamp+"&items="+items;
+		
+		// add the sync timestamp logic here
+        // make this a separate function
+		// ask user to merge, overwrite server or just keep server schedule
+		put_url = proxy+"type=SLPUT&username="+user+"&password="+pass+"&lastChanged="+timeStamp+"&items="+items;
         $.ajax({
           type: "POST",
           url: put_url,
@@ -79,6 +85,13 @@ var str="";
           });
 loadcontents();
 }
+
+function logOut(){
+  localStorage.setItem("pass","");
+    localStorage.setItem("user","");
+	alert("Logged Out");
+}
+
 /**************
 
 get all the confirmed schedule ids
@@ -102,12 +115,20 @@ function get_idString(){
 
 function get_timeStamp() {
         var d = new Date();
-        var curr_hour = d.getHours();
-        var curr_min = d.getMinutes();
-        var curr_sec = d.getSeconds();
-        var curr_day = d.getDate();
-        var curr_yr = d.getFullYear();
-        var curr_mth = d.getMonth() + 1;
+        var curr_hour = padding(d.getHours());
+        var curr_min = padding(d.getMinutes());
+        var curr_sec = padding(d.getSeconds());
+        var curr_day = padding(d.getDate());
+        var curr_yr = padding(d.getFullYear());
+        var curr_mth = padding(d.getMonth() + 1);
         var timeStamp = curr_yr+"-"+curr_mth+"-"+curr_day+" "+curr_hour+":"+curr_min+":"+curr_sec ;
-        return timeStamp ;
+		return timeStamp ;
+}
+
+function padding(num){
+
+	if(num <10){
+	num = "0"+num;
+	}
+	return num;
 }

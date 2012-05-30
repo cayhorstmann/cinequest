@@ -61,8 +61,9 @@ $.ajax({
 
             $('<li data-role="list-divider"></li>').html(current_date).appendTo('#schedule');
             }
-            $('<li></li>').html('<h3><input type="checkbox" id='+id+' class="custom" />'+title+'</h3><p class="ui-li-aside"><strong>From: '+rawStart+' - '+end+'<br>Venue: '+venue+'</strong></p>').appendTo('#schedule');
-                        checkbind('#'+id+'');
+           // $('<li></li>').html('<h3><input type="checkbox" id='+id+' class="custom" />'+title+'</h3><p class="ui-li-aside"><strong>From: '+rawStart+' - '+end+'<br>Venue: '+venue+'</strong></p>').appendTo('#schedule');
+			$('<li data-role="fieldcontain"></li>').html('<fieldset data-role="controlgroup"><input type="checkbox" id='+id+' class="custom"/><a href="#">&nbsp;&nbsp;'+title+'<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Time: '+rawStart+' - '+end+'&nbsp;&nbsp;&nbsp;&nbsp;Venue: '+venue+'</a></fieldset>').appendTo('#schedule');                       
+					   checkbind('#'+id+'');
                         previous_date = rawDate;
             $('#schedule').listview('refresh');
                }
