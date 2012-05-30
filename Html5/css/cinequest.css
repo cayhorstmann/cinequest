@@ -51,3 +51,40 @@ a {
 a:hover {
     color:grey;
 }
+
+#festival_btn {
+    width:10%;
+    height:70%;
+    font-size:17px;
+}
+
+#dvds_btn {
+    width:10%;
+    height:70%;
+    font-size:17px;
+}
+
+#index_header {
+    height:50px;
+}
+
+#date_header {
+    height:28px;
+    text-align:left;
+    font-size:15px;
+    font-style:bold;
+    line-height:2em;
+}
+
+#films_date_title_btns {
+    font-size:0.8em;
+}
+
+.ui-dialog .ui-header {
+        max-width: 500px; 
+        margin: 10% auto 15px auto;
+}
+.ui-dialog .ui-footer {
+        max-width: 500px; 
+        margin: 10% auto 15px auto;
+}

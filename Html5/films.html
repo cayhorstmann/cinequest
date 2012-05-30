@@ -13,12 +13,13 @@
   <header data-role="header" data-position="fixed">
   </header>
   <div data-role="content">
-    <div style="font-size: 0.8em;" data-role="controlgroup" data-type="horizontal">
+    <div id="films_date_title_btns" data-role="controlgroup" data-type="horizontal">
       <a href="#" id="date-btn" data-role="button">Date</a>
       <a href="#" id="title-btn" data-role="button">Title</a>
     </div>
+     <div data-role="header" data-position="fixed" id="date_header" data-theme="b">&nbsp;&nbsp;&nbsp;&nbsp;Fixed Row</div>
     <div id="film-list-content" class="list-content" data-role="content">
-      <ul data-role="listview" id="films" data-inset="true">
+      <ul data-role="listview" id="films">
       </ul>
     </div>
   </div>
@@ -27,9 +28,6 @@
 <script src="scripts/config.js" type="text/javascript"></script>
 <script src="scripts/headerbar.js" type="text/javascript"></script>
 <script src="scripts/getfilms.js" type="text/javascript"></script>
-<script>
-$("#filmstab").attr("class", "ui-btn-active");
-</script>
 </div>
 </body>
 </html>

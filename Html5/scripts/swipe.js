@@ -87,7 +87,7 @@ $(document).bind('pageinit', function(event) {
      */
     $.ajax({
         type: 'GET',
-        url:'cinequestproxy.php?type=films',
+        url: proxy+'type=films',
         dataType: 'xml',
         // async: false,
         success: function(xml) {
@@ -224,7 +224,6 @@ $(document).bind('pageinit', function(event) {
         }
     });   
 });
-
 /*
  * When the film nav bar is clicked, The 15 Summer Later will be shown in the 
  * content div.
@@ -248,7 +247,6 @@ $('#event_bar').click(function(event) {
     mode = 1;
     $('#swipe_content').empty();
     eventIndex = 0;
-    // alert("got " + events_array.length)
     $('#swipe_content').html(generateContent(eventIndex));
 });
 
@@ -270,14 +268,27 @@ $(document).bind('swiperight', function(event) {
     event.stopImmediatePropagation();
     event.preventDefault();
     if(mode == 0) {
-        fillContent(++filmIndex);
+        if(filmIndex < films_counter - 1) {
+            fillContent(++filmIndex);
+        } else {
+            filmIndex = 0;
+            fillContent(filmIndex);
+        }
     } else if(mode == 1) {
-        fillContent(++eventIndex);
+        if(eventIndex < events_counter - 1)
+            fillContent(++eventIndex);
+        else {
+            eventIndex = 0;
+            fillContent(eventIndex);
+        }
     } else if(mode == 2) {
-        fillContent(++forumsIndex);
+        if(forumsIndex < forums_counter - 1)
+            fillContent(++forumsIndex);
+        else {
+            forumsIndex = 0;
+            fillContent(forumsIndex);
+        }
     }
-    // alert("swipe right detacted");
-    
 });
 
 /*Swipe left function. Show the last item*/
@@ -285,13 +296,27 @@ $(document).bind('swipeleft', function(event) {
     event.stopImmediatePropagation();
     event.preventDefault();
     if(mode == 0) {
-        fillContent(--filmIndex);
+        if(filmIndex > 0)
+            fillContent(--filmIndex);
+        else {
+            filmIndex = films_counter - 1;
+            fillContent(filmIndex);
+        }
     } else if(mode == 1) {
-        fillContent(--eventIndex);
+        if(eventIndex > 0)
+            fillContent(--eventIndex);
+        else {
+            eventIndex = events_counter - 1;
+            fillContent(eventIndex);
+        }
     } else if(mode == 2) {
-        fillContent(--forumsIndex);
+        if(forumsIndex > 0)
+            fillContent(--forumsIndex);
+        else {
+            forumsIndex = forums_counter - 1;
+            fillContent(forumsIndex);
+        }
     }
-    
 });
 
 /*
@@ -337,17 +362,25 @@ function generateContent(index) {
     var spec_event, content;
     if(mode == 0) {
         spec_event = films_array[index];
-        content = spec_event.title + '<br/>' + spec_event.description + '<br/>'+
-            spec_event.tagline + '<br/>' + spec_event.genre + '<br/>' +
-            spec_event.director + '<br/>' + spec_event.producer + '<br/>' +
-            spec_event.writer + '<br/>' + spec_event.cinematographer  +
-            '<br/>' + spec_event.editor + '<br/>' + spec_event.cast + '<br/>' +
-            spec_event.country + '<br/>' + spec_event.language + '<br/>' +
-            spec_event.film_info + '<br/>';
+        content = '<h2 align="center">' + spec_event.title + '<br/><br/>' +
+            '<img src="'+spec_event.imageURL+'" /><br/>' + '</h2><br/>' +
+            '<b>Description: </b>' + spec_event.description + '<br/><br/>'+
+            '<b>Tagline: </b>' + spec_event.tagline + '<br/>' +
+            '<b>Genre: </b>' + spec_event.genre + '<br/>' +
+            '<b>Director: </b>' + spec_event.director + '<br/>' +
+            '<b>Producer: </b>' + spec_event.producer + '<br/>' +
+            '<b>Writer: </b>' + spec_event.writer + '<br/>' +
+            '<b>Cinematographer: </b>' + spec_event.cinematographer  +'<br/>' +
+            '<b>Editor: </b>' + spec_event.editor + '<br/>' +
+            '<b>Cast: </b>' + spec_event.cast + '<br/>' +
+            '<b>Country: </b>' + spec_event.country + '<br/>' +
+            '<b>Language: </b>' + spec_event.language + '<br/>' +
+            '<b>Film Info: </b>' + spec_event.film_info + '<br/>';
+        
     } else if(mode == 1 || mode == 2) {
         if(mode == 1) spec_event = events_array[index];
         else if(mode == 2) spec_event = forums_array[index];
-        content = spec_event.title + '<br/><br/>' ;
+        content = '<h2 align="center">' + spec_event.title + '</h2><br/><br/>';
         content += spec_event.description + '<br/>';
         content += spec_event.start_time + '<br/>';
         content += spec_event.end_time + '<br/>';
