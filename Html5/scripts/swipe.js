@@ -87,7 +87,7 @@ $(document).bind('pageinit', function(event) {
      */
     $.ajax({
         type: 'GET',
-        url: proxy+'type=films',
+        url:'cinequestproxy.php?type=films',
         dataType: 'xml',
         // async: false,
         success: function(xml) {
@@ -224,6 +224,7 @@ $(document).bind('pageinit', function(event) {
         }
     });   
 });
+
 /*
  * When the film nav bar is clicked, The 15 Summer Later will be shown in the 
  * content div.
@@ -285,6 +286,7 @@ $('#event_bar').click(function(event) {
     event.preventDefault();
     $('#wrapper').empty();
     mode = 1;
+<<<<<<< HEAD
     $('#index').empty();
     $('<a>1/9</a>').appendTo('#index');
     var	carousel,
@@ -325,6 +327,12 @@ $('#event_bar').click(function(event) {
 			}
 		}
 	});
+=======
+    $('#swipe_content').empty();
+    eventIndex = 0;
+    // alert("got " + events_array.length)
+    $('#swipe_content').html(generateContent(eventIndex));
+>>>>>>> e204eb2b6d484ebccabdff0a740b79c3890cd537
 });
 
 /*
@@ -336,6 +344,7 @@ $('#forums_bar').click(function(event){
     event.preventDefault();
     $('#wrapper').empty();
     mode = 2;
+<<<<<<< HEAD
     $('#index').empty();
     $('<a>1/2</a>').appendTo('#index');
     var	carousel,
@@ -376,6 +385,40 @@ $('#forums_bar').click(function(event){
 			}
 		}
 	});
+=======
+    $('#swipe_content').empty();
+    forumsIndex = 0;
+    $('#swipe_content').html(generateContent(forumsIndex));
+});
+
+/*Swipe right function. Show the next item*/
+$(document).bind('swiperight', function(event) {
+    event.stopImmediatePropagation();
+    event.preventDefault();
+    if(mode == 0) {
+        fillContent(++filmIndex);
+    } else if(mode == 1) {
+        fillContent(++eventIndex);
+    } else if(mode == 2) {
+        fillContent(++forumsIndex);
+    }
+    // alert("swipe right detacted");
+    
+});
+
+/*Swipe left function. Show the last item*/
+$(document).bind('swipeleft', function(event) {
+    event.stopImmediatePropagation();
+    event.preventDefault();
+    if(mode == 0) {
+        fillContent(--filmIndex);
+    } else if(mode == 1) {
+        fillContent(--eventIndex);
+    } else if(mode == 2) {
+        fillContent(--forumsIndex);
+    }
+    
+>>>>>>> e204eb2b6d484ebccabdff0a740b79c3890cd537
 });
 
 /*
@@ -386,31 +429,24 @@ function generateContent(index) {
     var spec_event, content;
     if(mode == 0) {
         spec_event = films_array[index];
-        content = '<h2 align="center">' + spec_event.title + '<br/><br/>' +
-            '<img src="'+spec_event.imageURL+'" /><br/>' + '</h2><br/>' +
-            '<b>Description: </b>' + spec_event.description + '<br/><br/>'+
-            '<b>Tagline: </b>' + spec_event.tagline + '<br/>' +
-            '<b>Genre: </b>' + spec_event.genre + '<br/>' +
-            '<b>Director: </b>' + spec_event.director + '<br/>' +
-            '<b>Producer: </b>' + spec_event.producer + '<br/>' +
-            '<b>Writer: </b>' + spec_event.writer + '<br/>' +
-            '<b>Cinematographer: </b>' + spec_event.cinematographer  +'<br/>' +
-            '<b>Editor: </b>' + spec_event.editor + '<br/>' +
-            '<b>Cast: </b>' + spec_event.cast + '<br/>' +
-            '<b>Country: </b>' + spec_event.country + '<br/>' +
-            '<b>Language: </b>' + spec_event.language + '<br/>' +
-            '<b>Film Info: </b>' + spec_event.film_info + '<br/>';
-        
+        content = spec_event.title + '<br/>' + spec_event.description + '<br/>'+
+            spec_event.tagline + '<br/>' + spec_event.genre + '<br/>' +
+            spec_event.director + '<br/>' + spec_event.producer + '<br/>' +
+            spec_event.writer + '<br/>' + spec_event.cinematographer  +
+            '<br/>' + spec_event.editor + '<br/>' + spec_event.cast + '<br/>' +
+            spec_event.country + '<br/>' + spec_event.language + '<br/>' +
+            spec_event.film_info + '<br/>';
     } else if(mode == 1 || mode == 2) {
         if(mode == 1) spec_event = events_array[index];
         else if(mode == 2) spec_event = forums_array[index];
-        content = '<h2 align="center">' + spec_event.title + '</h2><br/><br/>';
+        content = spec_event.title + '<br/><br/>' ;
         content += spec_event.description + '<br/>';
         content += spec_event.start_time + '<br/>';
         content += spec_event.end_time + '<br/>';
         content += spec_event.venue + '<br/>';
     }
     return content;
+<<<<<<< HEAD
 }
 
 /*
@@ -521,3 +557,6 @@ $('#wrapper').bind('swipeleft', function(event) {
 		$(text).appendTo('#index');
 	}
 });
+=======
+}
+>>>>>>> e204eb2b6d484ebccabdff0a740b79c3890cd537
