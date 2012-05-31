@@ -29,11 +29,11 @@
 }
 
 .checkbox {
-	position: relative;
-	height: 30px;
-	width: 30px;
-    left: 0px;
-    top: 0px;
+        position: relative;
+        height: 30px;
+        width: 30px;
+        left: 0px;
+        top: 0px;
 }
 
 .forum_name {
@@ -69,7 +69,7 @@ a:hover {
 }
 
 #date_header {
-    height:28px;
+    height:35px;
     text-align:left;
     font-size:15px;
     font-style:bold;
@@ -80,10 +80,15 @@ a:hover {
     font-size:0.8em;
 }
 
+#film-list-content {
+    height:640px;
+}
+
 .ui-dialog .ui-header {
         max-width: 500px; 
         margin: 10% auto 15px auto;
 }
+
 .ui-dialog .ui-footer {
         max-width: 500px; 
         margin: 10% auto 15px auto;
