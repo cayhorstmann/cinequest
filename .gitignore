@@ -11,3 +11,8 @@ JavaCommonTest/local
 */gen
 *.tgz
 todo.*
+bbjde_4.6.0/
+bin/
+build_cp/
+keys/
+Android/android.properties
