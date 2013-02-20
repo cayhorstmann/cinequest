@@ -444,22 +444,22 @@ public class HParserTest extends TestCase
             assertTrue(offsets[i] < offsets[i + 1]);
         assertTrue(offsets[offsets.length - 1] == parser.getResultString().length());
     }
-    
+    /*
     public void testWriter()
     {
         TestCallback callback = new TestCallback();
-        mgr.getProgramItem(1482, callback);
+        mgr.getProgramItem(1815, callback);
         ProgramItem item = (ProgramItem) callback.getResult();
         String input = item.getDescription();
         HParser parser = new HParser();
         parser.parse(input);
         assertTrue(parser.getResultString() != null);
     }
-    
+    */
     public void testFilms()
     {
         TestCallback callback = new TestCallback();
-        mgr.getProgramItem(1482, callback);
+        mgr.getProgramItem(1815, callback);
         ProgramItem item = (ProgramItem) callback.getResult();
         String input = item.getDescription();
         HParser parser = new HParser();
@@ -475,4 +475,5 @@ public class HParserTest extends TestCase
             assertTrue(parser.getResultString() != null);            
         }
     }
+    
 }
