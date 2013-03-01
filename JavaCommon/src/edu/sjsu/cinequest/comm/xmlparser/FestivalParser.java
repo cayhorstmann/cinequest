@@ -98,7 +98,7 @@ public class FestivalParser extends BasicHandler {
 		    if (currentBlock.equals("films")) {
 		    	festival.getFilms().addElement(film);
 		    } else if (currentBlock.equals("program_items")) {
-		    	programItem.getFilms().addElement(film);
+		    	programItem.getFilms().add(film);
 		    }		    
 		} else if (lastTagName().equals("schedule") && currentBlock.equals("schedules")) { 
 			// TODO: && currentBlock can be removed when schedules are removed from program items

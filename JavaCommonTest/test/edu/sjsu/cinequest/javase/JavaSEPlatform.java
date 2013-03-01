@@ -189,17 +189,6 @@ public class JavaSEPlatform extends Platform
         return null;
     }
     
-   public Vector sort(Vector vec, final Comparator comp)
-   {
-      Vector svec = new Vector(vec);
-      Collections.sort(svec, new java.util.Comparator() {
-    	  public int compare(Object obj1, Object obj2) {
-    		  return comp.compare(obj1, obj2);
-    	  }
-      });
-      return svec;
-   }
-    
    public void log(String message)
    {
        Logger.getLogger("global").info(message);

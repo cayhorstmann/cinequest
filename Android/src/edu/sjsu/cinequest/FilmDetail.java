@@ -1,5 +1,7 @@
 package edu.sjsu.cinequest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import android.graphics.Bitmap;
@@ -147,9 +149,9 @@ public class FilmDetail extends CinequestActivity {
 		scheduleList.setAdapter(adapter);
 	}
 
-	private void showFilms(Vector<? extends Filmlet> films)
+	private void showFilms(ArrayList<? extends Filmlet> films)
 	{
-		FilmletListAdapter section = new FilmletListAdapter(this, (Vector<Filmlet>) films);
+		FilmletListAdapter section = new FilmletListAdapter(this, (List<Filmlet>) films);
 		if (films.size() == 0) {
 			scheduleList.setAdapter(section);
 			return;
@@ -272,11 +274,11 @@ public class FilmDetail extends CinequestActivity {
 	
     public void showProgramItem(ProgramItem item) 
     {
-		Vector films = item.getFilms();
+		ArrayList<Film> films = item.getFilms();
 		
 		if (films.size() == 1)
 		{
-			showFilm((Film)films.elementAt(0));
+			showFilm(films.get(0));
 		} 
 		else  						
 		{

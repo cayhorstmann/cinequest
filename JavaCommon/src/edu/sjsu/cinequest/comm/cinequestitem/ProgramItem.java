@@ -19,7 +19,7 @@
 
 package edu.sjsu.cinequest.comm.cinequestitem;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * ProgramItem represents a Cinequest program.
@@ -36,13 +36,13 @@ public class ProgramItem extends CinequestItem
 	 */
 	public ProgramItem()
 	{
-		films = new Vector();
+		films = new ArrayList<Film>();
 	}
 
 	/**
 	 * @return the vector of films
 	 */
-	public Vector getFilms() {
+	public ArrayList<Film> getFilms() {
 		return films;
 	}
 
@@ -58,7 +58,7 @@ public class ProgramItem extends CinequestItem
 		{
 			for (int i = 0; i < films.size(); i++)
 			{
-				Film film = (Film) films.elementAt(0);
+				Film film = (Film) films.get(0);
 				url = film.getImageURL();
 				if (url != null) return url;
 			}
@@ -66,7 +66,7 @@ public class ProgramItem extends CinequestItem
 		return null;
 	}
 	
-	private Vector films;
+	private ArrayList<Film> films;
 	
     /**
      * Constructs a <code>String</code> with all attributes

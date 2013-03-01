@@ -14,7 +14,7 @@ import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 /**
- * Films tab of the app
+ * Films tab of the app, showing the films for a given date.
  * @author Prabhjeet Ghuman
  * @author Chao
  */

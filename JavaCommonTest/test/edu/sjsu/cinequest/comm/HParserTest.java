@@ -19,6 +19,7 @@
 
 package edu.sjsu.cinequest.comm;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import junit.framework.TestCase;
@@ -465,10 +466,10 @@ public class HParserTest extends TestCase
         HParser parser = new HParser();
         parser.parse(input);
         assertTrue(parser.getResultString() != null);
-        Vector films = item.getFilms();
+        ArrayList<Film> films = item.getFilms();
         for (int i = 0; i < films.size(); i++)
         {
-            Film film = (Film) films.elementAt(i);
+            Film film = films.get(i);
             input = film.getDescription();
             parser = new HParser();
             parser.parse(input);

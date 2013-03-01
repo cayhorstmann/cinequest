@@ -18,6 +18,7 @@
  */
 
 package edu.sjsu.cinequest.comm.cinequestitem;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import net.rim.device.api.util.Persistable;
@@ -151,17 +152,17 @@ public class Festival implements Persistable {
 	public Festival cleanup() {
 		for (int i = 0; i < programItems.size(); i++) {
 			ProgramItem item = (ProgramItem) programItems.elementAt(i);
-			Vector films = item.getFilms(); 
+			ArrayList<Film> films = item.getFilms(); 
 			for (int j = 0; j < films.size(); j++) {
-				Film film = (Film) films.elementAt(j);
+				Film film = films.get(j);
 				Film replacement = getFilmForId(film.getId());
 				if (replacement == null) // TODO: That should never happen
 				{
-					films.removeElementAt(j);
+					films.remove(j);
 					j--;
 				}
 				else
-					films.setElementAt(replacement, j);
+					films.set(j, replacement);
 			}
 		}
 		for (int i = 0; i < schedules.size(); i++) {
@@ -169,9 +170,9 @@ public class Festival implements Persistable {
 			ProgramItem item = getProgramItemForId(schedule.getItemId());
 			if (item != null) { // TODO: Could it be a mobile item otherwise?
 				schedule.setTitle(item.getTitle());
-				Vector films = item.getFilms(); 
+				ArrayList<Film> films = item.getFilms(); 
 				for (int j = 0; j < films.size(); j++) {
-					Film film = (Film) films.elementAt(j);
+					Film film = films.get(j);
 					film.getSchedules().addElement(schedule);
 				}
 			}

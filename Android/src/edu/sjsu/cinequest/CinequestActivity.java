@@ -189,9 +189,9 @@ public class CinequestActivity extends Activity
 	protected static class FilmletListAdapter extends ArrayAdapter<Filmlet> {
 		private static final int RESOURCE_ID = R.layout.listitem_title_only;
 		
-		public FilmletListAdapter(Context context, List<Filmlet> list) 
+		public FilmletListAdapter(Context context, List<? extends Filmlet> list) 
 		{
-		    super(context, RESOURCE_ID, list);
+		    super(context, RESOURCE_ID, (List<Filmlet>) list);
 		}
 		
 		@Override

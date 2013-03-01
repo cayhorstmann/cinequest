@@ -32,11 +32,6 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public abstract class Platform
 {
-	public interface Comparator
-	{
-       int compare(Object obj1, Object obj2);    
-	}
-	
     private static Platform platform;
     
     /**
@@ -53,13 +48,6 @@ public abstract class Platform
      * @return the platform instance
      */
     public static Platform getInstance() { return platform; }
-    
-    /**
-     * Creates a WebConnection for getting data from a URL
-     * @param url the URL to connect to
-     * @return the WebConnection
-     */
-    public abstract WebConnection createWebConnection(String url)  throws IOException;
     
     /**
      * Converts an array of bytes into an application-specific image object
@@ -131,8 +119,6 @@ public abstract class Platform
 	{
 	   return obj;
 	}
-	
-	public abstract Vector sort(Vector vec, Comparator comp);
 	
 	public abstract void log(String message);
 	

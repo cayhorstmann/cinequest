@@ -20,6 +20,7 @@
 package edu.sjsu.cinequest.comm;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -58,13 +59,13 @@ public class ImageManager
     private Object fetchImage(String imageUrl, boolean usePersistentCache) throws IOException
     {
         Object image = null;
-        WebConnection connection = Platform.getInstance().createWebConnection(imageUrl);
+        HttpURLConnection connection = ConnectionHelper.open(imageUrl);
         if (!connection.getHeaderField("content-type").startsWith("image"))
         {
-            connection.close();
+            connection.disconnect();
             return null;
         }
-        byte[] response = connection.getBytes();        
+        byte[] response = ConnectionHelper.getBytes(connection);        
         if (response.length > 0)
         {
             if (usePersistentCache)

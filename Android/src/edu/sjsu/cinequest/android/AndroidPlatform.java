@@ -251,18 +251,6 @@ public class AndroidPlatform extends Platform {
 	}
 
 	@Override
-	public Vector sort(Vector vec, final Comparator comp) {
-		Vector ret = new Vector(vec);
-		Collections.sort(ret, new java.util.Comparator<Object>() {
-
-			public int compare(Object a, Object b) {
-				return comp.compare(a, b);
-			}
-		});
-		return ret;
-	}
-
-	@Override
 	public void log(String message) {
 		if (message == null)
 			message = "null";

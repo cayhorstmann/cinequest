@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 /**
- * Films tab of the app
+ * Films tab of the app, showing the A-Z dates and the dates. 
  */
 public class FilmsActivity extends CinequestActivity {
 	private ListView listview;

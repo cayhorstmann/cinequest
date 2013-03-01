@@ -1,5 +1,7 @@
 package edu.sjsu.cinequest.comm.cinequestitem;
 
+import java.util.Comparator;
+import java.util.Collections;
 import java.util.Vector;
 
 import edu.sjsu.cinequest.comm.Platform;
@@ -152,16 +154,16 @@ public class UserSchedule
          if (item.getStartTime().startsWith(date)) result.addElement(item);
       }
       // sort by time, then venue-- SimpleSortingVector
-      return Platform.getInstance().sort(result, new Platform.Comparator()
+      Collections.sort(result, new Comparator<Schedule>()
        {
-         public int compare(Object o1, Object o2) {
-            Schedule s1 = (Schedule) o1;
-            Schedule s2 = (Schedule) o2;
+         public int compare(Schedule s1, Schedule s2) {
             int d = s1.getStartTime().compareTo(s2.getStartTime());
             if (d != 0) return d;            
             return s1.getVenue().compareTo(s2.getVenue());   
          }
       });
+      
+      return result;
    }
    
    public int getType(Schedule s)

@@ -27,7 +27,6 @@ import org.xml.sax.SAXException;
 
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
-import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.ProgramItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
@@ -83,7 +82,7 @@ public class ProgramItemParser extends FilmParser
 		super.endElement(uri, localName, qName);
         if (lastTagName().equals("film"))
         {
-            item.getFilms().addElement(getFilm());
+            item.getFilms().add(getFilm());
             setFilm(null);
         }
         else if (lastTagName().equals("program_item"))
@@ -91,7 +90,7 @@ public class ProgramItemParser extends FilmParser
             // attach all schedules to the individual films
             for (int i = 0; i < item.getFilms().size(); i++)
             {
-                ((Film) item.getFilms().elementAt(i)).setSchedules(schedules);
+                item.getFilms().get(i).setSchedules(schedules);
             }
         }
         else if (lastTagName().equals("title") && getFilm() == null)
