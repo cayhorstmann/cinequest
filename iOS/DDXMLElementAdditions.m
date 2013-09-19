@@ -97,7 +97,7 @@
 /**
  * Returns all the attributes as a dictionary.
 **/
-- (NSDictionary *)attributesAsDictionary
+/*- (NSDictionary *)attributesAsDictionary
 {
 	NSArray *attributes = [self attributes];
 	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[attributes count]];
@@ -110,6 +110,6 @@
 		[result setObject:[node stringValue] forKey:[node name]];
 	}
 	return result;
-}
+}*/
 
 @end

@@ -12,8 +12,8 @@ public class DateUtils {
     public static final int FESTIVAL_TEST_MODE = 1;
     public static final int OFFSEASON_TEST_MODE = 2;
     public static final int UNINITIALIZED_MODE = -1;
-    private static int mode = UNINITIALIZED_MODE;
-    // private static int mode = FESTIVAL_TEST_MODE;
+    // private static int mode = UNINITIALIZED_MODE;
+    private static int mode = FESTIVAL_TEST_MODE;
 
     /*
      * If you need more time formats, add a constant here, and be sure to

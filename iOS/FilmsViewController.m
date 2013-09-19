@@ -907,8 +907,8 @@
 #pragma mark UIAccelerometer Delegate
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration {
 	if (!delegate.isPresentingModalView) {
-		if (acceleration.x > kAccelerationThreadhold
-			&& acceleration.y < kAccelerationThreadhold
+		if ((acceleration.x > kAccelerationThreadhold
+			&& acceleration.y < kAccelerationThreadhold)
 			|| acceleration.z > kAccelerationThreadhold) {
 			delegate.isPresentingModalView = YES;
 			UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:delegate.newsView];

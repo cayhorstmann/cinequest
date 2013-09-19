@@ -16,6 +16,6 @@
 
 - (void)addAttributeWithName:(NSString *)name stringValue:(NSString *)string;
 
-- (NSDictionary *)attributesAsDictionary;
+//- (NSDictionary *)attributesAsDictionary;
 
 @end

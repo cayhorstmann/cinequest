@@ -123,7 +123,7 @@
 	//[self performSelectorOnMainThread:@selector(startParsingXML) withObject:nil waitUntilDone:YES];
 	[NSThread detachNewThreadSelector:@selector(startParsingXML) toTarget:self withObject:nil];
 	[pool drain];
-	[pool release];
+	//[pool release];
 }
 - (void)addEvents:(id)sender {
 	int counter = 0;
@@ -321,7 +321,9 @@
 		
 		//Start Time
 		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-		[dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+        NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+        [dateFormatter setLocale:usLocale];
+		[dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 		NSDate *date = [dateFormatter dateFromString:start];
 		event.date = date;
 		[dateFormatter setDateFormat:@"hh:mm a"];
@@ -331,7 +333,7 @@
 		NSString *dateString = [dateFormatter stringFromDate:date];
 		event.dateString = dateString;
 		//End Time
-		[dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+		[dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 		date = [dateFormatter dateFromString:end];
 		event.endDate = date;
 		[dateFormatter setDateFormat:@"hh:mm a"];
