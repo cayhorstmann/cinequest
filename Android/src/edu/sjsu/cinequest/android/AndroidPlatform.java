@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -33,6 +34,7 @@ import android.util.Log;
 import edu.sjsu.cinequest.comm.Cache;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.CallbackException;
+import edu.sjsu.cinequest.comm.ConnectionHelper;
 import edu.sjsu.cinequest.comm.MessageDigest;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.WebConnection;
@@ -64,10 +66,6 @@ public class AndroidPlatform extends Platform {
 				log(ex);
 			}
 		});
-	}
-
-	public WebConnection createWebConnection(String url) throws IOException {
-		return new AndroidWebConnection(url);
 	}
 
 	@Override
@@ -105,10 +103,10 @@ public class AndroidPlatform extends Platform {
 		if (getFromCache(url, sp, handler, MAX_CACHE_AGE))
 			return;
 		starting(callback);		
-		WebConnection connection = null;
+		HttpURLConnection connection = null;
 		try {
-			connection = createWebConnection(url);
-			byte[] xmlSource = (byte[]) connection.getBytes();
+			connection = ConnectionHelper.open(url);
+			byte[] xmlSource = (byte[]) ConnectionHelper.getBytes(connection);
 			if (xmlSource.length == 0)
 				throw new IOException("No data received from server");
 
@@ -141,32 +139,6 @@ public class AndroidPlatform extends Platform {
 			return true;
 		} else
 			return false;
-	}
-
-	@Override
-	public String parse(String url, Hashtable postData, DefaultHandler handler,
-			Callback callback) throws SAXException, IOException {
-		starting(callback);
-		SAXParserFactory spf = SAXParserFactory.newInstance();
-		SAXParser sp;
-		try {
-			sp = spf.newSAXParser();
-		} catch (ParserConfigurationException e) {
-			throw new SAXException(e.toString());
-		}
-		WebConnection connection = createWebConnection(url);
-		connection.setPostParameters(postData);
-		byte[] response = connection.getBytes();
-		String doc = new String(response);
-		if (response.length == 0) {
-			Platform.getInstance().log(
-					"AndroidPlatform.parse: No data received from server");
-			throw new IOException("No data received from server");
-		}
-		InputSource inputSource = new InputSource(new ByteArrayInputStream(
-				response));
-		sp.parse(inputSource, handler);
-		return doc;
 	}
 
 	@Override

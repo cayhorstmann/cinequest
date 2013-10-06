@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
@@ -44,17 +45,13 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.ConnectionHelper;
 import edu.sjsu.cinequest.comm.MessageDigest;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.WebConnection;
 
 public class JavaSEPlatform extends Platform
 {
-    public WebConnection createWebConnection(String url) throws IOException
-    {
-        return new JavaSEWebConnection(url);
-    }
-
     public Object convert(byte[] imageBytes)
     {
         return new ImageIcon(imageBytes).getImage();
@@ -81,26 +78,6 @@ public class JavaSEPlatform extends Platform
         sp.parse(in, handler);
     }
     
-    public String parse(final String url, Hashtable postData, DefaultHandler handler, Callback callback)
-       throws SAXException, IOException
-    {
-       SAXParserFactory spf = SAXParserFactory.newInstance();
-       SAXParser sp;
-       try
-       {
-           sp = spf.newSAXParser();
-       } catch (ParserConfigurationException e)
-       {
-           throw new SAXException(e.toString());
-       }
-       WebConnection connection = createWebConnection(url);
-       connection.setPostParameters(postData);
-       byte[] response = connection.getBytes();
-       sp.parse(new ByteArrayInputStream(response), handler);
-       return new String(response);
-    }
-    
-
     public void starting(Callback callback)
     {
         callback.starting();

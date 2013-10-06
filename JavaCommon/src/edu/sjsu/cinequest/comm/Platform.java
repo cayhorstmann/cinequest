@@ -19,10 +19,17 @@
 
 package edu.sjsu.cinequest.comm;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -72,8 +79,30 @@ public abstract class Platform
     /**
      * @return the retrieved document (for error reporting)
      */
-    public abstract String parse(final String url, Hashtable postData, DefaultHandler handler, Callback callback)
-       throws SAXException, IOException;    
+	public String parse(String url, Hashtable postData, DefaultHandler handler,
+			Callback callback) throws SAXException, IOException {
+		starting(callback);
+		SAXParserFactory spf = SAXParserFactory.newInstance();
+		SAXParser sp;
+		try {
+			sp = spf.newSAXParser();
+		} catch (ParserConfigurationException e) {
+			throw new SAXException(e.toString());
+		}
+		HttpURLConnection connection = ConnectionHelper.open(url);
+		ConnectionHelper.setPostParameters(connection, postData);
+		byte[] response = ConnectionHelper.getBytes(connection);
+		String doc = new String(response);
+		if (response.length == 0) {
+			Platform.getInstance().log(
+					"AndroidPlatform.parse: No data received from server");
+			throw new IOException("No data received from server");
+		}
+		InputSource inputSource = new InputSource(new ByteArrayInputStream(
+				response));
+		sp.parse(inputSource, handler);
+		return doc;
+	}
     
     /**
      * Calls the Callback's starting method
